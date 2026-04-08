@@ -1,0 +1,145 @@
+{% extends 'base_staff_modern.html' %}
+
+{% block title %}Emergency Request #{{ emergency_request.pk }} - BloodLink{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Emergency Request #{{ emergency_request.pk }}</h1>
+    <div>
+        {% if emergency_request.status == 'open' %}
+            <form method="post" action="{% url 'staff:request_close' emergency_request.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning">
+                    <i class="bi bi-x-circle"></i> Close Request
+                </button>
+            </form>
+        {% endif %}
+        <a href="{% url 'staff:request_list' %}" class="btn btn-outline-secondary ms-2">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<!-- Request Info Card -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Request Information</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Blood Type:</strong> <span class="badge badge-blood">{{ emergency_request.blood_type_needed }}</span></p>
+                <p><strong>Units Needed:</strong> {{ emergency_request.units_needed }}</p>
+                <p><strong>Urgency Level:</strong> 
+                    {% if emergency_request.urgency_level == 'critical' %}
+                        <span class="badge bg-danger">{{ emergency_request.get_urgency_level_display }}</span>
+                    {% elif emergency_request.urgency_level == 'urgent' %}
+                        <span class="badge bg-warning">{{ emergency_request.get_urgency_level_display }}</span>
+                    {% else %}
+                        <span class="badge bg-info">{{ emergency_request.get_urgency_level_display }}</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Status:</strong> 
+                    {% if emergency_request.status == 'open' %}
+                        <span class="badge bg-danger">Open</span>
+                    {% elif emergency_request.status == 'fulfilled' %}
+                        <span class="badge bg-success">Fulfilled</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Closed</span>
+                    {% endif %}
+                </p>
+                <p><strong>Created By:</strong> {{ emergency_request.created_by.get_full_name|default:emergency_request.created_by.username }}</p>
+                <p><strong>Created At:</strong> {{ emergency_request.created_at|date:"F d, Y, g:i A" }}</p>
+            </div>
+        </div>
+        
+        {% if emergency_request.patient_name %}
+            <div class="mt-3">
+                <p><strong>Patient Name:</strong> {{ emergency_request.patient_name }}</p>
+            </div>
+        {% endif %}
+        
+        {% if emergency_request.ward %}
+            <div class="mt-3">
+                <p><strong>Ward:</strong> {{ emergency_request.ward }}</p>
+            </div>
+        {% endif %}
+        
+        {% if emergency_request.notes %}
+            <div class="mt-3">
+                <p><strong>Notes:</strong> {{ emergency_request.notes }}</p>
+            </div>
+        {% endif %}
+        
+        {% if emergency_request.fulfilled_at %}
+            <div class="mt-3">
+                <p><strong>Fulfilled At:</strong> {{ emergency_request.fulfilled_at|date:"F d, Y, g:i A" }}</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- SMS Notifications -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">SMS Notifications</h5>
+    </div>
+    <div class="card-body">
+        {% if sms_list %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Donor</th>
+                            <th>Phone</th>
+                            <th>Sent At</th>
+                            <th>Delivery Status</th>
+                            <th>Response</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sms in sms_list %}
+                        <tr>
+                            <td>{{ sms.donor.full_name }}</td>
+                            <td>{{ sms.donor.phone_number }}</td>
+                            <td>{{ sms.sent_at|date:"M d, Y g:i A" }}</td>
+                            <td>
+                                <span class="badge bg-{{ sms.delivery_status|yesno:'success,warning,secondary' }}">
+                                    {{ sms.get_delivery_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ sms.donor_response|yesno:'success,warning,secondary' }}">
+                                    {{ sms.get_donor_response_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if sms.donor_response == 'no_response' %}
+                                    <div class="btn-group" role="group">
+                                        <form method="post" action="{% url 'notifications:update_response' sms.pk %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="response" value="confirmed">
+                                            <button type="submit" class="btn btn-sm btn-success">Confirmed</button>
+                                        </form>
+                                        <form method="post" action="{% url 'notifications:update_response' sms.pk %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="response" value="declined">
+                                            <button type="submit" class="btn btn-sm btn-warning">Declined</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No SMS notifications sent for this request yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

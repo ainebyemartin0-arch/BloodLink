@@ -1,0 +1,100 @@
+{% extends 'base_donor_modern.html' %}
+
+{% block title %}My Profile - BloodLink{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">My Profile</h2>
+    
+    <!-- Personal Info Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Personal Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Full Name:</strong> {{ donor.full_name }}</p>
+                    <p><strong>Email Address:</strong> {{ donor.email }}</p>
+                    <p><strong>Phone Number:</strong> {{ donor.phone_number }}</p>
+                    <p><strong>Gender:</strong> {{ donor.get_gender_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Date of Birth:</strong> {{ donor.date_of_birth }}</p>
+                    <p><strong>Age:</strong> 
+                        {% with today=now|date:"Y"|add:"0" %}
+                        {% with dob=donor.date_of_birth|date:"Y"|add:"0" %}
+                        {% widthratio today dob 1 %} years old
+                        {% endwith %}
+                        {% endwith %}
+                    </p>
+                    <p><strong>Physical Address:</strong> 
+                        {% if donor.physical_address %}{{ donor.physical_address }}{% else %}Not provided{% endif %}
+                    </p>
+                    <p><strong>Member Since:</strong> {{ donor.date_registered|date:"F d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Medical Info Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Medical Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Blood Type:</strong> <span class="badge badge-blood" style="font-size: 1.2rem; padding: 10px 20px;">{{ donor.blood_type }}</span></p>
+                    <p><strong>Location:</strong> {{ donor.get_location_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Availability Status:</strong> 
+                        {% if donor.is_available %}
+                            <span class="badge bg-success">Available for Donation</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Currently Unavailable</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Last Donation:</strong> 
+                        {% if donor.last_donation_date %}
+                            {{ donor.last_donation_date }}
+                        {% else %}
+                            <span class="text-muted">No donations recorded yet</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Notes Card -->
+    {% if donor.profile_notes %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Profile Notes</h5>
+        </div>
+        <div class="card-body">
+            <p>{{ donor.profile_notes }}</p>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Action Buttons -->
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{% url 'donor:profile_edit' %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit Profile
+                </a>
+                <a href="{% url 'donor:change_password' %}" class="btn btn-outline-warning">
+                    <i class="bi bi-key"></i> Change Password
+                </a>
+                <a href="{% url 'donor:dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

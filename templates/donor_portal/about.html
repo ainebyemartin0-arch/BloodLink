@@ -1,0 +1,247 @@
+{% extends 'base_donor_modern.html' %}
+{% load static %}
+
+{% block title %}About BloodLink - Connecting Donors with St. Francis Hospital Nsambya{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <div class="row align-items-center mb-4">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold text-success">About BloodLink</h1>
+                <p class="lead">Connecting blood donors with patients in need at St. Francis Hospital Nsambya, Kampala</p>
+            </div>
+            <div class="col-md-6">
+                <img src="{% static 'images/blood-cells.png' %}" alt="Blood Cells" class="img-fluid rounded" style="max-height: 200px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-success mb-3">
+                        <i class="bi bi-heart-fill"></i> Our Mission
+                    </h2>
+                    <p class="card-text">
+                        BloodLink is a life-saving platform that connects voluntary blood donors with patients who need urgent blood transfusions at St. Francis Hospital Nsambya. We bridge the critical gap between blood supply and demand through innovative technology and community engagement.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">How BloodLink Works</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-success">
+                        <div class="card-body text-center">
+                            <div class="step-icon mb-3">
+                                <i class="bi bi-pencil-square"></i>
+                            </div>
+                            <h4 class="text-success">1. Register</h4>
+                            <p>Sign up as a blood donor with your details and blood type. Registration takes just 2 minutes.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-success">
+                        <div class="card-body text-center">
+                            <div class="step-icon mb-3">
+                                <i class="bi bi-phone"></i>
+                            </div>
+                            <h4 class="text-success">2. Receive SMS Alert</h4>
+                            <p>When your blood type is urgently needed, you'll receive an instant SMS alert from the hospital.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-success">
+                        <div class="card-body text-center">
+                            <div class="step-icon mb-3">
+                                <i class="bi bi-heart-pulse"></i>
+                            </div>
+                            <h4 class="text-success">3. Save a Life</h4>
+                            <p>Visit St. Francis Hospital Nsambya and donate blood to help save a patient's life.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact Section -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-success">
+                        <i class="bi bi-graph-up"></i> Our Impact
+                    </h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>24/7 Availability:</strong> Round-the-clock blood donation coordination
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>Quick Response:</strong> Average response time under 30 minutes
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>All Blood Types:</strong> We support all blood types (A+, A-, B+, B-, O+, O-, AB+, AB-)
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i>
+                            <strong>Verified Donors:</strong> All donors are registered and verified
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-success">
+                        <i class="bi bi-hospital"></i> About St. Francis Hospital Nsambya
+                    </h3>
+                    <p>
+                        St. Francis Hospital Nsambya is a leading healthcare facility in Kampala, Uganda, providing quality medical care for over 100 years. Our partnership ensures:
+                    </p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-shield-check text-success"></i>
+                            Professional medical supervision during donations
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-shield-check text-success"></i>
+                            Safe and sterile donation procedures
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-shield-check text-success"></i>
+                            Post-donation care and refreshments
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-shield-check text-success"></i>
+                            Regular health check-ups for donors
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why Donate Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-success text-center mb-4">
+                        <i class="bi bi-heart-fill"></i> Why Donate Blood?
+                    </h2>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <i class="bi bi-person-heart text-success" style="font-size: 2rem;"></i>
+                                <h5 class="mt-2">Save Lives</h5>
+                                <p class="text-muted">One donation can save up to 3 lives</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <i class="bi bi-activity text-success" style="font-size: 2rem;"></i>
+                                <h5 class="mt-2">Health Benefits</h5>
+                                <p class="text-muted">Regular donation improves your health</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <i class="bi bi-award text-success" style="font-size: 2rem;"></i>
+                                <h5 class="mt-2">Be a Hero</h5>
+                                <p class="text-muted">Join our community of life-savers</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Requirements Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-success mb-3">
+                        <i class="bi bi-clipboard-check"></i> Donation Requirements
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-success">Eligibility:</h5>
+                            <ul>
+                                <li>Age: 18-65 years</li>
+                                <li>Weight: Minimum 50kg</li>
+                                <li>Good health condition</li>
+                                <li>No recent illnesses or infections</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-success">Before Donation:</h5>
+                            <ul>
+                                <li>Get adequate sleep (8 hours)</li>
+                                <li>Eat a healthy meal</li>
+                                <li>Drink plenty of water</li>
+                                <li>Avoid alcohol 24 hours before</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-success text-white">
+                <div class="card-body p-4 text-center">
+                    <h3 class="card-title mb-3">Ready to Save a Life?</h3>
+                    <p class="mb-4">Join our community of blood donors and help save lives in Kampala</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'donor:register' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-heart-fill"></i> Register as Donor
+                        </a>
+                        <a href="{% url 'donor:login' %}" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Contact -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5 class="alert-heading">
+                    <i class="bi bi-telephone-fill"></i> Emergency Blood Request
+                </h5>
+                <p class="mb-2">
+                    For urgent blood needs, contact St. Francis Hospital Nsambya directly:
+                </p>
+                <p class="mb-0">
+                    <strong>Emergency Hotline:</strong> +256 414 290 000<br>
+                    <strong>Location:</strong> Nsambya, Kampala, Uganda
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base_donor_modern.html' %}
+{% load static %}
+
+{% block title %}Donor Login - BloodLink{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <img src="{% static 'images/donor-smiling.png' %}" alt="Blood Donor" class="img-fluid rounded-circle mb-3" style="max-height: 100px;">
+                        <h1 class="text-success">🩸 BloodLink</h1>
+                        <h5 class="text-muted">Donor Login</h5>
+                        <small class="text-muted">Save Lives at St. Francis Hospital</small>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email Address</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger small">{{ form.password.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100 mb-3">
+                            <i class="bi bi-box-arrow-in-right"></i> Login to My Account
+                        </button>
+                    </form>
+                    
+                    <div class="text-center">
+                        <a href="#" class="text-muted" onclick="alert('Password reset feature coming soon!'); return false;">
+                            <small>Forgot password?</small>
+                        </a>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <p class="mb-2">Don't have an account?</p>
+                        <a href="{% url 'donor:register' %}" class="btn btn-outline-success">
+                            Register here →
+                        </a>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="/staff/login/" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-hospital"></i> Are you hospital staff? Staff login →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

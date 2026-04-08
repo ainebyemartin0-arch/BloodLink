@@ -1,0 +1,111 @@
+{% extends 'base_staff_modern.html' %}
+
+{% block title %}Emergency Blood Requests - BloodLink{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Emergency Blood Requests</h1>
+    <a href="{% url 'staff:request_create' %}" class="btn btn-danger">
+        <i class="bi bi-exclamation-triangle"></i> Create Emergency Request
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3>{{ requests.count }}</h3>
+                <p class="text-muted">Total Requests</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-danger">{{ open_requests|length }}</h3>
+                <p class="text-muted">Open Requests</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ fulfilled_requests|length }}</h3>
+                <p class="text-muted">Fulfilled Requests</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Requests Table -->
+<div class="card">
+    <div class="card-body">
+        {% if requests %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Blood Type</th>
+                            <th>Units</th>
+                            <th>Urgency</th>
+                            <th>Status</th>
+                            <th>Created By</th>
+                            <th>Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requests %}
+                        <tr>
+                            <td><strong>#{{ req.pk }}</strong></td>
+                            <td><span class="badge badge-blood">{{ req.blood_type_needed }}</span></td>
+                            <td>{{ req.units_needed }}</td>
+                            <td>
+                                {% if req.urgency_level == 'critical' %}
+                                    <span class="badge bg-danger">{{ req.get_urgency_level_display }}</span>
+                                {% elif req.urgency_level == 'urgent' %}
+                                    <span class="badge bg-warning">{{ req.get_urgency_level_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-info">{{ req.get_urgency_level_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if req.status == 'open' %}
+                                    <span class="badge bg-danger">Open</span>
+                                {% elif req.status == 'fulfilled' %}
+                                    <span class="badge bg-success">Fulfilled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Closed</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ req.created_by.get_full_name|default:req.created_by.username }}</td>
+                            <td>{{ req.created_at|date:"M d, Y g:i A" }}</td>
+                            <td>
+                                <a href="{% url 'staff:request_detail' req.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                                {% if req.status != 'fulfilled' %}
+                                <form method="post" action="{% url 'staff:request_delete' req.pk %}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this emergency request? This will also delete all related SMS notifications.')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-exclamation-triangle text-muted" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mt-3">No Emergency Requests Yet</h5>
+                <p class="text-muted">Create your first emergency blood request to get started.</p>
+                <a href="{% url 'staff:request_create' %}" class="btn btn-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Create Emergency Request
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends 'base_staff_modern.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - BloodLink{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ title }}</h4>
+                <div class="btn-group" role="group">
+                    {% if donor %}
+                    <a href="{% url 'staff:donor_detail' donor.pk %}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-eye"></i> View Details
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'staff:donor_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-list"></i> Donor List
+                    </a>
+                    <a href="{% url 'staff:dashboard' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.full_name.id_for_label }}" class="form-label">Full Name *</label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                                <div class="text-danger small">{{ form.full_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number *</label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                                <div class="text-danger small">{{ form.phone_number.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">Date of Birth *</label>
+                            {{ form.date_of_birth }}
+                            {% if form.date_of_birth.errors %}
+                                <div class="text-danger small">{{ form.date_of_birth.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.gender.id_for_label }}" class="form-label">Gender</label>
+                            {{ form.gender }}
+                            {% if form.gender.errors %}
+                                <div class="text-danger small">{{ form.gender.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.blood_type.id_for_label }}" class="form-label">Blood Type *</label>
+                            {{ form.blood_type }}
+                            {% if form.blood_type.errors %}
+                                <div class="text-danger small">{{ form.blood_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.location.id_for_label }}" class="form-label">Location</label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                                <div class="text-danger small">{{ form.location.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.physical_address.id_for_label }}" class="form-label">Physical Address</label>
+                        {{ form.physical_address }}
+                        {% if form.physical_address.errors %}
+                            <div class="text-danger small">{{ form.physical_address.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.profile_notes.id_for_label }}" class="form-label">Profile Notes</label>
+                        {{ form.profile_notes }}
+                        {% if form.profile_notes.errors %}
+                            <div class="text-danger small">{{ form.profile_notes.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_available }}
+                            <label class="form-check-label" for="{{ form.is_available.id_for_label }}">
+                                Available for donation
+                            </label>
+                        </div>
+                        {% if form.is_available.errors %}
+                            <div class="text-danger small">{{ form.is_available.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if title == 'Register Donor' %}
+                    <!-- Password Section for New Donors -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Password Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="{{ form.password_option.id_for_label }}" class="form-label">Password Option *</label>
+                                {{ form.password_option }}
+                                {% if form.password_option.errors %}
+                                    <div class="text-danger small">{{ form.password_option.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">Choose how to set the donor's login password</small>
+                            </div>
+                            
+                            <div class="mb-3" id="custom_password_field" style="display: none;">
+                                <label for="{{ form.custom_password.id_for_label }}" class="form-label">Custom Password *</label>
+                                {{ form.custom_password }}
+                                {% if form.custom_password.errors %}
+                                    <div class="text-danger small">{{ form.custom_password.errors.0 }}</div>
+                                {% endif %}
+                                {{ form.custom_password.help_text }}
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Password Information:</strong>
+                                <ul class="mb-0">
+                                    <li><strong>Generate Random:</strong> Creates an 8-character random password</li>
+                                    <li><strong>Use Phone Number:</strong> Sets password to donor's phone number</li>
+                                    <li><strong>Set Custom:</strong> Allows you to specify a custom password</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> 
+                            {% if title == 'Edit Donor' %}Update Donor{% else %}Register Donor{% endif %}
+                        </button>
+                        {% if title == 'Edit Donor' %}
+                        <button type="submit" name="save_and_continue" value="true" class="btn btn-outline-success">
+                            <i class="bi bi-check2-all"></i> Save & Continue Editing
+                        </button>
+                        {% endif %}
+                        <a href="{% url 'staff:donor_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                    <div class="d-flex gap-2">
+                        {% if donor %}
+                        <a href="{% url 'staff:donor_detail' donor.pk %}" class="btn btn-outline-info">
+                            <i class="bi bi-eye"></i> View Details
+                        </a>
+                        <a href="{% url 'staff:donor_edit' donor.pk %}" class="btn btn-outline-warning">
+                            <i class="bi bi-arrow-clockwise"></i> Reset Form
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if title == 'Register Donor' %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordOption = document.getElementById('{{ form.password_option.id_for_label }}');
+    const customPasswordField = document.getElementById('custom_password_field');
+    
+    function toggleCustomPassword() {
+        if (passwordOption && customPasswordField) {
+            if (passwordOption.value === 'custom') {
+                customPasswordField.style.display = 'block';
+            } else {
+                customPasswordField.style.display = 'none';
+            }
+        }
+    }
+    
+    // Initial check
+    toggleCustomPassword();
+    
+    // Listen for changes
+    if (passwordOption) {
+        passwordOption.addEventListener('change', toggleCustomPassword);
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

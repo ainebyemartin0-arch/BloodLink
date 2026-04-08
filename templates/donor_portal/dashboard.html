@@ -1,0 +1,241 @@
+{% extends 'base_donor_modern.html' %}
+{% load static %}
+
+{% block title %}My Dashboard - BloodLink{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-2">Welcome back, {{ donor.full_name }}!</h2>
+                            <p class="text-muted mb-0">Your blood type: <span class="badge badge-blood">{{ donor.blood_type }}</span></p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <img src="{% static 'images/donor-smiling.png' %}" alt="Donor" class="img-fluid rounded-circle" style="max-height: 80px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-phone text-primary" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2">{{ total_alerts }}</h3>
+                    <p class="text-muted">Alerts Received</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2">{{ confirmed_count }}</h3>
+                    <p class="text-muted">Times Confirmed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-droplet text-danger" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2">{{ donation_count }}</h3>
+                    <p class="text-muted">Donations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="bi bi-toggle-on{% if donor.is_available %} text-success{% else %} text-secondary{% endif %}" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2">
+                        {% if donor.is_available %}Available{% else %}Unavailable{% endif %}
+                    </h3>
+                    <p class="text-muted">My Status</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Urgent Alerts Section -->
+    {% if unread_alerts %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle-fill"></i> 
+                        URGENT: {{ unread_alerts|length }} Blood Donation Alert{{ unread_alerts|length|pluralize }} Awaiting Your Response
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for alert in unread_alerts %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="alert-heading">
+                                    <i class="bi bi-droplet-fill text-danger"></i>
+                                    {{ alert.emergency_request.blood_type }} Blood Needed - {{ alert.emergency_request.get_urgency_level_display }}
+                                </h6>
+                                <p class="mb-1">
+                                    <strong>Request:</strong> {{ alert.emergency_request.units_needed }} unit{{ alert.emergency_request.units_needed|pluralize }} 
+                                    | <strong>Ward:</strong> {{ alert.emergency_request.ward|default:"Emergency" }}
+                                </p>
+                                <small class="text-muted">Sent: {{ alert.sent_at|date:"M d, Y g:i A" }}</small>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <form method="post" action="{% url 'donor:respond_to_alert' alert.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="response" value="confirmed">
+                                    <button type="submit" class="btn btn-success btn-sm me-2">
+                                        <i class="bi bi-check-circle"></i> I Can Donate
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'donor:respond_to_alert' alert.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="response" value="declined">
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-x-circle"></i> Not Available
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent SMS Alerts -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent SMS Alerts</h5>
+                </div>
+                <div class="card-body">
+                    {% if sms_alerts %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Blood Type</th>
+                                        <th>Request Details</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sms in sms_alerts %}
+                                    <tr class="{% if sms.donor_response == 'no_response' %}table-warning{% endif %}">
+                                        <td>{{ sms.sent_at|date:"M d, Y g:i A" }}</td>
+                                        <td><span class="badge badge-blood">{{ sms.emergency_request.blood_type_needed }}</span></td>
+                                        <td>
+                                            <small>
+                                                <strong>{{ sms.emergency_request.units_needed }} unit{{ sms.emergency_request.units_needed|pluralize }}</strong><br>
+                                                {{ sms.emergency_request.get_urgency_level_display }}<br>
+                                                {{ sms.emergency_request.ward|default:"Emergency" }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            {% if sms.donor_response == 'confirmed' %}
+                                                <span class="badge bg-success">Confirmed</span>
+                                            {% elif sms.donor_response == 'declined' %}
+                                                <span class="badge bg-warning">Declined</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">No Response</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if sms.donor_response == 'no_response' %}
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <form method="post" action="{% url 'donor:respond_to_alert' sms.pk %}" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="response" value="confirmed">
+                                                        <button type="submit" class="btn btn-success btn-sm" title="I can donate">
+                                                            <i class="bi bi-check"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form method="post" action="{% url 'donor:respond_to_alert' sms.pk %}" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="response" value="declined">
+                                                        <button type="submit" class="btn btn-outline-secondary btn-sm" title="Not available">
+                                                            <i class="bi bi-x"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'donor:donations' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-list"></i> View All SMS History
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-phone text-muted" style="font-size: 3rem;"></i>
+                            <h6 class="text-muted mt-3">No SMS alerts received yet</h6>
+                            <p class="text-muted">You will receive alerts when your blood type is needed</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'donor:profile_edit' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Update Profile
+                        </a>
+                        <a href="{% url 'donor:donations' %}" class="btn btn-outline-info">
+                            <i class="bi bi-droplet"></i> View All Donations
+                        </a>
+                        <a href="{% url 'donor:change_password' %}" class="btn btn-outline-warning">
+                            <i class="bi bi-key"></i> Change Password
+                        </a>
+                        <a href="{% url 'donor:profile' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-person"></i> View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Motivational Message -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h4 class="mb-2">Thank you for being a BloodLink hero!</h4>
+                    <p class="mb-0">Your willingness to donate blood saves lives in our community. Keep up the amazing work!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends 'base_staff_modern.html' %}
+{% load static %}
+
+{% block title %}Donation Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0">
+                    <i class="bi bi-droplet-fill text-danger me-2"></i>
+                    Donation Details
+                </h2>
+                <div>
+                    <a href="{% url 'staff:donation_list' %}" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Back to Donations
+                    </a>
+                    <a href="{% url 'staff:donor_detail' donation.donor.pk %}" class="btn btn-outline-primary">
+                        <i class="bi bi-person me-1"></i>
+                        View Donor
+                    </a>
+                </div>
+            </div>
+
+            <!-- Donation Information -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-danger text-white">
+                            <i class="bi bi-droplet-fill me-1"></i>
+                            Donation Information
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Donation Date:</strong></td>
+                                    <td>{{ donation.donation_date|date:"F d, Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Units Donated:</strong></td>
+                                    <td>
+                                        <span class="badge bg-success text-white fs-6">
+                                            {{ donation.units_donated }} unit(s)
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Recorded At:</strong></td>
+                                    <td>{{ donation.created_at|date:"F d, Y H:i" }}</td>
+                                </tr>
+                                {% if donation.notes %}
+                                    <tr>
+                                        <td><strong>Medical Notes:</strong></td>
+                                        <td>{{ donation.notes|linebreaks }}</td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <i class="bi bi-person-fill me-1"></i>
+                            Donor Information
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Name:</strong></td>
+                                    <td>
+                                        <a href="{% url 'staff:donor_detail' donation.donor.pk %}" class="text-decoration-none">
+                                            {{ donation.donor.full_name }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Blood Type:</strong></td>
+                                    <td>
+                                        <span class="badge bg-danger text-white">
+                                            {{ donation.donor.blood_type }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phone:</strong></td>
+                                    <td>{{ donation.donor.phone_number }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Availability:</strong></td>
+                                    <td>
+                                        {% if donation.donor.is_available %}
+                                            <span class="badge bg-success text-white">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Available
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-x-circle me-1"></i>
+                                                Unavailable
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Location:</strong></td>
+                                    <td>{{ donation.donor.get_location_display }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Request Information (if applicable) -->
+            {% if donation.emergency_request %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                Linked Emergency Request
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Request ID:</strong></td>
+                                                <td>
+                                                    <a href="{% url 'staff:request_detail' donation.emergency_request.pk %}" class="text-decoration-none">
+                                                        #{{ donation.emergency_request.pk }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Blood Type Needed:</strong></td>
+                                                <td>
+                                                    <span class="badge bg-danger text-white">
+                                                        {{ donation.emergency_request.blood_type_needed }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Units Needed:</strong></td>
+                                                <td>{{ donation.emergency_request.units_needed }} units</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Urgency:</strong></td>
+                                            <td>
+                                                <span class="badge bg-warning text-dark">
+                                                    {{ donation.emergency_request.get_urgency_level_display }}
+                                                </span>
+                                            </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Patient:</strong></td>
+                                                <td>{{ donation.emergency_request.patient_name|default:"Not specified" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Ward:</strong></td>
+                                                <td>{{ donation.emergency_request.ward|default:"Not specified" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Status:</strong></td>
+                                                <td>
+                                                    {% if donation.emergency_request.status == 'fulfilled' %}
+                                                        <span class="badge bg-success text-white">
+                                                            <i class="bi bi-check-circle me-1"></i>
+                                                            Fulfilled
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge bg-warning text-dark">
+                                                            <i class="bi bi-clock me-1"></i>
+                                                            {{ donation.emergency_request.get_status_display }}
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Created:</strong></td>
+                                                <td>{{ donation.emergency_request.created_at|date:"F d, Y H:i" }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Staff Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <i class="bi bi-person-badge me-1"></i>
+                            Recording Information
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Recorded By:</strong> 
+                                        {% if donation.recorded_by %}
+                                            {{ donation.recorded_by.get_full_name|default:donation.recorded_by.username }}
+                                        {% else %}
+                                            System
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Recorded At:</strong> {{ donation.created_at|date:"F d, Y H:i:s" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card-header {
+    font-weight: 600;
+}
+
+.table-borderless td {
+    padding: 0.75rem;
+    border: none;
+}
+
+.table-borderless td:first-child {
+    width: 40%;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.875em;
+}
+
+.text-decoration-none:hover {
+    text-decoration: underline !important;
+}
+</style>
+{% endblock %}

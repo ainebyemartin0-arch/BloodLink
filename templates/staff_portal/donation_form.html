@@ -1,0 +1,181 @@
+{% extends 'base_staff_modern.html' %}
+{% load static %}
+
+{% block title %}Record Blood Donation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0">
+                    <i class="bi bi-droplet-fill text-danger me-2"></i>
+                    Record Blood Donation
+                </h2>
+                <a href="{% url 'staff:donation_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Back to Donations
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" id="donationForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.donor.id_for_label }}" class="form-label">
+                                    <i class="bi bi-person-fill me-1"></i>
+                                    Donor <span class="text-danger">*</span>
+                                </label>
+                                {{ form.donor }}
+                                {% if form.donor.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.donor.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Select the donor who is donating blood</div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.emergency_request.id_for_label }}" class="form-label">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                    Emergency Request (Optional)
+                                </label>
+                                {{ form.emergency_request }}
+                                {% if form.emergency_request.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.emergency_request.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Link to specific emergency request if applicable</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.donation_date.id_for_label }}" class="form-label">
+                                    <i class="bi bi-calendar-fill me-1"></i>
+                                    Donation Date <span class="text-danger">*</span>
+                                </label>
+                                {{ form.donation_date }}
+                                {% if form.donation_date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.donation_date.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.units_donated.id_for_label }}" class="form-label">
+                                    <i class="bi bi-droplet-half me-1"></i>
+                                    Units Donated <span class="text-danger">*</span>
+                                </label>
+                                {{ form.units_donated }}
+                                {% if form.units_donated.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.units_donated.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Number of blood units collected (typically 1-2)</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                <i class="bi bi-clipboard2-pulse me-1"></i>
+                                Medical Notes
+                            </label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.notes.errors.0 }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Any medical observations, donor condition, or special notes</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Record Donation
+                                    </button>
+                                    <a href="{% url 'staff:donation_list' %}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>
+                                        Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh donor selection when emergency request changes
+    const emergencyRequestSelect = document.getElementById('{{ form.emergency_request.id_for_label }}');
+    const donorSelect = document.getElementById('{{ form.donor.id_for_label }}');
+    
+    if (emergencyRequestSelect && donorSelect) {
+        emergencyRequestSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption && selectedOption.value && selectedOption.text) {
+                // Try to extract blood type from emergency request text
+                const bloodTypeMatch = selectedOption.text.match(/\[([A-Z][+-])\]/);
+                if (bloodTypeMatch) {
+                    const bloodType = bloodTypeMatch[1];
+                    // Filter donors to show only matching blood type
+                    Array.from(donorSelect.options).forEach(option => {
+                        if (option.value) {
+                            const donorText = option.text;
+                            const donorBloodTypeMatch = donorText.match(/\[([A-Z][+-])\]/);
+                            if (donorBloodTypeMatch) {
+                                const donorBloodType = donorBloodTypeMatch[1];
+                                option.style.display = donorBloodType === bloodType ? 'block' : 'none';
+                            }
+                        }
+                    });
+                    
+                    // Reset selection if current donor doesn't match
+                    if (donorSelect.value) {
+                        const currentOption = donorSelect.options[donorSelect.selectedIndex];
+                        const currentBloodTypeMatch = currentOption.text.match(/\[([A-Z][+-])\]/);
+                        if (currentBloodTypeMatch && currentBloodTypeMatch[1] !== bloodType) {
+                            donorSelect.value = '';
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.form-select:focus, .form-control:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+</style>
+{% endblock %}

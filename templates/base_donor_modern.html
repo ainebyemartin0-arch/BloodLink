@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BloodLink{% endblock %} — Save Lives in Kampala</title>
+    
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    
+    {% load static %}
+    <!-- Custom Modern CSS -->
+    <link rel="stylesheet" href="{% static 'css/modern-figma.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        /* Additional modern donor styles */
+        :root {
+            --donor-primary: #10b981;
+            --donor-primary-dark: #059669;
+            --donor-primary-light: #d1fae5;
+            --donor-secondary: #ef4444;
+            --donor-secondary-dark: #dc2626;
+            --donor-text: #1e293b;
+            --donor-muted: #64748b;
+            --donor-border: #e2e8f0;
+            --donor-bg: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--donor-bg);
+        }
+        
+        .donor-navbar {
+            background: white;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: var(--space-md) 0;
+        }
+        
+        .donor-navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .donor-brand {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--donor-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .donor-nav-links {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xl);
+        }
+        
+        .donor-nav-link {
+            color: var(--donor-text);
+            text-decoration: none;
+            font-weight: 500;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition-base);
+        }
+        
+        .donor-nav-link:hover {
+            background: var(--donor-primary-light);
+            color: var(--donor-primary-dark);
+        }
+        
+        .donor-nav-link.active {
+            background: var(--donor-primary);
+            color: white;
+        }
+        
+        .donor-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .btn-donor {
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-lg);
+            font-weight: 500;
+            transition: all var(--transition-base);
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            text-decoration: none;
+        }
+        
+        .btn-donor-primary {
+            background: var(--donor-primary);
+            color: white;
+            border-color: var(--donor-primary);
+        }
+        
+        .btn-donor-primary:hover {
+            background: var(--donor-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-donor-secondary {
+            background: var(--donor-secondary);
+            color: white;
+            border-color: var(--donor-secondary);
+        }
+        
+        .btn-donor-secondary:hover {
+            background: var(--donor-secondary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-donor-outline {
+            background: transparent;
+            color: var(--donor-primary);
+            border-color: var(--donor-primary);
+        }
+        
+        .btn-donor-outline:hover {
+            background: var(--donor-primary);
+            color: white;
+        }
+        
+        .donor-hero {
+            background: linear-gradient(135deg, var(--donor-primary) 0%, var(--donor-primary-dark) 100%);
+            color: white;
+            padding: var(--space-3xl) 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .donor-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="50" cy="50" r="3"/></g></svg>');
+            opacity: 0.4;
+        }
+        
+        .donor-hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .donor-hero-title {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .donor-hero-subtitle {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            margin-bottom: var(--space-2xl);
+            opacity: 0.9;
+        }
+        
+        .donor-footer {
+            background: linear-gradient(135deg, var(--donor-text), #0f172a);
+            color: white;
+            padding: var(--space-3xl) 0 var(--space-lg);
+            margin-top: var(--space-3xl);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .donor-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.03"><circle cx="50" cy="50" r="3"/></g></svg>');
+            opacity: 0.5;
+        }
+        
+        .donor-footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-lg);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .donor-footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .donor-footer-section {
+            position: relative;
+        }
+        
+        .donor-footer-brand {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .donor-footer-brand::before {
+            content: '🩸';
+            font-size: 2rem;
+        }
+        
+        .donor-footer-tagline {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: var(--space-lg);
+            font-size: 0.95rem;
+        }
+        
+        .donor-footer-section h6 {
+            color: white;
+            margin-bottom: var(--space-lg);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .donor-footer-section h6::before {
+            content: '';
+            width: 20px;
+            height: 2px;
+            background: var(--donor-primary);
+            border-radius: var(--radius-full);
+        }
+        
+        .donor-footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            padding: var(--space-sm) 0;
+            transition: all var(--transition-base);
+            font-size: 0.9rem;
+            position: relative;
+            padding-left: var(--space-lg);
+        }
+        
+        .donor-footer-link::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            transition: all var(--transition-base);
+            color: var(--donor-primary);
+        }
+        
+        .donor-footer-link:hover {
+            color: white;
+            transform: translateX(4px);
+        }
+        
+        .donor-footer-link:hover::before {
+            opacity: 1;
+        }
+        
+        .donor-footer-contact {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .donor-footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .donor-footer-contact-item i {
+            color: var(--donor-primary);
+            font-size: 1.125rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .donor-footer-social {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+        
+        .donor-footer-social-link {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all var(--transition-base);
+            font-size: 1.125rem;
+        }
+        
+        .donor-footer-social-link:hover {
+            background: var(--donor-primary);
+            border-color: var(--donor-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .donor-footer-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+        
+        .donor-footer-stat {
+            text-align: center;
+            padding: var(--space-md);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .donor-footer-stat-number {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--donor-primary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .donor-footer-stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .donor-footer-bottom {
+            padding-top: var(--space-xl);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        .donor-footer-copyright {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: var(--space-md);
+        }
+        
+        .donor-footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+        
+        .donor-footer-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            transition: all var(--transition-base);
+        }
+        
+        .donor-footer-badge:hover {
+            background: var(--donor-primary);
+            border-color: var(--donor-primary);
+        }
+        
+        .donor-footer-badge i {
+            font-size: 0.875rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .donor-footer-content {
+                grid-template-columns: 1fr;
+                gap: var(--space-xl);
+            }
+            
+            .donor-footer-stats {
+                grid-template-columns: 1fr;
+                gap: var(--space-sm);
+            }
+            
+            .donor-footer-social {
+                justify-content: center;
+            }
+            
+            .donor-footer-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .donor-footer-contact-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-xs);
+            }
+        }
+        
+        .donor-section {
+            padding: var(--space-3xl) 0;
+        }
+        
+        .donor-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-lg);
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .donor-navbar-container {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+            
+            .donor-nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: var(--space-md);
+            }
+            
+            .donor-hero-title {
+                font-size: 2rem;
+            }
+            
+            .donor-hero-subtitle {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Modern alert styles */
+        .alert-donor {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-sm);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-lg);
+            border: 1px solid;
+        }
+        
+        .alert-success-donor {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--donor-primary);
+            color: var(--donor-primary);
+        }
+        
+        .alert-error-donor {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--donor-secondary);
+            color: var(--donor-secondary);
+        }
+        
+        .alert-info-donor {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        /* Modern card styles */
+        .card-donor {
+            background: white;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--donor-border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: all var(--transition-base);
+        }
+        
+        .card-donor:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .card-header-donor {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--donor-border);
+            background: var(--donor-bg);
+        }
+        
+        .card-body-donor {
+            padding: var(--space-lg);
+        }
+        
+        .card-footer-donor {
+            padding: var(--space-lg);
+            border-top: 1px solid var(--donor-border);
+            background: var(--donor-bg);
+        }
+        
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--donor-text);
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .donor-nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                box-shadow: var(--shadow-lg);
+                padding: var(--space-lg);
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+            
+            .donor-nav-links.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="donor-navbar">
+        <div class="donor-navbar-container">
+            <a href="{% url 'donor:home' %}" class="donor-brand">
+                🩸 BloodLink
+            </a>
+            
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            <ul class="donor-nav-links" id="donorNavLinks">
+                <li><a href="{% url 'donor:home' %}" class="donor-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+                {% if request.session.donor_id %}
+                <li><a href="{% url 'donor:dashboard' %}" class="donor-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">My Dashboard</a></li>
+                <li><a href="{% url 'donor:donations' %}" class="donor-nav-link {% if request.resolver_match.url_name == 'donations' %}active{% endif %}">My Donations</a></li>
+                <li><a href="{% url 'donor:profile' %}" class="donor-nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">Profile</a></li>
+                {% endif %}
+            </ul>
+            
+            <div class="donor-nav-actions">
+                {% if request.session.donor_id %}
+                    <a href="{% url 'donor:logout' %}" class="btn-donor btn-donor-outline">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                {% else %}
+                    <a href="{% url 'donor:login' %}" class="btn-donor btn-donor-outline">Login</a>
+                    <a href="{% url 'donor:register' %}" class="btn-donor btn-donor-primary">
+                        <i class="bi bi-heart-fill"></i> Register
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Alerts -->
+    {% if messages %}
+    <div class="donor-container">
+        {% for message in messages %}
+        <div class="alert-donor {% if message.tags == 'success' %}alert-success-donor{% elif message.tags == 'error' %}alert-error-donor{% else %}alert-info-donor{% endif %}">
+            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill{% elif message.tags == 'error' %}bi-x-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+            <div>{{ message }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Page Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="donor-footer">
+        <div class="donor-footer-container">
+            <div class="donor-footer-content">
+                <!-- About BloodLink -->
+                <div class="donor-footer-section">
+                    <div class="donor-footer-brand">BloodLink</div>
+                    <p class="donor-footer-tagline">
+                        Connecting donors with St. Francis Hospital Nsambya to save lives in our community. 
+                        Every donation counts, every life matters.
+                    </p>
+                    <div class="donor-footer-stats">
+                        <div class="donor-footer-stat">
+                            <div class="donor-footer-stat-number">2,847</div>
+                            <div class="donor-footer-stat-label">Active Donors</div>
+                        </div>
+                        <div class="donor-footer-stat">
+                            <div class="donor-footer-stat-number">15,234</div>
+                            <div class="donor-footer-stat-label">Lives Saved</div>
+                        </div>
+                    </div>
+                    <div class="donor-footer-social">
+                        <a href="#" class="donor-footer-social-link" title="Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="donor-footer-social-link" title="Twitter">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="donor-footer-social-link" title="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" class="donor-footer-social-link" title="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <a href="#" class="donor-footer-social-link" title="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="donor-footer-section">
+                    <h6>Quick Links</h6>
+                    <a href="{% url 'donor:home' %}" class="donor-footer-link">Home</a>
+                    <a href="{% url 'donor:register' %}" class="donor-footer-link">Register as Donor</a>
+                    <a href="{% url 'donor:login' %}" class="donor-footer-link">Donor Login</a>
+                    <a href="{% url 'donor:about' %}" class="donor-footer-link">About BloodLink</a>
+                    <a href="{% url 'donor:donations' %}" class="donor-footer-link">My Donations</a>
+                    <a href="{% url 'donor:profile' %}" class="donor-footer-link">My Profile</a>
+                    <a href="{% url 'staff:login' %}" class="donor-footer-link">Hospital Staff Login</a>
+                    <a href="#" class="donor-footer-link">Blood Types Guide</a>
+                </div>
+                
+                <!-- Hospital Information -->
+                <div class="donor-footer-section">
+                    <h6>Hospital Information</h6>
+                    <div class="donor-footer-contact">
+                        <div class="donor-footer-contact-item">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <div>
+                                <strong>St. Francis Hospital Nsambya</strong><br>
+                                Nsambya Hill, Kampala, Uganda
+                            </div>
+                        </div>
+                        <div class="donor-footer-contact-item">
+                            <i class="bi bi-telephone-fill"></i>
+                            <div>
+                                <strong>Emergency:</strong> +256 414 267 462<br>
+                                <strong>General:</strong> +256 414 267 461
+                            </div>
+                        </div>
+                        <div class="donor-footer-contact-item">
+                            <i class="bi bi-envelope-fill"></i>
+                            <div>
+                                <strong>Email:</strong> info@bloodlink.ug<br>
+                                <strong>Support:</strong> support@bloodlink.ug
+                            </div>
+                        </div>
+                        <div class="donor-footer-contact-item">
+                            <i class="bi bi-clock-fill"></i>
+                            <div>
+                                <strong>Blood Donation Hours:</strong><br>
+                                Monday - Friday: 8:00 AM - 5:00 PM<br>
+                                Saturday: 9:00 AM - 1:00 PM<br>
+                                <strong>Emergency: 24/7 Available</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resources & Support -->
+                <div class="donor-footer-section">
+                    <h6>Resources & Support</h6>
+                    <a href="#" class="donor-footer-link">Blood Donation Process</a>
+                    <a href="#" class="donor-footer-link">Blood Types & Compatibility</a>
+                    <a href="#" class="donor-footer-link">Donor Eligibility Requirements</a>
+                    <a href="#" class="donor-footer-link">FAQs About Blood Donation</a>
+                    <a href="#" class="donor-footer-link">Privacy Policy</a>
+                    <a href="#" class="donor-footer-link">Terms of Service</a>
+                    <a href="#" class="donor-footer-link">Contact Support</a>
+                    <a href="#" class="donor-footer-link">Report an Issue</a>
+                    
+                    <div style="margin-top: var(--space-lg);">
+                        <div class="donor-footer-badge">
+                            <i class="bi bi-shield-check"></i>
+                            HIPAA Compliant
+                        </div>
+                        <div class="donor-footer-badge">
+                            <i class="bi bi-award"></i>
+                            WHO Certified
+                        </div>
+                        <div class="donor-footer-badge">
+                            <i class="bi bi-heart-fill"></i>
+                            Save Lives
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="donor-footer-bottom">
+                <div class="donor-footer-copyright">
+                    <p> 2026 BloodLink — Final Year Project | Cavendish University Uganda</p>
+                    <p>All rights reserved. BloodLink is a student project for educational purposes.</p>
+                </div>
+                <div class="donor-footer-badges">
+                    <div class="donor-footer-badge">
+                        <i class="bi bi-phone"></i>
+                        +256 414 267 462
+                    </div>
+                    <div class="donor-footer-badge">
+                        <i class="bi bi-envelope"></i>
+                        info@bloodlink.ug
+                    </div>
+                    <div class="donor-footer-badge">
+                        <i class="bi bi-chat-dots"></i>
+                        Powered by Africa's Talking SMS
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/bloodlink.js' %}"></script>
+    
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const donorNavLinks = document.getElementById('donorNavLinks');
+            
+            if (mobileMenuToggle && donorNavLinks) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    donorNavLinks.classList.toggle('active');
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!donorNavLinks.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                        donorNavLinks.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert-donor');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

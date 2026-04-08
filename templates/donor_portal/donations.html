@@ -1,0 +1,131 @@
+{% extends 'base_donor_modern.html' %}
+
+{% block title %}My Donation History - BloodLink{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">My Donation History</h2>
+    
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="donationTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="alerts-tab" data-bs-toggle="tab" data-bs-target="#alerts" type="button" role="tab">
+                <i class="bi bi-phone"></i> SMS Alerts Received ({{ all_alerts.count }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="donations-tab" data-bs-toggle="tab" data-bs-target="#donations" type="button" role="tab">
+                <i class="bi bi-droplet"></i> Recorded Donations ({{ all_donations.count }})
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="donationTabsContent">
+        <!-- SMS Alerts Tab -->
+        <div class="tab-pane fade show active" id="alerts" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    {% if all_alerts %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Blood Type Needed</th>
+                                        <th>Hospital</th>
+                                        <th>Emergency Request</th>
+                                        <th>My Response</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sms in all_alerts %}
+                                    <tr>
+                                        <td>{{ sms.sent_at|date:"M d, Y g:i A" }}</td>
+                                        <td><span class="badge badge-blood">{{ sms.emergency_request.blood_type_needed }}</span></td>
+                                        <td>St. Francis Nsambya</td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                                Request #{{ sms.emergency_request.pk }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if sms.donor_response == 'confirmed' %}
+                                                <span class="badge bg-success">Confirmed</span>
+                                            {% elif sms.donor_response == 'declined' %}
+                                                <span class="badge bg-warning">Declined</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">No Response</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-phone text-muted" style="font-size: 4rem;"></i>
+                            <h5 class="text-muted mt-3">No SMS Alerts Received Yet</h5>
+                            <p class="text-muted">You'll receive SMS alerts when your blood type is needed for emergencies.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recorded Donations Tab -->
+        <div class="tab-pane fade" id="donations" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    {% if all_donations %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Donation Date</th>
+                                        <th>Units Donated</th>
+                                        <th>Emergency Request</th>
+                                        <th>Recorded By</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for donation in all_donations %}
+                                    <tr>
+                                        <td>{{ donation.donation_date }}</td>
+                                        <td>{{ donation.units_donated }}</td>
+                                        <td>
+                                            {% if donation.emergency_request %}
+                                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                                    Request #{{ donation.emergency_request.pk }}
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">Regular donation</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ donation.recorded_by.get_full_name|default:donation.recorded_by.username }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-droplet text-muted" style="font-size: 4rem;"></i>
+                            <h5 class="text-muted mt-3">No Donations Recorded Yet</h5>
+                            <p class="text-muted">Your donations will be recorded here when you donate blood at the hospital.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back to Dashboard -->
+    <div class="mt-4">
+        <a href="{% url 'donor:dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

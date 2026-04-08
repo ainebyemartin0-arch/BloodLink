@@ -1,0 +1,643 @@
+{% extends 'base_donor_modern.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Enhanced Hero Section -->
+<section class="donor-hero position-relative overflow-hidden">
+  <div class="hero-background">
+    <img src="{% static 'images/blood-cells.png' %}" alt="Blood Cells Background" class="hero-bg-image">
+  </div>
+  <div class="container position-relative">
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-7">
+        <div class="donor-hero-content reveal">
+          <h1 class="display-4 fw-bold mb-4">
+            Save Lives at <em class="text-highlight">St. Francis Hospital</em><br>
+            <span class="text-accent">Donate Blood Today</span>
+          </h1>
+          <p class="hero-sub lead mb-4">
+            Join our community of life-saving donors at St. Francis Hospital Nsambya. 
+            Your donation can save up to 3 lives and help meet's urgent blood needs 
+            of patients across Kampala.
+          </p>
+          <div class="hero-cta-group mb-4">
+            <a href="{% url 'donor:register' %}" class="btn-hero-primary btn-lg">
+              <i class="bi bi-heart-fill me-2"></i> Become a Donor
+            </a>
+            <a href="{% url 'donor:about' %}" class="btn-hero-outline btn-lg">
+              <i class="bi bi-info-circle me-2"></i> Learn More
+            </a>
+          </div>
+          
+          <!-- Enhanced Hero Stats -->
+          <div class="hero-stats row g-3">
+            <div class="col-6 col-md-3">
+              <div class="hero-stat-item text-center">
+                <div class="hero-stat-icon">
+                  <img src="{% static 'images/donor-smiling.png' %}" alt="Active Donors" class="stat-icon-img">
+                </div>
+                <span class="hero-stat-num" data-target="{{ total_donors|default:2847 }}">{{ total_donors|default:2847 }}</span>
+                <span class="hero-stat-lbl">Active Donors</span>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="hero-stat-item text-center">
+                <div class="hero-stat-icon">
+                  <img src="{% static 'images/hero-donation1.jpg' %}" alt="Lives Saved" class="stat-icon-img">
+                </div>
+                <span class="hero-stat-num" data-target="15234">15,234</span>
+                <span class="hero-stat-lbl">Lives Saved</span>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="hero-stat-item text-center">
+                <div class="hero-stat-icon">
+                  <img src="{% static 'images/hospital-nsambya.jpg' %}" alt="Emergency Support" class="stat-icon-img">
+                </div>
+                <span class="hero-stat-num">24/7</span>
+                <span class="hero-stat-lbl">Emergency Support</span>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="hero-stat-item text-center">
+                <div class="hero-stat-icon">
+                  <img src="{% static 'images/lab-staff.png' %}" alt="Professional Staff" class="stat-icon-img">
+                </div>
+                <span class="hero-stat-num" data-target="{{ available_donors|default:1250 }}">{{ available_donors|default:1250 }}</span>
+                <span class="hero-stat-lbl">Available Now</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-flex align-items-center justify-content-center">
+        <div class="hero-image-container position-relative">
+          <img src="{% static 'images/hero-donation.png' %}" alt="Blood Donation Hero" class="img-fluid rounded-4 shadow-lg hero-main-image">
+          <div class="floating-badge">
+            <i class="bi bi-heart-fill text-danger"></i>
+            <span>Save Lives</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Enhanced How It Works Section -->
+<section class="how-section py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow text-uppercase fw-bold text-primary">How It Works</span>
+      <h2 class="section-heading display-5 fw-bold mb-3">Simple 3-Step Process</h2>
+      <p class="section-sub lead text-muted">Becoming a blood donor is quick, easy, and makes a huge difference</p>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="step-card step-1 h-100 reveal">
+          <div class="step-num-wrap position-relative">
+            <div class="step-icon-circle">
+              <img src="{% static 'images/lab-staff1.jpg' %}" alt="Register" class="step-icon-img">
+            </div>
+            <span class="step-num">1</span>
+          </div>
+          <h5 class="fw-bold">Register</h5>
+          <p class="text-muted">Sign up as a donor with your basic information and blood type. Registration takes less than 2 minutes.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card step-2 h-100 reveal reveal-delay-1">
+          <div class="step-num-wrap position-relative">
+            <div class="step-icon-circle">
+              <img src="{% static 'images/blood-cells.png' %}" alt="Receive Alerts" class="step-icon-img">
+            </div>
+            <span class="step-num">2</span>
+          </div>
+          <h5 class="fw-bold">Receive Alerts</h5>
+          <p class="text-muted">Get instant SMS notifications when your blood type is urgently needed at hospital.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card step-3 h-100 reveal reveal-delay-2">
+          <div class="step-num-wrap position-relative">
+            <div class="step-icon-circle">
+              <img src="{% static 'images/hero-donation1.jpg' %}" alt="Save Lives" class="step-icon-img">
+            </div>
+            <span class="step-num">3</span>
+          </div>
+          <h5 class="fw-bold">Save Lives</h5>
+          <p class="text-muted">Visit hospital to donate your blood and help save lives in your community.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Enhanced Blood Type Section -->
+<section class="bt-section py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow text-uppercase fw-bold text-danger">Blood Types</span>
+      <h2 class="section-heading display-5 fw-bold mb-3">All Blood Types Welcome</h2>
+      <p class="section-sub lead text-muted">Every blood type is valuable and needed to save lives</p>
+    </div>
+    
+    <div class="bt-grid row g-3 justify-content-center">
+      <div class="col-6 col-md-3">
+        <div class="bt-tile text-center p-3" style="background: #FADBD8; border-color: #C0392B; color: #C0392B;">
+          <div class="bt-type-display mb-2">
+            <img src="{% static 'images/blood-cells.png' %}" alt="O+" class="bt-type-img">
+          </div>
+          <span class="bt-type fw-bold d-block">O+</span>
+          <span class="bt-name">Universal</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="bt-tile text-center p-3" style="background: #FDEDEC; border-color: #C0392B; color: #C0392B;">
+          <div class="bt-type-display mb-2">
+            <img src="{% static 'images/blood-cells.png' %}" alt="O-" class="bt-type-img">
+          </div>
+          <span class="bt-type fw-bold d-block">O-</span>
+          <span class="bt-name">Universal</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="bt-tile text-center p-3" style="background: #FADBD8; border-color: #C0392B; color: #C0392B;">
+          <div class="bt-type-display mb-2">
+            <img src="{% static 'images/blood-cells.png' %}" alt="A+" class="bt-type-img">
+          </div>
+          <span class="bt-type fw-bold d-block">A+</span>
+          <span class="bt-name">Common</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="bt-tile text-center p-3" style="background: #EBDEF0; border-color: #7D3C98; color: #7D3C98;">
+          <div class="bt-type-display mb-2">
+            <img src="{% static 'images/blood-cells.png' %}" alt="A-" class="bt-type-img">
+          </div>
+          <span class="bt-type fw-bold d-block">A-</span>
+          <span class="bt-name">Rare</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="bt-tile text-center p-3" style="background: #D5F5E3; border-color: #1E8449; color: #1E8449;">
+          <div class="bt-type-display mb-2">
+            <img src="{% static 'images/blood-cells.png' %}" alt="B+" class="bt-type-img">
+          </div>
+          <span class="bt-type fw-bold d-block">B+</span>
+          <span class="bt-name">Common</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="bt-tile text-center p-3" style="background: #D6EAF8; border-color: #1A5276; color: #1A5276;">
+          <div class="bt-type-display mb-2">
+            <img src="{% static 'images/blood-cells.png' %}" alt="B-" class="bt-type-img">
+          </div>
+          <span class="bt-type fw-bold d-block">B-</span>
+          <span class="bt-name">Rare</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="bt-tile text-center p-3" style="background: #FEF9E7; border-color: #D68910; color: #D68910;">
+          <div class="bt-type-display mb-2">
+            <img src="{% static 'images/blood-cells.png' %}" alt="AB+" class="bt-type-img">
+          </div>
+          <span class="bt-type fw-bold d-block">AB+</span>
+          <span class="bt-name">Universal</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="bt-tile text-center p-3" style="background: #F2F3F4; border-color: #566573; color: #566573;">
+          <div class="bt-type-display mb-2">
+            <img src="{% static 'images/blood-cells.png' %}" alt="AB-" class="bt-type-img">
+          </div>
+          <span class="bt-type fw-bold d-block">AB-</span>
+          <span class="bt-name">Rare</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Enhanced Emergency Alert Section -->
+<section class="py-5 emergency-section position-relative overflow-hidden">
+  <div class="emergency-bg">
+    <img src="{% static 'images/blood-cells.png' %}" alt="Emergency Background" class="emergency-bg-image">
+  </div>
+  <div class="container position-relative">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <div class="emergency-banner p-4 rounded-4 shadow-lg bg-white">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <div class="emergency-banner-icon">
+                <img src="{% static 'images/hero-donation.png' %}" alt="Emergency" class="emergency-icon-img">
+              </div>
+            </div>
+            <div class="col">
+              <div class="emergency-banner-text">
+                <h5 class="fw-bold text-danger mb-1">Emergency Blood Needed</h5>
+                <span class="text-muted">Type O+ and A- blood urgently needed for emergency surgeries</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 text-center mt-3 mt-lg-0">
+        <a href="{% url 'donor:register' %}" class="btn-emergency btn-lg">
+          <i class="bi bi-heart-fill me-2"></i> Donate Now
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Enhanced Impact Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="donor-stat-card h-100 p-4 text-center reveal">
+          <div class="donor-stat-image mb-3">
+            <img src="{% static 'images/hospital-nsambya.jpg' %}" alt="Hospital" class="stat-card-img">
+          </div>
+          <div class="donor-stat-num fw-bold">St. Francis</div>
+          <div class="donor-stat-lbl text-muted">Trusted Hospital Partner</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="donor-stat-card h-100 p-4 text-center reveal reveal-delay-1">
+          <div class="donor-stat-image mb-3">
+            <img src="{% static 'images/lab-staff.png' %}" alt="Lab Staff" class="stat-card-img">
+          </div>
+          <div class="donor-stat-num fw-bold">30 min</div>
+          <div class="donor-stat-lbl text-muted">Average Donation Time</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="donor-stat-card h-100 p-4 text-center reveal reveal-delay-2">
+          <div class="donor-stat-image mb-3">
+            <img src="{% static 'images/donor-smiling.png' %}" alt="Lives Saved" class="stat-card-img">
+          </div>
+          <div class="donor-stat-num fw-bold">3 lives</div>
+          <div class="donor-stat-lbl text-muted">Saved Per Donation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Enhanced Call to Action Section -->
+<section class="py-5 text-center bg-gradient-cta position-relative overflow-hidden">
+  <div class="cta-bg">
+    <img src="{% static 'images/blood-cells.png' %}" alt="CTA Background" class="cta-bg-image">
+  </div>
+  <div class="container position-relative">
+    <div class="reveal">
+      <h2 class="display-5 fw-bold mb-4">Ready to Save Lives?</h2>
+      <p class="lead mb-4">Join thousands of Ugandans making a difference in their community</p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="{% url 'donor:register' %}" class="btn-bl btn-lg">
+          <i class="bi bi-heart-fill me-2"></i> Register Now
+        </a>
+        <a href="{% url 'donor:login' %}" class="btn-bl-outline btn-lg">
+          <i class="bi bi-box-arrow-in-right me-2"></i> Login
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Enhanced animations when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate hero stats on scroll
+  const heroStats = document.querySelectorAll('.hero-stat-num');
+  const heroObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const text = el.textContent;
+        const number = parseInt(text.replace(/[^0-9]/g, ''));
+        
+        if (number) {
+          let current = 0;
+          const increment = number / 50;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= number) {
+              current = number;
+              clearInterval(timer);
+            }
+            el.textContent = Math.floor(current).toLocaleString() + text.replace(/[0-9,]/g, '');
+          }, 30);
+        }
+        
+        heroObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  
+  heroStats.forEach(stat => heroObserver.observe(stat));
+
+  // Reveal animations
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(reveal => revealObserver.observe(reveal));
+});
+</script>
+
+<style>
+/* Enhanced Hero Section */
+.donor-hero {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+  position: relative;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+}
+
+.hero-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+.text-highlight {
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.text-accent {
+  color: #ffd700;
+}
+
+.hero-main-image {
+  max-height: 400px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.floating-badge {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background: white;
+  color: #dc3545;
+  padding: 10px 15px;
+  border-radius: 50px;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  animation: pulse 2s infinite;
+}
+
+.hero-stat-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.stat-icon-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Enhanced Steps */
+.step-icon-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  position: relative;
+}
+
+.step-icon-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid white;
+}
+
+/* Enhanced Blood Types */
+.bt-type-display {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bt-type-img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.bt-tile {
+  border: 2px solid;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.bt-tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* Enhanced Emergency Section */
+.emergency-section {
+  background: linear-gradient(135deg, #FDEDEC, #fff5f5);
+}
+
+.emergency-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.05;
+}
+
+.emergency-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.emergency-icon-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Enhanced Impact Cards */
+.donor-stat-image {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-card-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Enhanced CTA Section */
+.bg-gradient-cta {
+  background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+}
+
+.cta-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+}
+
+.cta-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 {
+  transition-delay: 0.2s;
+}
+
+.reveal-delay-2 {
+  transition-delay: 0.4s;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .donor-hero {
+    min-height: auto;
+    padding: 2rem 0;
+  }
+  
+  .hero-main-image {
+    max-height: 250px;
+  }
+  
+  .floating-badge {
+    top: -10px;
+    right: -10px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+  }
+  
+  .hero-stat-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .stat-icon-img {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .step-icon-circle {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .step-icon-img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-cta-group {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .btn-hero-primary, .btn-hero-outline {
+    width: 100%;
+  }
+  
+  .bt-tile {
+    padding: 1rem !important;
+  }
+  
+  .emergency-banner {
+    padding: 1.5rem !important;
+  }
+}
+</style>
+{% endblock %}

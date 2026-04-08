@@ -1,0 +1,24 @@
+from django.urls import path
+from . import views
+from . import api_views
+
+app_name = 'donor'
+
+urlpatterns = [
+    path('', views.donor_home, name='home'),
+    path('about/', views.about_bloodlink, name='about'),
+    path('register/', views.donor_register, name='register'),
+    path('login/', views.donor_login, name='login'),
+    path('logout/', views.donor_logout, name='logout'),
+    path('dashboard/', views.donor_dashboard, name='dashboard'),
+    path('profile/', views.donor_profile, name='profile'),
+    path('profile/edit/', views.donor_profile_edit, name='profile_edit'),
+    path('donations/', views.donor_donations, name='donations'),
+    path('change-password/', views.donor_change_password, name='change_password'),
+    path('respond/<int:pk>/', views.respond_to_alert, name='respond_to_alert'),
+    path('sms-opened/<int:pk>/', views.mark_sms_opened, name='mark_sms_opened'),
+    
+    # API endpoints
+    path('api/urgent-alerts/', api_views.urgent_alerts, name='api_urgent_alerts'),
+    path('api/notification-stats/', api_views.notification_stats, name='api_notification_stats'),
+]
