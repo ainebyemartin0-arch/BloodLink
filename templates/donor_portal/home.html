@@ -5,17 +5,17 @@
 
 {% block content %}
 <!-- Enhanced Hero Section -->
-<section class="donor-hero position-relative overflow-hidden">
+<section class="hero-blood position-relative overflow-hidden">
   <div class="hero-background">
     <img src="{% static 'images/blood-cells.png' %}" alt="Blood Cells Background" class="hero-bg-image">
   </div>
   <div class="container position-relative">
     <div class="row align-items-center min-vh-75">
       <div class="col-lg-7">
-        <div class="donor-hero-content reveal">
-          <h1 class="display-4 fw-bold mb-4">
-            Save Lives at <em class="text-highlight">St. Francis Hospital</em><br>
-            <span class="text-accent">Donate Blood Today</span>
+        <div class="hero-blood-content reveal">
+          <h1 class="blood-heading-primary mb-4">
+            Save Lives at <em>St. Francis Hospital</em><br>
+            <span>Donate Blood Today</span>
           </h1>
           <p class="hero-sub lead mb-4">
             Join our community of life-saving donors at St. Francis Hospital Nsambya. 
@@ -23,50 +23,38 @@
             of patients across Kampala.
           </p>
           <div class="hero-cta-group mb-4">
-            <a href="{% url 'donor:register' %}" class="btn-hero-primary btn-lg">
+            <a href="{% url 'donor:register' %}" class="btn-blood btn-lg">
               <i class="bi bi-heart-fill me-2"></i> Become a Donor
             </a>
-            <a href="{% url 'donor:about' %}" class="btn-hero-outline btn-lg">
+            <a href="{% url 'donor:about' %}" class="btn-health btn-lg">
               <i class="bi bi-info-circle me-2"></i> Learn More
             </a>
           </div>
           
           <!-- Enhanced Hero Stats -->
-          <div class="hero-stats row g-3">
+          <div class="row g-3">
             <div class="col-6 col-md-3">
-              <div class="hero-stat-item text-center">
-                <div class="hero-stat-icon">
-                  <img src="{% static 'images/donor-smiling.png' %}" alt="Active Donors" class="stat-icon-img">
-                </div>
-                <span class="hero-stat-num" data-target="{{ total_donors|default:2847 }}">{{ total_donors|default:2847 }}</span>
-                <span class="hero-stat-lbl">Active Donors</span>
+              <div class="stat-card-enhanced stat-card-blood">
+                <div class="stat-number-enhanced">{{ total_donors|default:2847 }}</div>
+                <div class="stat-label-enhanced">Active Donors</div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="hero-stat-item text-center">
-                <div class="hero-stat-icon">
-                  <img src="{% static 'images/hero-donation1.jpg' %}" alt="Lives Saved" class="stat-icon-img">
-                </div>
-                <span class="hero-stat-num" data-target="15234">15,234</span>
-                <span class="hero-stat-lbl">Lives Saved</span>
+              <div class="stat-card-enhanced stat-card-life">
+                <div class="stat-number-enhanced">15,234</div>
+                <div class="stat-label-enhanced">Lives Saved</div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="hero-stat-item text-center">
-                <div class="hero-stat-icon">
-                  <img src="{% static 'images/hospital-nsambya.jpg' %}" alt="Emergency Support" class="stat-icon-img">
-                </div>
-                <span class="hero-stat-num">24/7</span>
-                <span class="hero-stat-lbl">Emergency Support</span>
+              <div class="stat-card-enhanced stat-card-health">
+                <div class="stat-number-enhanced">24/7</div>
+                <div class="stat-label-enhanced">Emergency Support</div>
               </div>
             </div>
             <div class="col-6 col-md-3">
-              <div class="hero-stat-item text-center">
-                <div class="hero-stat-icon">
-                  <img src="{% static 'images/lab-staff.png' %}" alt="Professional Staff" class="stat-icon-img">
-                </div>
-                <span class="hero-stat-num" data-target="{{ available_donors|default:1250 }}">{{ available_donors|default:1250 }}</span>
-                <span class="hero-stat-lbl">Available Now</span>
+              <div class="stat-card-enhanced stat-card-emergency">
+                <div class="stat-number-enhanced">{{ available_donors|default:1250 }}</div>
+                <div class="stat-label-enhanced">Available Now</div>
               </div>
             </div>
           </div>
@@ -144,77 +132,53 @@
       <p class="section-sub lead text-muted">Every blood type is valuable and needed to save lives</p>
     </div>
     
-    <div class="bt-grid row g-3 justify-content-center">
+    <div class="row g-3 justify-content-center">
       <div class="col-6 col-md-3">
-        <div class="bt-tile text-center p-3" style="background: #FADBD8; border-color: #C0392B; color: #C0392B;">
-          <div class="bt-type-display mb-2">
-            <img src="{% static 'images/blood-cells.png' %}" alt="O+" class="bt-type-img">
-          </div>
-          <span class="bt-type fw-bold d-block">O+</span>
-          <span class="bt-name">Universal</span>
+        <div class="text-center">
+          <div class="blood-type-badge o-positive mb-2">O+</div>
+          <span class="fw-bold d-block">Universal Donor</span>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="bt-tile text-center p-3" style="background: #FDEDEC; border-color: #C0392B; color: #C0392B;">
-          <div class="bt-type-display mb-2">
-            <img src="{% static 'images/blood-cells.png' %}" alt="O-" class="bt-type-img">
-          </div>
-          <span class="bt-type fw-bold d-block">O-</span>
-          <span class="bt-name">Universal</span>
+        <div class="text-center">
+          <div class="blood-type-badge o-negative mb-2">O-</div>
+          <span class="fw-bold d-block">Universal Rare</span>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="bt-tile text-center p-3" style="background: #FADBD8; border-color: #C0392B; color: #C0392B;">
-          <div class="bt-type-display mb-2">
-            <img src="{% static 'images/blood-cells.png' %}" alt="A+" class="bt-type-img">
-          </div>
-          <span class="bt-type fw-bold d-block">A+</span>
-          <span class="bt-name">Common</span>
+        <div class="text-center">
+          <div class="blood-type-badge a-positive mb-2">A+</div>
+          <span class="fw-bold d-block">Common</span>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="bt-tile text-center p-3" style="background: #EBDEF0; border-color: #7D3C98; color: #7D3C98;">
-          <div class="bt-type-display mb-2">
-            <img src="{% static 'images/blood-cells.png' %}" alt="A-" class="bt-type-img">
-          </div>
-          <span class="bt-type fw-bold d-block">A-</span>
-          <span class="bt-name">Rare</span>
+        <div class="text-center">
+          <div class="blood-type-badge a-negative mb-2">A-</div>
+          <span class="fw-bold d-block">Rare</span>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="bt-tile text-center p-3" style="background: #D5F5E3; border-color: #1E8449; color: #1E8449;">
-          <div class="bt-type-display mb-2">
-            <img src="{% static 'images/blood-cells.png' %}" alt="B+" class="bt-type-img">
-          </div>
-          <span class="bt-type fw-bold d-block">B+</span>
-          <span class="bt-name">Common</span>
+        <div class="text-center">
+          <div class="blood-type-badge b-positive mb-2">B+</div>
+          <span class="fw-bold d-block">Common</span>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="bt-tile text-center p-3" style="background: #D6EAF8; border-color: #1A5276; color: #1A5276;">
-          <div class="bt-type-display mb-2">
-            <img src="{% static 'images/blood-cells.png' %}" alt="B-" class="bt-type-img">
-          </div>
-          <span class="bt-type fw-bold d-block">B-</span>
-          <span class="bt-name">Rare</span>
+        <div class="text-center">
+          <div class="blood-type-badge b-negative mb-2">B-</div>
+          <span class="fw-bold d-block">Rare</span>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="bt-tile text-center p-3" style="background: #FEF9E7; border-color: #D68910; color: #D68910;">
-          <div class="bt-type-display mb-2">
-            <img src="{% static 'images/blood-cells.png' %}" alt="AB+" class="bt-type-img">
-          </div>
-          <span class="bt-type fw-bold d-block">AB+</span>
-          <span class="bt-name">Universal</span>
+        <div class="text-center">
+          <div class="blood-type-badge ab-positive mb-2">AB+</div>
+          <span class="fw-bold d-block">Universal Recipient</span>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="bt-tile text-center p-3" style="background: #F2F3F4; border-color: #566573; color: #566573;">
-          <div class="bt-type-display mb-2">
-            <img src="{% static 'images/blood-cells.png' %}" alt="AB-" class="bt-type-img">
-          </div>
-          <span class="bt-type fw-bold d-block">AB-</span>
-          <span class="bt-name">Rare</span>
+        <div class="text-center">
+          <div class="blood-type-badge ab-negative mb-2">AB-</div>
+          <span class="fw-bold d-block">Very Rare</span>
         </div>
       </div>
     </div>
@@ -222,31 +186,28 @@
 </section>
 
 <!-- Enhanced Emergency Alert Section -->
-<section class="py-5 emergency-section position-relative overflow-hidden">
-  <div class="emergency-bg">
-    <img src="{% static 'images/blood-cells.png' %}" alt="Emergency Background" class="emergency-bg-image">
-  </div>
+<section class="py-5 alert-emergency position-relative overflow-hidden">
   <div class="container position-relative">
     <div class="row align-items-center">
       <div class="col-lg-8">
-        <div class="emergency-banner p-4 rounded-4 shadow-lg bg-white">
+        <div class="blood-card blood-card-emergency">
           <div class="row align-items-center">
             <div class="col-auto">
-              <div class="emergency-banner-icon">
-                <img src="{% static 'images/hero-donation.png' %}" alt="Emergency" class="emergency-icon-img">
+              <div class="stat-icon" style="background: var(--gradient-emergency); color: white; width: 60px; height: 60px;">
+                <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.5rem;"></i>
               </div>
             </div>
             <div class="col">
-              <div class="emergency-banner-text">
-                <h5 class="fw-bold text-danger mb-1">Emergency Blood Needed</h5>
-                <span class="text-muted">Type O+ and A- blood urgently needed for emergency surgeries</span>
+              <div class="blood-subheading">
+                <h5 class="fw-bold mb-1">Emergency Blood Needed</h5>
+                <span>Type O+ and A- blood urgently needed for emergency surgeries</span>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="col-lg-4 text-center mt-3 mt-lg-0">
-        <a href="{% url 'donor:register' %}" class="btn-emergency btn-lg">
+        <a href="{% url 'donor:register' %}" class="btn-emergency">
           <i class="bi bi-heart-fill me-2"></i> Donate Now
         </a>
       </div>
@@ -259,30 +220,30 @@
   <div class="container">
     <div class="row g-4">
       <div class="col-md-4">
-        <div class="donor-stat-card h-100 p-4 text-center reveal">
-          <div class="donor-stat-image mb-3">
-            <img src="{% static 'images/hospital-nsambya.jpg' %}" alt="Hospital" class="stat-card-img">
+        <div class="stat-card-enhanced stat-card-health h-100 reveal">
+          <div class="stat-icon" style="background: var(--gradient-health); color: white; width: 60px; height: 60px; margin: 0 auto 20px;">
+            <i class="bi bi-hospital" style="font-size: 1.5rem;"></i>
           </div>
-          <div class="donor-stat-num fw-bold">St. Francis</div>
-          <div class="donor-stat-lbl text-muted">Trusted Hospital Partner</div>
+          <div class="stat-number-enhanced">St. Francis</div>
+          <div class="stat-label-enhanced">Trusted Hospital Partner</div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="donor-stat-card h-100 p-4 text-center reveal reveal-delay-1">
-          <div class="donor-stat-image mb-3">
-            <img src="{% static 'images/lab-staff.png' %}" alt="Lab Staff" class="stat-card-img">
+        <div class="stat-card-enhanced stat-card-life h-100 reveal reveal-delay-1">
+          <div class="stat-icon" style="background: var(--gradient-life); color: white; width: 60px; height: 60px; margin: 0 auto 20px;">
+            <i class="bi bi-clock" style="font-size: 1.5rem;"></i>
           </div>
-          <div class="donor-stat-num fw-bold">30 min</div>
-          <div class="donor-stat-lbl text-muted">Average Donation Time</div>
+          <div class="stat-number-enhanced">30 min</div>
+          <div class="stat-label-enhanced">Average Donation Time</div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="donor-stat-card h-100 p-4 text-center reveal reveal-delay-2">
-          <div class="donor-stat-image mb-3">
-            <img src="{% static 'images/donor-smiling.png' %}" alt="Lives Saved" class="stat-card-img">
+        <div class="stat-card-enhanced stat-card-blood h-100 reveal reveal-delay-2">
+          <div class="stat-icon" style="background: var(--gradient-blood); color: white; width: 60px; height: 60px; margin: 0 auto 20px;">
+            <i class="bi bi-heart-fill" style="font-size: 1.5rem;"></i>
           </div>
-          <div class="donor-stat-num fw-bold">3 lives</div>
-          <div class="donor-stat-lbl text-muted">Saved Per Donation</div>
+          <div class="stat-number-enhanced">3 lives</div>
+          <div class="stat-label-enhanced">Saved Per Donation</div>
         </div>
       </div>
     </div>
@@ -290,19 +251,16 @@
 </section>
 
 <!-- Enhanced Call to Action Section -->
-<section class="py-5 text-center bg-gradient-cta position-relative overflow-hidden">
-  <div class="cta-bg">
-    <img src="{% static 'images/blood-cells.png' %}" alt="CTA Background" class="cta-bg-image">
-  </div>
+<section class="py-5 text-center position-relative overflow-hidden" style="background: var(--gradient-hero);">
   <div class="container position-relative">
     <div class="reveal">
-      <h2 class="display-5 fw-bold mb-4">Ready to Save Lives?</h2>
-      <p class="lead mb-4">Join thousands of Ugandans making a difference in their community</p>
+      <h2 class="blood-heading-primary mb-4 text-white">Ready to Save Lives?</h2>
+      <p class="lead mb-4 text-white opacity-90">Join thousands of Ugandans making a difference in their community</p>
       <div class="d-flex gap-3 justify-content-center flex-wrap">
-        <a href="{% url 'donor:register' %}" class="btn-bl btn-lg">
+        <a href="{% url 'donor:register' %}" class="btn-blood btn-lg">
           <i class="bi bi-heart-fill me-2"></i> Register Now
         </a>
-        <a href="{% url 'donor:login' %}" class="btn-bl-outline btn-lg">
+        <a href="{% url 'donor:login' %}" class="btn-health btn-lg">
           <i class="bi bi-box-arrow-in-right me-2"></i> Login
         </a>
       </div>

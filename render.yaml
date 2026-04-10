@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: bloodlink
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:application
+    healthCheckPath: /staff/login/
+    autoDeploy: true
+    
+    # Environment variables (you'll set these in Render dashboard)
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
+      - key: DJANGO_SETTINGS_MODULE
+        value: bloodlink_project.settings
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: WEB_CONCURRENCY
+        value: 1

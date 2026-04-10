@@ -1,0 +1,812 @@
+/* ================================================
+   BLOODLINK ENHANCED COLOR THEME
+   Professional Healthcare & Blood Donation Aesthetics
+   ================================================ */
+
+/* ===== ENHANCED BLOODLINK COLOR SYSTEM ===== */
+:root {
+    /* === PRIMARY BLOOD THEME COLORS === */
+    --blood-primary:        #E74C3C;      /* Main blood red - vibrant and professional */
+    --blood-primary-dark:    #C0392B;      /* Darker blood red - hover states */
+    --blood-primary-darker:  #A93226;      /* Deepest blood red - accents */
+    --blood-primary-light:   #FADBD8;      /* Light blood red - backgrounds */
+    --blood-primary-lighter: #FDEDEC;      /* Very light blood red - subtle */
+    
+    /* === SECONDARY HEALTHCARE COLORS === */
+    --health-blue:           #3498DB;      /* Medical blue - trust and care */
+    --health-blue-dark:      #2980B9;      /* Darker medical blue */
+    --health-blue-light:     #D6EAF8;      /* Light medical blue */
+    
+    --life-green:            #27AE60;      /* Life green - success and health */
+    --life-green-dark:       #229954;      /* Darker life green */
+    --life-green-light:      #D5F4E6;      /* Light life green */
+    
+    --care-purple:           #9B59B6;      /* Care purple - compassion */
+    --care-purple-light:     #EBDEF0;      /* Light care purple */
+    
+    /* === EMERGENCY & URGENCY COLORS === */
+    --emergency-red:         #FF6B6B;      /* Emergency alert red */
+    --emergency-orange:       #FF9F43;      /* Emergency warning orange */
+    --emergency-yellow:      #FFC048;      /* Emergency caution yellow */
+    
+    /* === NEUTRAL PROFESSIONAL PALETTE === */
+    --neutral-50:            #F8F9FA;      /* Lightest neutral - backgrounds */
+    --neutral-100:           #E9ECEF;      /* Very light neutral */
+    --neutral-200:           #DEE2E6;      /* Light neutral */
+    --neutral-300:           #CED4DA;      /* Medium light neutral */
+    --neutral-400:           #ADB5BD;      /* Medium neutral */
+    --neutral-500:           #6C757D;      /* Medium neutral - text */
+    --neutral-600:           #495057;      /* Medium dark neutral - headings */
+    --neutral-700:           #343A40;      /* Dark neutral - strong text */
+    --neutral-800:           #212529;      /* Darkest neutral - emphasis */
+    
+    /* === BLOOD TYPE SPECIFIC COLORS === */
+    --blood-o-positive:       #E74C3C;      /* O+ - Universal donor */
+    --blood-o-negative:       #C0392B;      /* O- - Universal rare */
+    --blood-a-positive:       #E74C3C;      /* A+ - Common */
+    --blood-a-negative:       #9B59B6;      /* A- - Rare */
+    --blood-b-positive:       #27AE60;      /* B+ - Common */
+    --blood-b-negative:       #3498DB;      /* B- - Rare */
+    --blood-ab-positive:      #FF9F43;      /* AB+ - Universal recipient */
+    --blood-ab-negative:      #F39C12;      /* AB- - Very rare */
+    
+    /* === STATUS INDICATOR COLORS === */
+    --status-available:       #27AE60;      /* Available - green */
+    --status-unavailable:     #95A5A6;      /* Unavailable - gray */
+    --status-urgent:          #E74C3C;      /* Urgent - red */
+    --status-pending:         #FF9F43;      /* Pending - orange */
+    --status-confirmed:       #27AE60;      /* Confirmed - green */
+    --status-declined:        #E74C3C;      /* Declined - red */
+    
+    /* === GRADIENT SYSTEM === */
+    --gradient-blood:         linear-gradient(135deg, var(--blood-primary) 0%, var(--blood-primary-dark) 100%);
+    --gradient-health:        linear-gradient(135deg, var(--health-blue) 0%, var(--health-blue-dark) 100%);
+    --gradient-life:          linear-gradient(135deg, var(--life-green) 0%, var(--life-green-dark) 100%);
+    --gradient-emergency:     linear-gradient(135deg, var(--emergency-red) 0%, var(--emergency-orange) 100%);
+    --gradient-hero:          linear-gradient(135deg, var(--blood-primary) 0%, var(--care-purple) 50%, var(--health-blue) 100%);
+    
+    /* === SHADOW SYSTEM === */
+    --shadow-blood:           0 4px 20px rgba(231, 76, 60, 0.25);
+    --shadow-health:          0 4px 20px rgba(52, 152, 219, 0.25);
+    --shadow-life:            0 4px 20px rgba(39, 174, 96, 0.25);
+    --shadow-emergency:       0 4px 20px rgba(255, 107, 107, 0.35);
+    --shadow-soft:            0 2px 10px rgba(0, 0, 0, 0.08);
+    --shadow-medium:          0 4px 20px rgba(0, 0, 0, 0.12);
+    --shadow-strong:          0 8px 30px rgba(0, 0, 0, 0.15);
+    
+    /* === TRANSITION SYSTEM === */
+    --transition-fast:         0.15s ease;
+    --transition-normal:       0.25s ease;
+    --transition-slow:         0.4s ease;
+    --transition-smooth:       0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== ENHANCED TYPOGRAPHY ===== */
+body {
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--neutral-700);
+    background: var(--neutral-50);
+    line-height: 1.6;
+}
+
+/* Enhanced headings with blood theme */
+.blood-heading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: var(--blood-primary);
+    margin-bottom: 1rem;
+}
+
+.blood-heading-primary {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: var(--gradient-blood);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+}
+
+.blood-subheading {
+    font-size: 1.25rem;
+    color: var(--neutral-600);
+    margin-bottom: 1rem;
+}
+
+/* ===== ENHANCED BUTTON SYSTEM ===== */
+.btn-blood {
+    background: var(--gradient-blood);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-blood);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-blood:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-emergency);
+    color: white;
+}
+
+.btn-blood:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-soft);
+}
+
+.btn-health {
+    background: var(--gradient-health);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-health);
+}
+
+.btn-health:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    color: white;
+}
+
+.btn-life {
+    background: var(--gradient-life);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-life);
+}
+
+.btn-life:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    color: white;
+}
+
+.btn-emergency {
+    background: var(--gradient-emergency);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-emergency);
+    animation: pulse-emergency 2s infinite;
+}
+
+.btn-emergency:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(255, 107, 107, 0.4);
+    color: white;
+}
+
+@keyframes pulse-emergency {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* ===== ENHANCED CARD SYSTEM ===== */
+.blood-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--neutral-200);
+    padding: 24px;
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.blood-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+}
+
+.blood-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-blood);
+}
+
+.blood-card-health::before {
+    background: var(--gradient-health);
+}
+
+.blood-card-life::before {
+    background: var(--gradient-life);
+}
+
+.blood-card-emergency::before {
+    background: var(--gradient-emergency);
+    height: 6px;
+}
+
+/* ===== ENHANCED STAT CARDS ===== */
+.stat-card-enhanced {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid var(--neutral-200);
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card-enhanced:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-strong);
+}
+
+.stat-card-enhanced::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.stat-card-blood::after {
+    background: var(--gradient-blood);
+}
+
+.stat-card-health::after {
+    background: var(--gradient-health);
+}
+
+.stat-card-life::after {
+    background: var(--gradient-life);
+}
+
+.stat-card-emergency::after {
+    background: var(--gradient-emergency);
+    animation: pulse-emergency 2s infinite;
+}
+
+.stat-number-enhanced {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+}
+
+.stat-card-blood .stat-number-enhanced {
+    background: var(--gradient-blood);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-card-health .stat-number-enhanced {
+    background: var(--gradient-health);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-card-life .stat-number-enhanced {
+    background: var(--gradient-life);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-card-emergency .stat-number-enhanced {
+    background: var(--gradient-emergency);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label-enhanced {
+    font-size: 0.9rem;
+    color: var(--neutral-600);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===== ENHANCED BLOOD TYPE BADGES ===== */
+.blood-type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+    border: 3px solid white;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-normal);
+    cursor: default;
+}
+
+.blood-type-badge:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-medium);
+}
+
+.blood-type-badge.o-positive {
+    background: var(--blood-o-positive);
+}
+
+.blood-type-badge.o-negative {
+    background: var(--blood-o-negative);
+}
+
+.blood-type-badge.a-positive {
+    background: var(--blood-a-positive);
+}
+
+.blood-type-badge.a-negative {
+    background: var(--blood-a-negative);
+}
+
+.blood-type-badge.b-positive {
+    background: var(--blood-b-positive);
+}
+
+.blood-type-badge.b-negative {
+    background: var(--blood-b-negative);
+}
+
+.blood-type-badge.ab-positive {
+    background: var(--blood-ab-positive);
+}
+
+.blood-type-badge.ab-negative {
+    background: var(--blood-ab-negative);
+}
+
+/* ===== ENHANCED STATUS PILLS ===== */
+.status-pill-enhanced {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid transparent;
+    transition: var(--transition-normal);
+}
+
+.status-pill-enhanced.available {
+    background: var(--life-green-light);
+    color: var(--life-green);
+    border-color: var(--life-green);
+}
+
+.status-pill-enhanced.unavailable {
+    background: var(--neutral-200);
+    color: var(--neutral-600);
+    border-color: var(--neutral-400);
+}
+
+.status-pill-enhanced.urgent {
+    background: var(--blood-primary-light);
+    color: var(--blood-primary);
+    border-color: var(--blood-primary);
+    animation: pulse-emergency 2s infinite;
+}
+
+.status-pill-enhanced.pending {
+    background: var(--emergency-yellow);
+    color: var(--neutral-800);
+    border-color: var(--emergency-orange);
+}
+
+.status-pill-enhanced.confirmed {
+    background: var(--life-green-light);
+    color: var(--life-green);
+    border-color: var(--life-green);
+}
+
+.status-pill-enhanced.declined {
+    background: var(--blood-primary-light);
+    color: var(--blood-primary);
+    border-color: var(--blood-primary);
+}
+
+/* Status indicator dots */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ===== ENHANCED NAVIGATION ===== */
+.navbar-blood {
+    background: white;
+    border-bottom: 4px solid var(--blood-primary);
+    box-shadow: var(--shadow-soft);
+    padding: 0;
+}
+
+.navbar-brand-blood {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--blood-primary);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.navbar-brand-blood:hover {
+    color: var(--blood-primary-dark);
+}
+
+.nav-link-blood {
+    color: var(--neutral-600);
+    font-weight: 500;
+    padding: 24px 16px;
+    transition: var(--transition-fast);
+    border-bottom: 3px solid transparent;
+}
+
+.nav-link-blood:hover {
+    color: var(--blood-primary);
+    border-bottom-color: var(--blood-primary);
+}
+
+.nav-link-blood.active {
+    color: var(--blood-primary);
+    border-bottom-color: var(--blood-primary);
+}
+
+/* ===== ENHANCED SIDEBAR ===== */
+.sidebar-blood {
+    background: var(--neutral-800);
+    color: white;
+    width: 280px;
+    min-height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-strong);
+}
+
+.sidebar-brand-blood {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--neutral-700);
+    text-align: center;
+}
+
+.sidebar-brand-blood .logo {
+    font-size: 2rem;
+    color: var(--blood-primary);
+    margin-bottom: 8px;
+}
+
+.sidebar-brand-blood .name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.sidebar-brand-blood .tagline {
+    font-size: 0.8rem;
+    color: var(--neutral-400);
+}
+
+.sidebar-nav-blood {
+    padding: 20px 0;
+}
+
+.sidebar-link-blood {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    color: var(--neutral-300);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link-blood:hover {
+    background: var(--neutral-700);
+    color: white;
+    border-left-color: var(--blood-primary);
+}
+
+.sidebar-link-blood.active {
+    background: rgba(231, 76, 60, 0.1);
+    color: var(--blood-primary);
+    border-left-color: var(--blood-primary);
+}
+
+/* ===== ENHANCED ALERTS ===== */
+.alert-blood {
+    padding: 16px 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--blood-primary);
+    background: var(--blood-primary-lighter);
+    color: var(--blood-primary-dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-health {
+    border-left-color: var(--health-blue);
+    background: var(--health-blue-light);
+    color: var(--health-blue-dark);
+}
+
+.alert-life {
+    border-left-color: var(--life-green);
+    background: var(--life-green-light);
+    color: var(--life-green-dark);
+}
+
+.alert-emergency {
+    border-left-color: var(--emergency-red);
+    background: var(--blood-primary-light);
+    color: var(--blood-primary-dark);
+    animation: pulse-emergency 2s infinite;
+}
+
+/* ===== ENHANCED FORMS ===== */
+.form-control-blood {
+    border: 2px solid var(--neutral-300);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+    background: white;
+}
+
+.form-control-blood:focus {
+    outline: none;
+    border-color: var(--blood-primary);
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+.form-label-blood {
+    font-weight: 600;
+    color: var(--neutral-700);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-label-blood .required {
+    color: var(--blood-primary);
+    margin-left: 4px;
+}
+
+/* ===== ENHANCED TABLES ===== */
+.table-blood {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--neutral-200);
+}
+
+.table-blood thead {
+    background: var(--neutral-50);
+}
+
+.table-blood th {
+    padding: 16px;
+    font-weight: 600;
+    color: var(--neutral-700);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--neutral-200);
+}
+
+.table-blood td {
+    padding: 16px;
+    border-bottom: 1px solid var(--neutral-100);
+    color: var(--neutral-600);
+}
+
+.table-blood tbody tr:hover {
+    background: var(--neutral-50);
+}
+
+/* ===== ENHANCED HERO SECTION ===== */
+.hero-blood {
+    background: var(--gradient-hero);
+    color: white;
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-blood::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="blood-cells" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23blood-cells)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-blood-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.hero-blood-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-blood-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+/* ===== ENHANCED FOOTER ===== */
+.footer-blood {
+    background: var(--neutral-800);
+    color: white;
+    padding: 40px 0 20px;
+    border-top: 4px solid var(--blood-primary);
+}
+
+.footer-blood-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--blood-primary);
+    margin-bottom: 16px;
+}
+
+.footer-blood-links {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.footer-blood-link {
+    color: var(--neutral-300);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.footer-blood-link:hover {
+    color: var(--blood-primary);
+}
+
+.footer-blood-bottom {
+    border-top: 1px solid var(--neutral-700);
+    padding-top: 20px;
+    text-align: center;
+    color: var(--neutral-400);
+    font-size: 0.9rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .hero-blood-title {
+        font-size: 2.5rem;
+    }
+    
+    .stat-number-enhanced {
+        font-size: 2rem;
+    }
+    
+    .blood-card {
+        padding: 16px;
+    }
+    
+    .sidebar-blood {
+        transform: translateX(-100%);
+    }
+    
+    .navbar-blood {
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-blood {
+        padding: 60px 0;
+    }
+    
+    .hero-blood-title {
+        font-size: 2rem;
+    }
+    
+    .btn-emergency {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+    
+    .blood-type-badge {
+        width: 50px;
+        height: 50px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ===== FOCUS STATES ===== */
+.btn-blood:focus,
+.btn-health:focus,
+.btn-life:focus,
+.btn-emergency:focus,
+.form-control-blood:focus {
+    outline: 2px solid var(--blood-primary);
+    outline-offset: 2px;
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .sidebar-blood,
+    .navbar-blood {
+        display: none;
+    }
+    
+    .blood-card {
+        box-shadow: none;
+        border: 1px solid var(--neutral-300);
+    }
+}
