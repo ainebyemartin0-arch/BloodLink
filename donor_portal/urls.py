@@ -21,4 +21,7 @@ urlpatterns = [
     # API endpoints
     path('api/urgent-alerts/', api_views.urgent_alerts, name='api_urgent_alerts'),
     path('api/notification-stats/', api_views.notification_stats, name='api_notification_stats'),
+    
+    # Test page
+    path('test/', views.test_page, name='test_page'),
 ]

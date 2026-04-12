@@ -798,10 +798,126 @@ body {
     outline-offset: 2px;
 }
 
+/* ===== MODERN COMPACT FOOTER ===== */
+.footer-blood {
+    background: var(--neutral-800);
+    color: white;
+    padding: 60px 0 30px;
+    margin-top: 80px;
+    border-top: 4px solid var(--blood-primary);
+}
+
+.footer-blood h6 {
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+}
+
+.footer-blood .text-muted {
+    color: var(--neutral-400) !important;
+    transition: var(--transition-fast);
+}
+
+.footer-blood .text-muted:hover {
+    color: var(--blood-primary) !important;
+}
+
+.footer-blood .small {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.footer-blood .fs-4 {
+    font-size: 1.5rem;
+}
+
+.footer-blood .fs-5 {
+    font-size: 1.25rem;
+}
+
+.footer-blood .fw-bold {
+    font-weight: 600;
+}
+
+.footer-blood .mb-0 {
+    margin-bottom: 0;
+}
+
+.footer-blood .mb-3 {
+    margin-bottom: 16px;
+}
+
+.footer-blood .me-1 {
+    margin-right: 4px;
+}
+
+.footer-blood .me-2 {
+    margin-right: 8px;
+}
+
+.footer-blood .gap-2 {
+    gap: 8px;
+}
+
+.footer-blood .gap-3 {
+    gap: 12px;
+}
+
+.footer-blood .text-decoration-none {
+    text-decoration: none;
+}
+
+.footer-blood .d-flex {
+    display: flex;
+}
+
+.footer-blood .flex-column {
+    flex-direction: column;
+}
+
+.footer-blood .align-items-center {
+    align-items: center;
+}
+
+.footer-blood .align-items-start {
+    align-items: flex-start;
+}
+
+.footer-blood .text-md-end {
+    text-align: right;
+}
+
+.footer-blood .border-top {
+    border-top: 1px solid var(--neutral-700);
+}
+
+.footer-blood .pt-3 {
+    padding-top: 16px;
+}
+
+.footer-blood .mt-4 {
+    margin-top: 24px;
+}
+
+/* Footer responsive */
+@media (max-width: 768px) {
+    .footer-blood {
+        padding: 40px 0 20px;
+        margin-top: 60px;
+    }
+    
+    .footer-blood .text-md-end {
+        text-align: left;
+        margin-top: 16px;
+    }
+}
+
 /* ===== PRINT STYLES ===== */
 @media print {
     .sidebar-blood,
-    .navbar-blood {
+    .navbar-blood,
+    .footer-blood {
         display: none;
     }
     

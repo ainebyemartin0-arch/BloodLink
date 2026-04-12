@@ -628,142 +628,74 @@
         {% block content %}{% endblock %}
     </main>
     
-    <!-- Footer -->
-    <footer class="donor-footer">
-        <div class="donor-footer-container">
-            <div class="donor-footer-content">
-                <!-- About BloodLink -->
-                <div class="donor-footer-section">
-                    <div class="donor-footer-brand">BloodLink</div>
-                    <p class="donor-footer-tagline">
-                        Connecting donors with St. Francis Hospital Nsambya to save lives in our community. 
-                        Every donation counts, every life matters.
-                    </p>
-                    <div class="donor-footer-stats">
-                        <div class="donor-footer-stat">
-                            <div class="donor-footer-stat-number">2,847</div>
-                            <div class="donor-footer-stat-label">Active Donors</div>
-                        </div>
-                        <div class="donor-footer-stat">
-                            <div class="donor-footer-stat-number">15,234</div>
-                            <div class="donor-footer-stat-label">Lives Saved</div>
-                        </div>
+    <!-- Modern Compact Footer -->
+    <footer class="footer-blood">
+        <div class="container">
+            <div class="row align-items-start">
+                <!-- Brand & Contact -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-heart-fill text-danger fs-4 me-2"></i>
+                        <h5 class="mb-0 fw-bold">BloodLink</h5>
                     </div>
-                    <div class="donor-footer-social">
-                        <a href="#" class="donor-footer-social-link" title="Facebook">
-                            <i class="bi bi-facebook"></i>
-                        </a>
-                        <a href="#" class="donor-footer-social-link" title="Twitter">
-                            <i class="bi bi-twitter"></i>
-                        </a>
-                        <a href="#" class="donor-footer-social-link" title="Instagram">
-                            <i class="bi bi-instagram"></i>
-                        </a>
-                        <a href="#" class="donor-footer-social-link" title="WhatsApp">
-                            <i class="bi bi-whatsapp"></i>
-                        </a>
-                        <a href="#" class="donor-footer-social-link" title="YouTube">
-                            <i class="bi bi-youtube"></i>
-                        </a>
+                    <p class="text-muted small mb-3">Connecting blood donors with patients at St. Francis Hospital Nsambya</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-muted"><i class="bi bi-facebook fs-5"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-twitter fs-5"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-instagram fs-5"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-whatsapp fs-5"></i></a>
                     </div>
                 </div>
                 
                 <!-- Quick Links -->
-                <div class="donor-footer-section">
-                    <h6>Quick Links</h6>
-                    <a href="{% url 'donor:home' %}" class="donor-footer-link">Home</a>
-                    <a href="{% url 'donor:register' %}" class="donor-footer-link">Register as Donor</a>
-                    <a href="{% url 'donor:login' %}" class="donor-footer-link">Donor Login</a>
-                    <a href="{% url 'donor:about' %}" class="donor-footer-link">About BloodLink</a>
-                    <a href="{% url 'donor:donations' %}" class="donor-footer-link">My Donations</a>
-                    <a href="{% url 'donor:profile' %}" class="donor-footer-link">My Profile</a>
-                    <a href="{% url 'staff:login' %}" class="donor-footer-link">Hospital Staff Login</a>
-                    <a href="#" class="donor-footer-link">Blood Types Guide</a>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">Quick Links</h6>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'donor:home' %}" class="text-muted text-decoration-none small">Home</a>
+                        <a href="{% url 'donor:register' %}" class="text-muted text-decoration-none small">Register</a>
+                        <a href="{% url 'donor:about' %}" class="text-muted text-decoration-none small">About</a>
+                        <a href="{% url 'staff:login' %}" class="text-muted text-decoration-none small">Staff Login</a>
+                    </div>
                 </div>
                 
-                <!-- Hospital Information -->
-                <div class="donor-footer-section">
-                    <h6>Hospital Information</h6>
-                    <div class="donor-footer-contact">
-                        <div class="donor-footer-contact-item">
-                            <i class="bi bi-geo-alt-fill"></i>
-                            <div>
-                                <strong>St. Francis Hospital Nsambya</strong><br>
-                                Nsambya Hill, Kampala, Uganda
-                            </div>
+                <!-- Contact Info -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">Contact</h6>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex align-items-center text-muted small">
+                            <i class="bi bi-geo-alt me-2"></i>
+                            <span>St. Francis Hospital Nsambya</span>
                         </div>
-                        <div class="donor-footer-contact-item">
-                            <i class="bi bi-telephone-fill"></i>
-                            <div>
-                                <strong>Emergency:</strong> +256 414 267 462<br>
-                                <strong>General:</strong> +256 414 267 461
-                            </div>
+                        <div class="d-flex align-items-center text-muted small">
+                            <i class="bi bi-telephone me-2"></i>
+                            <span>+256 414 267 462</span>
                         </div>
-                        <div class="donor-footer-contact-item">
-                            <i class="bi bi-envelope-fill"></i>
-                            <div>
-                                <strong>Email:</strong> info@bloodlink.ug<br>
-                                <strong>Support:</strong> support@bloodlink.ug
-                            </div>
-                        </div>
-                        <div class="donor-footer-contact-item">
-                            <i class="bi bi-clock-fill"></i>
-                            <div>
-                                <strong>Blood Donation Hours:</strong><br>
-                                Monday - Friday: 8:00 AM - 5:00 PM<br>
-                                Saturday: 9:00 AM - 1:00 PM<br>
-                                <strong>Emergency: 24/7 Available</strong>
-                            </div>
+                        <div class="d-flex align-items-center text-muted small">
+                            <i class="bi bi-envelope me-2"></i>
+                            <span>info@bloodlink.ug</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Resources & Support -->
-                <div class="donor-footer-section">
-                    <h6>Resources & Support</h6>
-                    <a href="#" class="donor-footer-link">Blood Donation Process</a>
-                    <a href="#" class="donor-footer-link">Blood Types & Compatibility</a>
-                    <a href="#" class="donor-footer-link">Donor Eligibility Requirements</a>
-                    <a href="#" class="donor-footer-link">FAQs About Blood Donation</a>
-                    <a href="#" class="donor-footer-link">Privacy Policy</a>
-                    <a href="#" class="donor-footer-link">Terms of Service</a>
-                    <a href="#" class="donor-footer-link">Contact Support</a>
-                    <a href="#" class="donor-footer-link">Report an Issue</a>
-                    
-                    <div style="margin-top: var(--space-lg);">
-                        <div class="donor-footer-badge">
-                            <i class="bi bi-shield-check"></i>
-                            HIPAA Compliant
-                        </div>
-                        <div class="donor-footer-badge">
-                            <i class="bi bi-award"></i>
-                            WHO Certified
-                        </div>
-                        <div class="donor-footer-badge">
-                            <i class="bi bi-heart-fill"></i>
-                            Save Lives
-                        </div>
+                <!-- Legal -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="fw-bold mb-3">Legal</h6>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="#" class="text-muted text-decoration-none small">Privacy Policy</a>
+                        <a href="#" class="text-muted text-decoration-none small">Terms of Service</a>
+                        <a href="#" class="text-muted text-decoration-none small">FAQ</a>
                     </div>
                 </div>
             </div>
             
-            <div class="donor-footer-bottom">
-                <div class="donor-footer-copyright">
-                    <p> 2026 BloodLink — Final Year Project | Cavendish University Uganda</p>
-                    <p>All rights reserved. BloodLink is a student project for educational purposes.</p>
-                </div>
-                <div class="donor-footer-badges">
-                    <div class="donor-footer-badge">
-                        <i class="bi bi-phone"></i>
-                        +256 414 267 462
+            <!-- Copyright -->
+            <div class="border-top pt-3 mt-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="text-muted small mb-0">© 2026 BloodLink | Cavendish University Uganda</p>
                     </div>
-                    <div class="donor-footer-badge">
-                        <i class="bi bi-envelope"></i>
-                        info@bloodlink.ug
-                    </div>
-                    <div class="donor-footer-badge">
-                        <i class="bi bi-chat-dots"></i>
-                        Powered by Africa's Talking SMS
+                    <div class="col-md-6 text-md-end">
+                        <p class="text-muted small mb-0">Powered by Africa's Talking SMS</p>
                     </div>
                 </div>
             </div>

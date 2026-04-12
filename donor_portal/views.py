@@ -38,6 +38,15 @@ def donor_home(request):
     }
     return render(request, 'donor_portal/home.html', context)
 
+def test_page(request):
+    """Simple test page to debug issues"""
+    total_donors = Donor.objects.filter(is_active=True).count()
+    
+    context = {
+        'total_donors': total_donors,
+    }
+    return render(request, 'test_minimal.html', context)
+
 def about_bloodlink(request):
     """About BloodLink page with detailed information"""
     return render(request, 'donor_portal/about.html')
