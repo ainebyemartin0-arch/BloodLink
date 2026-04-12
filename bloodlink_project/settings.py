@@ -49,6 +49,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
                 'bloodlink_project.context_processors.admin_custom_context',
+                'bloodlink_project.context_processors.vapid_context',
             ],
             'libraries': {
                 'static': 'django.templatetags.static',
@@ -120,3 +121,8 @@ LOGOUT_REDIRECT_URL = '/staff/login/'
 AT_USERNAME = os.getenv('AT_USERNAME', 'sandbox')
 AT_API_KEY = os.getenv('AT_API_KEY', '')
 AT_SENDER_ID = os.getenv('AT_SENDER_ID', 'BloodLink')
+
+# Web Push Notification settings
+VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY', '')
+VAPID_PUBLIC_KEY = os.getenv('VAPID_PUBLIC_KEY', '')
+VAPID_CLAIMS_EMAIL = os.getenv('VAPID_CLAIMS_EMAIL', 'admin@bloodlink.ug')

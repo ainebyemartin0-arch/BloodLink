@@ -21,6 +21,10 @@
     <!-- Enhanced BloodLink Theme CSS -->
     <link rel="stylesheet" href="{% static 'css/bloodlink-enhanced.css' %}">
     
+    <!-- Web Push Notifications -->
+    <meta name="vapid-public-key" content="{{ VAPID_PUBLIC_KEY }}">
+    <script src="{% static 'js/push-notifications.js' %}" defer></script>
+    
     {% block extra_css %}{% endblock %}
     
     <style>

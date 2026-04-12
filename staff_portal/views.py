@@ -299,7 +299,12 @@ def request_create(request):
             emergency_request.save()
             
             sms_result = send_emergency_sms(emergency_request)
-            messages.success(request, f"Emergency request created. SMS alerts sent to {sms_result['sent_count']} donors (failed: {sms_result['failed_count']}).")
+            
+            # Send push notifications alongside SMS
+            from notifications.push_utils import send_emergency_push_alerts
+            push_result = send_emergency_push_alerts(emergency_request)
+            
+            messages.success(request, f"Emergency request created. SMS alerts sent to {sms_result['sent_count']} donors (failed: {sms_result['failed_count']}). Push notifications sent to {push_result['sent']} devices (failed: {push_result['failed']}).")
             
             # Add notification data to session for immediate display
             request.session['emergency_notification'] = {

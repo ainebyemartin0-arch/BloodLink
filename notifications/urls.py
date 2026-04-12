@@ -8,4 +8,6 @@ urlpatterns = [
     path('<int:pk>/update-response/', views.update_response, name='update_response'),
     path('test-connection/', views.test_connection, name='test_connection'),
     path('test-sms-api/', views.test_sms_api, name='test_sms_api'),
+    path('push/subscribe/', views.push_subscribe, name='push_subscribe'),
+    path('push/unsubscribe/', views.push_unsubscribe, name='push_unsubscribe'),
 ]

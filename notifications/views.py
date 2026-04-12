@@ -2,8 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import SMSNotification
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
+from .models import SMSNotification, PushSubscription
 from .utils import test_africastalking_connection
+from .push_utils import send_emergency_push_alerts
 
 @login_required
 def notification_list(request):
@@ -69,3 +73,70 @@ def test_sms_api(request):
     """Public test endpoint for Africa's Talking API."""
     result = test_africastalking_connection()
     return JsonResponse(result)
+
+
+@require_POST
+def push_subscribe(request):
+    """Save a push notification subscription from browser."""
+    try:
+        data = json.loads(request.body)
+        
+        endpoint = data.get('endpoint')
+        p256dh = data.get('p256dh')
+        auth = data.get('auth')
+        
+        if not all([endpoint, p256dh, auth]):
+            return JsonResponse({'error': 'Missing fields'}, status=400)
+        
+        # Get donor from session or staff from Django auth
+        donor = None
+        staff_user = None
+        
+        donor_id = request.session.get('donor_id')
+        if donor_id:
+            from donors.models import Donor
+            try:
+                donor = Donor.objects.get(pk=donor_id)
+            except Donor.DoesNotExist:
+                pass
+        
+        if request.user.is_authenticated:
+            staff_user = request.user
+        
+        # Save or update subscription
+        subscription, created = PushSubscription.objects.update_or_create(
+            endpoint=endpoint,
+            defaults={
+                'p256dh_key': p256dh,
+                'auth_key': auth,
+                'donor': donor,
+                'staff_user': staff_user,
+                'is_active': True,
+                'user_agent': request.META.get('HTTP_USER_AGENT', '')[:300],
+            }
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'created': created,
+            'message': 'Subscribed to BloodLink alerts successfully'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_POST
+def push_unsubscribe(request):
+    """Remove a push notification subscription."""
+    try:
+        data = json.loads(request.body)
+        endpoint = data.get('endpoint')
+        
+        PushSubscription.objects.filter(
+            endpoint=endpoint
+        ).update(is_active=False)
+        
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

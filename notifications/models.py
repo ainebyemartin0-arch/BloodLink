@@ -98,3 +98,40 @@ class SMSNotification(models.Model):
         ordering = ['-sent_at']
         verbose_name = 'SMS Notification'
         verbose_name_plural = 'SMS Notifications'
+
+
+class PushSubscription(models.Model):
+    """Stores browser push notification subscriptions."""
+    
+    # Can belong to a donor or staff — both optional
+    donor = models.ForeignKey(
+        'donors.Donor',
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+        related_name='push_subscriptions'
+    )
+    staff_user = models.ForeignKey(
+        'accounts.StaffUser',
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+        related_name='push_subscriptions'
+    )
+    
+    # The subscription data from browser
+    endpoint = models.TextField(unique=True)
+    p256dh_key = models.TextField()
+    auth_key = models.TextField()
+    
+    user_agent = models.CharField(max_length=300, blank=True)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    
+    def __str__(self):
+        if self.donor:
+            return f"Push: {self.donor.full_name}"
+        if self.staff_user:
+            return f"Push: {self.staff_user.get_full_name()}"
+        return f"Push: Anonymous ({self.endpoint[:40]}...)"
+    
+    class Meta:
+        ordering = ['-subscribed_at']

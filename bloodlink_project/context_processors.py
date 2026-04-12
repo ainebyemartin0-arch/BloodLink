@@ -6,3 +6,10 @@ def admin_custom_context(request):
     return {
         'admin_custom_context': True,
     }
+
+from django.conf import settings
+
+def vapid_context(request):
+    return {
+        'VAPID_PUBLIC_KEY': getattr(settings, 'VAPID_PUBLIC_KEY', '')
+    }
