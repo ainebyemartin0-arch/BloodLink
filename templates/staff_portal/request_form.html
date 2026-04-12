@@ -22,11 +22,24 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="{{ form.blood_type_needed.id_for_label }}" class="form-label">Blood Type Needed *</label>
-                            {{ form.blood_type_needed }}
-                            {% if form.blood_type_needed.errors %}
-                                <div class="text-danger small">{{ form.blood_type_needed.errors.0 }}</div>
-                            {% endif %}
+                            <div class="bl-field">
+                                <label class="bl-label">Blood Type Needed <span class="req">*</span></label>
+                                <div class="blood-type-selector">
+                                    {% for value, label in blood_type_choices %}
+                                    <label class="bt-option">
+                                        <input type="radio" 
+                                               name="blood_type_needed" 
+                                               value="{{ value }}" 
+                                               class="bt-radio"
+                                               {% if form.blood_type_needed.value == value %}checked{% endif %}>
+                                        <span class="bt-option-card" data-type="{{ value }}">{{ value }}</span>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                                {% if form.blood_type_needed.errors %}
+                                    <div class="text-danger small">{{ form.blood_type_needed.errors.0 }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="{{ form.units_needed.id_for_label }}" class="form-label">Units Needed *</label>

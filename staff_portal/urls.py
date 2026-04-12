@@ -7,7 +7,7 @@ app_name = 'staff'
 
 urlpatterns = [
     path('', views.redirect_root, name='root'),
-    path('login/', views.staff_login, name='login'),
+    path('secure-access/', views.staff_login, name='login'),
     path('logout/', views.staff_logout, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('register/', views.register_staff, name='register'),

@@ -320,7 +320,13 @@ def request_create(request):
     else:
         form = EmergencyRequestForm()
     
-    return render(request, 'staff_portal/request_form.html', {'form': form})
+    # Add blood type choices for the interactive selector
+    blood_type_choices = EmergencyRequestForm.base_fields['blood_type_needed'].choices
+    
+    return render(request, 'staff_portal/request_form.html', {
+        'form': form,
+        'blood_type_choices': blood_type_choices
+    })
 
 @login_required
 def request_detail(request, pk):

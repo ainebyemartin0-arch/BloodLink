@@ -269,6 +269,15 @@
 </section>
 
 <script>
+// Parallax hero effect
+window.addEventListener('scroll', function() {
+    const hero = document.querySelector('.donor-hero');
+    if (hero) {
+        const scrolled = window.pageYOffset;
+        hero.style.backgroundPositionY = scrolled * 0.4 + 'px';
+    }
+});
+
 // Enhanced animations when page loads
 document.addEventListener('DOMContentLoaded', function() {
   // Animate hero stats on scroll

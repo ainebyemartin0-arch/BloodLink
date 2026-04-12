@@ -5,6 +5,25 @@
 
 'use strict';
 
+// Page transition effect
+document.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.add('page-loaded');
+});
+
+document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
+    link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href && !href.startsWith('#') && !href.startsWith('mailto') 
+            && !href.startsWith('javascript')) {
+            e.preventDefault();
+            document.body.classList.add('page-exit');
+            setTimeout(() => {
+                window.location.href = href;
+            }, 250);
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function () {
 
   /* ── 1. AUTO-DISMISS ALERTS (5 seconds) ── */
@@ -321,3 +340,103 @@ window.BloodLink = {
     });
   }
 };
+
+/* ── TOAST NOTIFICATION SYSTEM ── */
+window.BloodLinkToast = {
+    container: null,
+    
+    init() {
+        this.container = document.createElement('div');
+        this.container.className = 'toast-container';
+        document.body.appendChild(this.container);
+        
+        // Convert Django messages to toasts
+        document.querySelectorAll('.bl-alert, .alert').forEach(alert => {
+            const text = alert.textContent.trim();
+            const type = alert.classList.contains('bl-success') || 
+                         alert.classList.contains('alert-success') 
+                         ? 'success'
+                         : alert.classList.contains('bl-error') || 
+                           alert.classList.contains('alert-danger') 
+                           ? 'error'
+                         : alert.classList.contains('bl-warning') || 
+                             alert.classList.contains('alert-warning')
+                             ? 'warning' : 'info';
+            
+            if (text) this.show(text, type);
+            alert.style.display = 'none';
+        });
+    },
+    
+    show(message, type = 'info', title = null) {
+        if (!this.container) this.init();
+        
+        const icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+        
+        const titles = {
+            success: 'Success',
+            error: 'Error',
+            warning: 'Warning',
+            info: 'Notice'
+        };
+        
+        const toast = document.createElement('div');
+        toast.className = `bl-toast ${type}`;
+        toast.innerHTML = `
+            <span class="bl-toast-icon">${icons[type]}</span>
+            <div class="bl-toast-body">
+                <span class="bl-toast-title">${title || titles[type]}</span>
+                <span class="bl-toast-message">${message}</span>
+            </div>
+            <button class="bl-toast-close" onclick="this.closest('.bl-toast').remove()">✕</button>
+            <div class="bl-toast-progress"></div>
+        `;
+        
+        this.container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('removing');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+        
+        return toast;
+    }
+};
+
+// Initialize toast system
+document.addEventListener('DOMContentLoaded', () => {
+    window.BloodLinkToast.init();
+});
+
+// Loading button states
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function() {
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn && !btn.classList.contains('no-loading')) {
+            btn.dataset.originalText = btn.innerHTML;
+            btn.innerHTML = `
+                <span style="display:inline-flex;align-items:center;gap:8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" 
+                         fill="none" stroke="currentColor" stroke-width="2.5"
+                         style="animation:spin 0.8s linear infinite">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                    Processing...
+                </span>
+            `;
+            btn.disabled = true;
+            btn.style.opacity = '0.85';
+            
+            setTimeout(() => {
+                btn.innerHTML = btn.dataset.originalText;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }, 10000);
+        }
+    });
+});

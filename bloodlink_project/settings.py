@@ -113,9 +113,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Staff portal login settings
-LOGIN_URL = '/staff/login/'
+LOGIN_URL = '/staff/secure-access/'
 LOGIN_REDIRECT_URL = '/staff/dashboard/'
-LOGOUT_REDIRECT_URL = '/staff/login/'
+LOGOUT_REDIRECT_URL = '/staff/secure-access/'
 
 # Africa's Talking SMS settings
 AT_USERNAME = os.getenv('AT_USERNAME', 'sandbox')
