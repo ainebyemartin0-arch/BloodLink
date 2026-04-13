@@ -11,7 +11,7 @@ from django.views.decorators.http import require_POST
 from django.db import transaction
 
 from donors.models import Donor
-from donors.choices import BLOOD_TYPE_CHOICES
+from donors.choices import BLOOD_TYPE_CHOICES, LOCATION_CHOICES
 from .models import EmergencyRequest, DonationRecord, BloodStock, PublicBloodRequest
 from notifications.models import SMSNotification
 from .utils import log_activity
