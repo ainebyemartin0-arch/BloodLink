@@ -548,7 +548,7 @@ def check_request_fulfillment(emergency_request):
     # Count total units donated for this request
     total_donated = DonationRecord.objects.filter(
         emergency_request=emergency_request
-    ).aggregate(total=models.Sum('units_donated'))['total'] or 0
+    ).aggregate(total=Sum('units_donated'))['total'] or 0
     
     # If donated units meet or exceed needed units, mark as fulfilled
     if total_donated >= emergency_request.units_needed:
@@ -577,7 +577,7 @@ def blood_stock(request):
     stocks = BloodStock.objects.all().order_by('blood_type')
     
     critical_stocks = stocks.filter(
-        units_available__lte=models.F('minimum_threshold')
+        units_available__lte=F('minimum_threshold')
     )
     
     context = {
@@ -654,7 +654,7 @@ def dashboard_stats_api(request):
             donor_response='confirmed'
         ).count(),
         'critical_stocks': BloodStock.objects.filter(
-            units_available__lte=models.F('minimum_threshold')
+            units_available__lte=F('minimum_threshold')
         ).count(),
     }
     return JsonResponse(stats)
