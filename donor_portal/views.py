@@ -1,12 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.db import models
-from donors.models import Donor, BLOOD_TYPE_CHOICES
-from .forms import DonorRegistrationForm, DonorLoginForm, DonorProfileEditForm, DonorChangePasswordForm
-from notifications.models import SMSNotification
-from staff_portal.models import DonationRecord
+from django.urls import reverse
+from django.http import JsonResponse
+from django.db.models import Q, Count, Avg
+from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator
 from functools import wraps
+
+from donors.models import Donor
+from donors.choices import BLOOD_TYPE_CHOICES
+from notifications.models import SMSNotification
+from staff_portal.models import PublicBloodRequest, DonationRecord
+from .forms import DonorRegistrationForm, DonorLoginForm, DonorProfileEditForm, DonorChangePasswordForm, PublicBloodRequestForm
 
 def get_logged_in_donor(request):
     donor_id = request.session.get('donor_id')
@@ -207,13 +215,51 @@ def donor_change_password(request):
     
     return render(request, 'donor_portal/change_password.html', {'form': form})
 
+def request_blood(request):
+    """Public blood request form — anyone can submit."""
+    if request.method == 'POST':
+        form = PublicBloodRequestForm(request.POST)
+        if form.is_valid():
+            public_request = PublicBloodRequest.objects.create(
+                requester_name=form.cleaned_data['requester_name'],
+                requester_phone=form.cleaned_data['requester_phone'],
+                requester_relationship=form.cleaned_data['requester_relationship'],
+                patient_name=form.cleaned_data['patient_name'],
+                blood_type_needed=form.cleaned_data['blood_type_needed'],
+                units_needed=form.cleaned_data['units_needed'],
+                urgency_level=form.cleaned_data['urgency_level'],
+                hospital_ward=form.cleaned_data.get('hospital_ward', ''),
+                additional_notes=form.cleaned_data.get('additional_notes', ''),
+            )
+            messages.success(
+                request,
+                f'✅ Your blood request has been submitted successfully! '
+                f'Reference #: BL-{public_request.pk:04d}. '
+                f'Hospital staff will review and send alerts to donors shortly.'
+            )
+            return redirect('donor:request_blood_success',
+                          pk=public_request.pk)
+    else:
+        form = PublicBloodRequestForm()
+
+    return render(request, 'donor_portal/request_blood.html', {
+        'form': form
+    })
+
+def request_blood_success(request, pk):
+    """Confirmation page after submitting blood request."""
+    public_request = get_object_or_404(PublicBloodRequest, pk=pk)
+    return render(request, 'donor_portal/request_blood_success.html', {
+        'public_request': public_request
+    })
+
 @donor_login_required
 def respond_to_alert(request, pk):
     """Allow donor to respond to SMS alert"""
     donor = get_logged_in_donor(request)
     notification = get_object_or_404(SMSNotification, pk=pk, donor=donor)
     
-    # Mark as opened when donor views the alert
+    # Mark as opened when donor views alert
     if notification.opened_at is None:
         notification.opened_at = timezone.now()
     

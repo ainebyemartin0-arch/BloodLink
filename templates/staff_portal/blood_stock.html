@@ -1,0 +1,185 @@
+{% extends 'base_staff_modern.html' %}
+{% load static %}
+
+{% block title %}Blood Stock{% endblock %}
+{% block page_title %}Blood Stock Management{% endblock %}
+{% block breadcrumb %}
+    <a href="{% url 'staff:dashboard' %}">Home</a> / Blood Stock
+{% endblock %}
+
+{% block content %}
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card sc-blue reveal">
+            <div class="sc-bg-shape"></div>
+            <div class="sc-icon"><i class="bi bi-droplet-fill"></i></div>
+            <span class="sc-number">{{ total_units }}</span>
+            <span class="sc-label">Total Units In Stock</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card sc-red {% if critical_count > 0 %}sc-pulse{% endif %} reveal reveal-delay-1">
+            <div class="sc-bg-shape"></div>
+            <div class="sc-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <span class="sc-number">{{ critical_count }}</span>
+            <span class="sc-label">Critical Blood Types</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card sc-amber reveal reveal-delay-2">
+            <div class="sc-bg-shape"></div>
+            <div class="sc-icon"><i class="bi bi-x-circle-fill"></i></div>
+            <span class="sc-number">{{ empty_types }}</span>
+            <span class="sc-label">Empty Blood Types</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card sc-green reveal reveal-delay-3">
+            <div class="sc-bg-shape"></div>
+            <div class="sc-icon"><i class="bi bi-check-circle-fill"></i></div>
+            <span class="sc-number">8</span>
+            <span class="sc-label">Blood Types Tracked</span>
+        </div>
+    </div>
+</div>
+
+<!-- Blood Stock Grid -->
+<div class="bl-card reveal">
+    <div class="bl-card-header">
+        <div class="bl-card-header-left">
+            <div class="bl-card-header-icon">
+                <i class="bi bi-droplet-fill"></i>
+            </div>
+            <div>
+                <h5 class="bl-card-title">Current Blood Stock Levels</h5>
+                <span class="bl-card-subtitle">
+                    Update units after receiving donations or after use
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="bl-card-body">
+        <div class="row g-3">
+            {% for stock in stocks %}
+            <div class="col-md-6 col-lg-3">
+                <div class="blood-stock-card 
+                    {% if stock.stock_status == 'empty' %}stock-empty
+                    {% elif stock.stock_status == 'critical' %}stock-critical
+                    {% elif stock.stock_status == 'low' %}stock-low
+                    {% else %}stock-adequate{% endif %}">
+                    
+                    <!-- Blood Type Badge -->
+                    <div class="stock-header">
+                        <span class="bt-badge" data-type="{{ stock.blood_type }}">
+                            {{ stock.blood_type }}
+                        </span>
+                        <span class="stock-status-badge {{ stock.stock_status }}">
+                            {{ stock.stock_status|title }}
+                        </span>
+                    </div>
+                    
+                    <!-- Units Display -->
+                    <div class="stock-units">
+                        <span class="stock-number">{{ stock.units_available }}</span>
+                        <span class="stock-unit-label">units</span>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="stock-progress-wrap">
+                        <div class="stock-progress">
+                            <div class="stock-progress-bar 
+                                {{ stock.stock_status }}"
+                                style="width: {{ stock.stock_percentage }}%">
+                            </div>
+                        </div>
+                        <span class="stock-threshold-label">
+                            Min: {{ stock.minimum_threshold }} units
+                        </span>
+                    </div>
+                    
+                    <!-- Update Form -->
+                    <form method="post" 
+                          action="{% url 'staff:update_blood_stock' stock.pk %}">
+                        {% csrf_token %}
+                        <div class="stock-update-form">
+                            <div class="stock-input-group">
+                                <label style="font-size:0.72rem;
+                                              color:var(--staff-muted);
+                                              font-weight:600;">
+                                    Units Available
+                                </label>
+                                <input type="number" 
+                                       name="units_available"
+                                       value="{{ stock.units_available }}"
+                                       min="0" max="999"
+                                       class="bl-input"
+                                       style="padding:7px 10px;font-size:0.85rem;">
+                            </div>
+                            <div class="stock-input-group">
+                                <label style="font-size:0.72rem;
+                                              color:var(--staff-muted);
+                                              font-weight:600;">
+                                    Alert Threshold
+                                </label>
+                                <input type="number"
+                                       name="minimum_threshold"
+                                       value="{{ stock.minimum_threshold }}"
+                                       min="1" max="20"
+                                       class="bl-input"
+                                       style="padding:7px 10px;font-size:0.85rem;">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-bl btn-sm w-100 mt-2">
+                            <i class="bi bi-save2"></i> Update Stock
+                        </button>
+                    </form>
+                    
+                    {% if stock.last_updated %}
+                    <div style="font-size:0.7rem;color:var(--staff-muted);
+                                margin-top:8px;text-align:center;">
+                        Updated: {{ stock.last_updated|date:"M d, H:i" }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.blood-stock-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    border: 2px solid var(--staff-border);
+    transition: all 0.25s ease;
+    height: 100%;
+}
+.blood-stock-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.blood-stock-card.stock-empty { border-color: #922B21; background: #FFF9F9; }
+.blood-stock-card.stock-critical { border-color: #C0392B; background: #FEFAFA; }
+.blood-stock-card.stock-low { border-color: #D68910; background: #FFFDF5; }
+.blood-stock-card.stock-adequate { border-color: #1E8449; background: #F9FFFE; }
+.stock-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.stock-status-badge { font-size:0.65rem; font-weight:700; padding:3px 8px; border-radius:20px; text-transform:uppercase; }
+.stock-status-badge.empty { background:#FADBD8; color:#C0392B; }
+.stock-status-badge.critical { background:#FADBD8; color:#922B21; }
+.stock-status-badge.low { background:#FEF9E7; color:#D68910; }
+.stock-status-badge.adequate { background:#D5F5E3; color:#1E8449; }
+.stock-units { text-align:center; margin:12px 0; }
+.stock-number { font-family:'JetBrains Mono',monospace; font-size:2.4rem; font-weight:700; color:var(--staff-text); display:block; line-height:1; }
+.stock-unit-label { font-size:0.75rem; color:var(--staff-muted); text-transform:uppercase; letter-spacing:1px; }
+.stock-progress-wrap { margin-bottom:14px; }
+.stock-progress { height:8px; background:var(--staff-bg); border-radius:4px; overflow:hidden; margin-bottom:4px; }
+.stock-progress-bar { height:100%; border-radius:4px; transition:width 0.5s ease; }
+.stock-progress-bar.empty { background:#C0392B; }
+.stock-progress-bar.critical { background:#C0392B; }
+.stock-progress-bar.low { background:#D68910; }
+.stock-progress-bar.adequate { background:#1E8449; }
+.stock-threshold-label { font-size:0.68rem; color:var(--staff-muted); }
+.stock-update-form { display:flex; flex-direction:column; gap:8px; }
+.stock-input-group { display:flex; flex-direction:column; gap:3px; }
+</style>
+{% endblock %}

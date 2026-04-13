@@ -593,6 +593,7 @@
             
             <ul class="donor-nav-links" id="donorNavLinks">
                 <li><a href="{% url 'donor:home' %}" class="donor-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+                <li><a href="{% url 'donor:request_blood' %}" class="donor-nav-link {% if request.resolver_match.url_name == 'request_blood' %}active{% endif %}">Request Blood</a></li>
                 {% if request.session.donor_id %}
                 <li><a href="{% url 'donor:dashboard' %}" class="donor-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">My Dashboard</a></li>
                 <li><a href="{% url 'donor:donations' %}" class="donor-nav-link {% if request.resolver_match.url_name == 'donations' %}active{% endif %}">My Donations</a></li>

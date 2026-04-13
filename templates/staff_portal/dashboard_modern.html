@@ -367,13 +367,33 @@
     </a>
 </div>
 
+<!-- Blood Stock Alert Row -->
+{% if critical_stocks %}
+<div class="emergency-banner mb-4">
+    <span class="emergency-banner-icon">🩸</span>
+    <div class="emergency-banner-text">
+        <strong>Blood Stock Alert — Immediate Action Required</strong>
+        <span>
+            {% for stock in critical_stocks %}
+                {{ stock.blood_type }} ({{ stock.units_available }} units)
+                {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            are critically low or empty.
+        </span>
+    </div>
+    <a href="{% url 'staff:blood_stock' %}" class="btn-bl btn-sm ms-auto">
+        Update Stock
+    </a>
+</div>
+{% endif %}
+
 <!-- Stats Grid -->
 <div class="dashboard-grid">
     <div class="stat-card-modern animate-fadeInUp">
         <div class="stat-icon donors">
             <i class="bi bi-people-fill"></i>
         </div>
-        <div class="stat-number">{{ total_donors|default:0 }}</div>
+        <div class="stat-number" id="stat-total-donors">{{ total_donors|default:0 }}</div>
         <div class="stat-label">Total Donors</div>
         <div class="stat-change positive">
             <i class="bi bi-arrow-up"></i>
@@ -385,11 +405,12 @@
         <div class="stat-icon requests">
             <i class="bi bi-exclamation-triangle-fill"></i>
         </div>
-        <div class="stat-number">{{ total_requests|default:0 }}</div>
-        <div class="stat-label">Emergency Requests</div>
+        <div class="stat-number" id="stat-open-requests">{{ total_requests|default:0 }}</div>
+        <div class="stat-label">Total Requests</div>
         <div class="stat-change {% if critical_requests > 0 %}negative{% else %}positive{% endif %}">
             <i class="bi bi-arrow-{% if critical_requests > 0 %}up{% else %}down{% endif %}"></i>
             <span>{{ critical_requests|default:0 }} critical</span>
+            <span class="stat-badge" id="open-requests-badge" style="display: {% if critical_requests > 0 %}inline-flex{% else %}none{% endif %}; background: var(--bl-red); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;">{{ critical_requests }}</span>
         </div>
     </div>
     
@@ -397,8 +418,8 @@
         <div class="stat-icon sms">
             <i class="bi bi-chat-dots-fill"></i>
         </div>
-        <div class="stat-number">{{ total_sms|default:0 }}</div>
-        <div class="stat-label">SMS Sent</div>
+        <div class="stat-number" id="stat-confirmed">{{ confirmed_responses|default:0 }}</div>
+        <div class="stat-label">Confirmed Responses</div>
         <div class="stat-change positive">
             <i class="bi bi-arrow-up"></i>
             <span>{{ pending_sms|default:0 }} pending</span>
@@ -409,8 +430,8 @@
         <div class="stat-icon donations">
             <i class="bi bi-heart-fill"></i>
         </div>
-        <div class="stat-number">{{ total_donations|default:0 }}</div>
-        <div class="stat-label">Total Donations</div>
+        <div class="stat-number" id="stat-available-donors">{{ available_donors|default:0 }}</div>
+        <div class="stat-label">Available Donors</div>
         <div class="stat-change positive">
             <i class="bi bi-arrow-up"></i>
             <span>{{ donations_this_month|default:0 }} this month</span>
@@ -631,6 +652,56 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Auto-refresh dashboard stats every 60 seconds
+function refreshDashboardStats() {
+    fetch("{% url 'staff:dashboard_stats_api' %}", {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update each stat number smoothly
+        updateStat('stat-total-donors', data.total_donors);
+        updateStat('stat-available-donors', data.available_donors);
+        updateStat('stat-open-requests', data.open_requests);
+        updateStat('stat-total-sms', data.total_sms);
+        updateStat('stat-confirmed', data.confirmed_responses);
+        
+        // Show urgent badge if open requests > 0
+        const openBadge = document.getElementById('open-requests-badge');
+        if (openBadge) {
+            openBadge.style.display = 
+                data.open_requests > 0 ? 'inline-flex' : 'none';
+        }
+        
+        // Update last refreshed time
+        const timeEl = document.getElementById('last-refreshed');
+        if (timeEl) {
+            const now = new Date();
+            timeEl.textContent = 
+                `Last updated: ${now.toLocaleTimeString()}`;
+        }
+    })
+    .catch(err => console.log('Stats refresh failed:', err));
+}
+
+function updateStat(elementId, newValue) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    
+    const currentVal = parseInt(el.textContent.replace(/,/g, ''), 10);
+    if (currentVal === newValue) return;
+    
+    // Animate numbers on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const numbers = document.querySelectorAll('.stat-number');
+    numbers.forEach(number => {
+        const target = parseInt(number.textContent);
+        if (!isNaN(target)) {
+            animateNumber(number, target);
+        }
+    });
+});
+
 function animateNumber(element, target) {
     const duration = 2000;
     const step = target / (duration / 16);
@@ -645,5 +716,22 @@ function animateNumber(element, target) {
         element.textContent = Math.floor(current).toLocaleString();
     }, 16);
 }
+
+// Run immediately then every 60 seconds
+refreshDashboardStats();
+setInterval(refreshDashboardStats, 60000);
+
+// Show refresh indicator
+const indicator = document.createElement('div');
+indicator.id = 'last-refreshed';
+indicator.style.cssText = `
+    position: fixed; bottom: 20px; right: 20px;
+    background: rgba(0,0,0,0.6); color: white;
+    padding: 6px 12px; border-radius: 20px;
+    font-size: 0.72rem; z-index: 999;
+    font-family: 'JetBrains Mono', monospace;
+`;
+document.body.appendChild(indicator);
+});
 </script>
 {% endblock %}

@@ -28,44 +28,28 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-6">
-                <p><strong>Blood Type:</strong> <span class="badge badge-blood">{{ emergency_request.blood_type_needed }}</span></p>
+                <p><strong>Blood Type:</strong> {{ emergency_request.blood_type_needed }}</p>
+            </div>
+            <div class="col-md-6">
                 <p><strong>Units Needed:</strong> {{ emergency_request.units_needed }}</p>
-                <p><strong>Urgency Level:</strong> 
-                    {% if emergency_request.urgency_level == 'critical' %}
-                        <span class="badge bg-danger">{{ emergency_request.get_urgency_level_display }}</span>
-                    {% elif emergency_request.urgency_level == 'urgent' %}
-                        <span class="badge bg-warning">{{ emergency_request.get_urgency_level_display }}</span>
-                    {% else %}
-                        <span class="badge bg-info">{{ emergency_request.get_urgency_level_display }}</span>
-                    {% endif %}
-                </p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Urgency:</strong> {{ emergency_request.get_urgency_level_display }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Patient Name:</strong> {{ emergency_request.patient_name }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Ward:</strong> {{ emergency_request.ward }}</p>
             </div>
             <div class="col-md-6">
                 <p><strong>Status:</strong> 
-                    {% if emergency_request.status == 'open' %}
-                        <span class="badge bg-danger">Open</span>
-                    {% elif emergency_request.status == 'fulfilled' %}
-                        <span class="badge bg-success">Fulfilled</span>
-                    {% else %}
-                        <span class="badge bg-secondary">Closed</span>
-                    {% endif %}
+                    <span class="badge bg-{{ emergency_request.status|yesno:'success,warning,secondary' }}">
+                        {{ emergency_request.get_status_display }}
+                    </span>
                 </p>
-                <p><strong>Created By:</strong> {{ emergency_request.created_by.get_full_name|default:emergency_request.created_by.username }}</p>
-                <p><strong>Created At:</strong> {{ emergency_request.created_at|date:"F d, Y, g:i A" }}</p>
             </div>
         </div>
-        
-        {% if emergency_request.patient_name %}
-            <div class="mt-3">
-                <p><strong>Patient Name:</strong> {{ emergency_request.patient_name }}</p>
-            </div>
-        {% endif %}
-        
-        {% if emergency_request.ward %}
-            <div class="mt-3">
-                <p><strong>Ward:</strong> {{ emergency_request.ward }}</p>
-            </div>
-        {% endif %}
         
         {% if emergency_request.notes %}
             <div class="mt-3">
@@ -80,6 +64,123 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Request Actions -->
+{% if emergency_request.status == 'open' %}
+<div class="bl-card mb-3">
+    <div class="bl-card-header">
+        <div class="bl-card-header-left">
+            <div class="bl-card-header-icon">
+                <i class="bi bi-gear-fill"></i>
+            </div>
+            <div>
+                <h5 class="bl-card-title">Request Actions</h5>
+            </div>
+        </div>
+    </div>
+    <div class="bl-card-body">
+        <div class="row g-3">
+            
+            <!-- Re-send Alerts -->
+            <div class="col-md-4">
+                <div style="background:var(--bl-amber-light);
+                            border:1px solid var(--bl-amber);
+                            border-radius:12px;padding:16px;">
+                    <h6 style="color:var(--bl-amber);font-weight:700;">
+                        <i class="bi bi-send-fill"></i> Re-Send Alerts
+                    </h6>
+                    <p style="font-size:0.8rem;color:var(--staff-muted);">
+                        Alert count: <strong>{{ emergency_request.alert_count }}</strong>
+                        <br>Send again if no donors responded.
+                    </p>
+                    <form method="post" 
+                          action="{% url 'staff:request_resend' emergency_request.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="btn-bl btn-sm"
+                                data-confirm="Re-send SMS alerts to all matching donors?">
+                            <i class="bi bi-bell-fill"></i> Re-Alert Donors
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Escalate Request -->
+            <div class="col-md-4">
+                <div style="background:var(--bl-red-light);
+                            border:1px solid var(--bl-red);
+                            border-radius:12px;padding:16px;">
+                    <h6 style="color:var(--bl-red);font-weight:700;">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Escalate Request
+                    </h6>
+                    <p style="font-size:0.8rem;color:var(--staff-muted);">
+                        Escalate to higher authorities if no donors responded.
+                    </p>
+                    <form method="post" 
+                          action="{% url 'staff:request_escalate' emergency_request.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="btn-bl btn-sm"
+                                data-confirm="Escalate this request to higher authorities?">
+                            <i class="bi bi-arrow-up"></i> Escalate Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Mark as Fulfilled -->
+            <div class="col-md-4">
+                <div style="background:var(--bl-green-light);
+                            border:1px solid var(--bl-green);
+                            border-radius:12px;padding:16px;">
+                    <h6 style="color:var(--bl-green);font-weight:700;">
+                        <i class="bi bi-check-circle-fill"></i> Mark Fulfilled
+                    </h6>
+                    <p style="font-size:0.8rem;color:var(--staff-muted);">
+                        Enter units received and close request.
+                    </p>
+                    <form method="post" 
+                          action="{% url 'staff:request_fulfill' emergency_request.pk %}">
+                        {% csrf_token %}
+                        <input type="number" name="units_received"
+                               min="0" max="{{ emergency_request.units_needed }}"
+                               value="{{ emergency_request.units_fulfilled }}"
+                               class="bl-input mb-2"
+                               placeholder="Units received"
+                               style="padding:7px;font-size:0.85rem;">
+                        <button type="submit" class="btn-bl-green btn-sm w-100"
+                                data-confirm="Mark this request as fulfilled?">
+                            <i class="bi bi-check-lg"></i> Fulfill Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Close Request -->
+            <div class="col-md-4">
+                <div style="background:var(--bl-grey-light);
+                            border:1px solid #AEB6BF;
+                            border-radius:12px;padding:16px;">
+                    <h6 style="color:var(--bl-grey);font-weight:700;">
+                        <i class="bi bi-x-circle-fill"></i> Close Request
+                    </h6>
+                    <p style="font-size:0.8rem;color:var(--staff-muted);">
+                        Close without fulfillment (cancelled or expired).
+                    </p>
+                    <form method="post" 
+                          action="{% url 'staff:request_close' emergency_request.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-bl-ghost btn-sm w-100"
+                                data-confirm="Close this request? This cannot be undone.">
+                            <i class="bi bi-x-lg"></i> Close Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- SMS Notifications -->
 <div class="card">

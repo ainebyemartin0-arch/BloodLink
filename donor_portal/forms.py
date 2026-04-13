@@ -111,3 +111,73 @@ class DonorChangePasswordForm(forms.Form):
         if password1 and password2 and password1 != password2:
             raise ValidationError("New passwords do not match.")
         return password2
+
+
+class PublicBloodRequestForm(forms.Form):
+    requester_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'bl-input',
+            'placeholder': 'Your full name'
+        })
+    )
+    requester_phone = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'bl-input',
+            'placeholder': '07XXXXXXXX'
+        })
+    )
+    requester_relationship = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'bl-input',
+            'placeholder': 'e.g. Mother, Brother, Self'
+        })
+    )
+    patient_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'bl-input',
+            'placeholder': 'Patient full name'
+        })
+    )
+    blood_type_needed = forms.ChoiceField(
+        choices=[
+            ('', 'Select blood type'),
+            ('A+','A+'),('A-','A-'),('B+','B+'),('B-','B-'),
+            ('AB+','AB+'),('AB-','AB-'),('O+','O+'),('O-','O-'),
+        ],
+        widget=forms.Select(attrs={'class': 'bl-input bl-select'})
+    )
+    units_needed = forms.IntegerField(
+        min_value=1, max_value=10, initial=1,
+        widget=forms.NumberInput(attrs={
+            'class': 'bl-input',
+            'placeholder': '1'
+        })
+    )
+    urgency_level = forms.ChoiceField(
+        choices=[
+            ('critical', 'Critical - Life Threatening'),
+            ('urgent', 'Urgent - Within 2 Hours'),
+            ('normal', 'Normal - Within 24 Hours'),
+        ],
+        widget=forms.Select(attrs={'class': 'bl-input bl-select'})
+    )
+    hospital_ward = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'bl-input',
+            'placeholder': 'e.g. Maternity Ward, ICU (optional)'
+        })
+    )
+    additional_notes = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'bl-input bl-textarea',
+            'placeholder': 'Any additional information...',
+            'rows': 3
+        })
+    )

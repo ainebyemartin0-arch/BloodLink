@@ -16,7 +16,9 @@ urlpatterns = [
     path('donations/', views.donor_donations, name='donations'),
     path('change-password/', views.donor_change_password, name='change_password'),
     path('respond/<int:pk>/', views.respond_to_alert, name='respond_to_alert'),
-    path('sms-opened/<int:pk>/', views.mark_sms_opened, name='mark_sms_opened'),
+    path('sms/opened/<int:pk>/', views.mark_sms_opened, name='mark_sms_opened'),
+    path('request-blood/', views.request_blood, name='request_blood'),
+    path('request-blood/success/<int:pk>/', views.request_blood_success, name='request_blood_success'),
     
     # API endpoints
     path('api/urgent-alerts/', api_views.urgent_alerts, name='api_urgent_alerts'),

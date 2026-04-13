@@ -100,6 +100,47 @@
                 <p><strong>Last Donation:</strong> {{ donor.last_donation_date }}</p>
             {% endif %}
         </div>
+        
+        <!-- Eligibility Information -->
+        <div class="profile-info-item">
+            <span class="profile-info-label">Age</span>
+            <span class="profile-info-value">
+                {% if donor.age %}{{ donor.age }} years{% else %}Not set{% endif %}
+            </span>
+        </div>
+
+        <div class="profile-info-item">
+            <span class="profile-info-label">Eligibility Status</span>
+            <span class="profile-info-value">
+                {% if donor.is_eligible_to_donate %}
+                    <span class="status-pill fulfilled">
+                        <span class="dot"></span>Eligible to Donate
+                    </span>
+                {% else %}
+                    <span class="status-pill closed">
+                        <span class="dot"></span>Not Eligible
+                    </span>
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="profile-info-item">
+            <span class="profile-info-label">Eligibility Reason</span>
+            <span class="profile-info-value" style="font-size:0.82rem;color:var(--staff-muted);">
+                {{ donor.eligibility_reason }}
+            </span>
+        </div>
+
+        {% if donor.days_until_eligible > 0 %}
+        <div class="bl-alert bl-warning" style="margin-top:12px;">
+            <i class="bi bi-clock"></i>
+            <div class="bl-alert-body">
+                This donor can donate again in 
+                <strong>{{ donor.days_until_eligible }} days</strong>
+                ({{ donor.last_donation_date|date:"M d, Y" }} + 90 days)
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 

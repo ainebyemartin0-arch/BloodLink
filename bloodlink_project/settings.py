@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -8,7 +9,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['*', '.pythonanywhere.com', '127.0.0.1', 'localhost', '.onrender.com']
+ALLOWED_HOSTS = os.getenv(
+    'ALLOWED_HOSTS', 
+    'localhost 127.0.0.1'
+).split(' ')
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -60,21 +64,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bloodlink_project.wsgi.application'
 
-# Database configuration for different environments
-if os.getenv('RENDER'):
-    # Render PostgreSQL database
+# Database configuration
+# Supports SQLite (local) and PostgreSQL (Render.com)
+DATABASE_URL = os.getenv('DATABASE_URL', '')
+
+if DATABASE_URL:
+    # Render.com PostgreSQL
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('RENDER_DB_NAME'),
-            'USER': os.getenv('RENDER_DB_USER'),
-            'PASSWORD': os.getenv('RENDER_DB_PASSWORD'),
-            'HOST': os.getenv('RENDER_DB_HOST'),
-            'PORT': os.getenv('RENDER_DB_PORT', '5432'),
-        }
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
 else:
-    # Local development database
+    # Local SQLite development (no setup required)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

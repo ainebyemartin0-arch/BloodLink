@@ -1,0 +1,175 @@
+{% extends 'base_staff_modern.html' %}
+{% load static %}
+
+{% block title %}Public Blood Requests{% endblock %}
+{% block page_title %}Public Blood Requests{% endblock %}
+{% block breadcrumb %}
+    <a href="{% url 'staff:dashboard' %}">Home</a> / Public Requests
+{% endblock %}
+
+{% block topbar_actions %}
+{% if pending_count > 0 %}
+<span class="status-pill open">
+    <span class="dot"></span>
+    {{ pending_count }} Pending Review
+</span>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="bl-card">
+    <div class="bl-card-header">
+        <div class="bl-card-header-left">
+            <div class="bl-card-header-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div>
+                <h5 class="bl-card-title">Public Blood Requests</h5>
+                <span class="bl-card-subtitle">
+                    Submitted by patients and families
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="bl-card-body p-0">
+        <div class="bl-table-wrap">
+            <table class="bl-table">
+                <thead>
+                    <tr>
+                        <th>Ref #</th>
+                        <th>Requester</th>
+                        <th>Patient</th>
+                        <th>Blood Type</th>
+                        <th>Units</th>
+                        <th>Urgency</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pr in public_requests %}
+                    <tr>
+                        <td class="mono" style="font-weight:700;">
+                            BL-{{ pr.pk|stringformat:"04d" }}
+                        </td>
+                        <td>
+                            <span class="donor-cell-name">
+                                {{ pr.requester_name }}
+                            </span>
+                            <span class="donor-cell-email">
+                                {{ pr.requester_phone }} · {{ pr.requester_relationship }}
+                            </span>
+                        </td>
+                        <td>{{ pr.patient_name }}</td>
+                        <td>
+                            <span class="bt-badge" data-type="{{ pr.blood_type_needed }}">
+                                {{ pr.blood_type_needed }}
+                            </span>
+                        </td>
+                        <td class="mono">{{ pr.units_needed }}</td>
+                        <td>
+                            <span class="urgency-pill {{ pr.urgency_level }}">
+                                {{ pr.get_urgency_level_display|truncatechars:15 }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-pill 
+                                {% if pr.status == 'pending' %}pending
+                                {% elif pr.status == 'approved' %}fulfilled
+                                {% else %}closed{% endif %}">
+                                <span class="dot"></span>
+                                {{ pr.get_status_display }}
+                            </span>
+                        </td>
+                        <td style="font-size:0.8rem;color:var(--staff-muted);">
+                            {{ pr.submitted_at|date:"M d, Y H:i" }}
+                        </td>
+                        <td>
+                            {% if pr.status == 'pending' %}
+                            <div style="display:flex;gap:6px;">
+                                <form method="post" 
+                                      action="{% url 'staff:approve_public_request' pr.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn-bl-green btn-sm"
+                                            data-confirm="Approve and send SMS alerts for this blood request?">
+                                        <i class="bi bi-check-lg"></i> Approve
+                                    </button>
+                                </form>
+                                <button type="button" 
+                                        class="btn-bl-ghost btn-sm"
+                                        onclick="showRejectModal({{ pr.pk }})">
+                                    <i class="bi bi-x-lg"></i> Reject
+                                </button>
+                            </div>
+                            {% elif pr.status == 'approved' %}
+                            <a href="{% url 'staff:request_detail' pr.linked_emergency_request.pk %}"
+                               class="btn-bl-outline btn-sm">
+                                View Request
+                            </a>
+                            {% else %}
+                            <span style="font-size:0.78rem;color:var(--staff-muted);">
+                                Rejected
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty-state">
+                                <span class="empty-state-icon">📋</span>
+                                <h5>No public requests yet</h5>
+                                <p>Requests submitted by patients and families will appear here.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade bl-modal" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Blood Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" id="rejectForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="bl-field">
+                        <label class="bl-label">
+                            Rejection Reason <span class="req">*</span>
+                        </label>
+                        <textarea name="rejection_reason" 
+                                  class="bl-input bl-textarea"
+                                  placeholder="Explain why this request is being rejected..."
+                                  rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-bl-ghost" 
+                            data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-bl">Confirm Rejection</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function showRejectModal(pk) {
+    const form = document.getElementById('rejectForm');
+    form.action = `/staff/public-requests/${pk}/reject/`;
+    new bootstrap.Modal(document.getElementById('rejectModal')).show();
+}
+</script>
+{% endblock %}
+{% endblock %}

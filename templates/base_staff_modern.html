@@ -561,6 +561,15 @@
                 <a href="{% url 'staff:donor_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'donor_list' %}active{% endif %}">
                     <i class="bi bi-people-fill"></i> Donors
                 </a>
+                <a href="{% url 'staff:blood_stock' %}" class="sidebar-link">
+                    <i class="bi bi-droplet-fill"></i> Blood Stock
+                </a>
+                <a href="{% url 'staff:public_requests_list' %}" class="sidebar-link">
+                    <i class="bi bi-clipboard2-pulse-fill"></i> Public Requests
+                    {% if pending_public_requests > 0 %}
+                    <span class="sidebar-badge">{{ pending_public_requests }}</span>
+                    {% endif %}
+                </a>
                 <a href="{% url 'staff:request_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'request_list' %}active{% endif %}">
                     <i class="bi bi-exclamation-triangle-fill"></i> Emergency Requests
                 </a>
@@ -570,6 +579,11 @@
                 <a href="{% url 'staff:reports' %}" class="sidebar-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
                     <i class="bi bi-bar-chart-fill"></i> Reports
                 </a>
+                {% if user.is_superuser %}
+                <a href="{% url 'staff:activity_log' %}" class="sidebar-link {% if request.resolver_match.url_name == 'activity_log' %}active{% endif %}">
+                    <i class="bi bi-journal-text"></i> Activity Log
+                </a>
+                {% endif %}
                 
                 {% if user.is_superuser %}
                 <span class="sidebar-nav-label" style="margin-top: var(--space-lg);">Admin</span>

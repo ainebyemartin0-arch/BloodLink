@@ -1,18 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count, Q, Avg, Sum
-from django.utils import timezone
-from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from accounts.models import StaffUser
+from django.utils import timezone
+from django.urls import reverse
+from django.http import JsonResponse, HttpResponse
+from django.db.models import Q, Count, Sum, F, Avg
+from django.core.paginator import Paginator
+from django.views.decorators.http import require_POST
+from django.db import transaction
+
 from donors.models import Donor
-from donors.choices import BLOOD_TYPE_CHOICES, LOCATION_CHOICES
+from donors.choices import BLOOD_TYPE_CHOICES
+from .models import EmergencyRequest, DonationRecord, BloodStock, PublicBloodRequest
 from notifications.models import SMSNotification
+from .utils import log_activity
 
 # Import from whichever app actually has these models:
-from staff_portal.models import EmergencyRequest, DonationRecord, BloodShortageAlert
+from staff_portal.models import EmergencyRequest, DonationRecord, BloodShortageAlert, BloodStock
 from .forms import StaffLoginForm, StaffRegistrationForm, DonorForm, EmergencyRequestForm, DonationRecordForm
 from notifications.utils import send_emergency_sms
 
@@ -31,6 +36,10 @@ def staff_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                
+                # Log the activity
+                log_activity(request, 'login', f'Staff login: {username}')
+                
                 return redirect('staff:dashboard')
             else:
                 messages.error(request, 'Invalid username or password')
@@ -89,6 +98,14 @@ def dashboard(request):
     critical_alerts = active_alerts.filter(alert_level='critical')
     low_alerts = active_alerts.filter(alert_level='low')
     
+    # Public Requests - NEW
+    pending_public_requests = PublicBloodRequest.objects.filter(status='pending').count()
+    
+    # Blood Stock Alerts - NEW
+    critical_stocks = BloodStock.objects.filter(
+        units_available__lte=F('minimum_threshold')
+    )
+    
     context = {
         # Donor Stats
         'total_donors': total_donors,
@@ -122,12 +139,16 @@ def dashboard(request):
         'recent_requests': recent_requests,
         'recent_donors': recent_donors,
         'blood_type_stats': blood_type_stats,
+        'critical_stocks': critical_stocks,
         
         # Blood Shortage Alerts
         'active_alerts': active_alerts,
         'emergency_alerts': emergency_alerts,
         'critical_alerts': critical_alerts,
         'low_alerts': low_alerts,
+        
+        # Public Requests
+        'pending_public_requests': pending_public_requests,
     }
     return render(request, 'staff_portal/dashboard.html', context)
 
@@ -197,6 +218,13 @@ def donor_add(request):
                 messages.success(request, f"Donor {donor.full_name} registered. Password set to their phone number: {password}")
             else:
                 messages.success(request, f"Donor {donor.full_name} registered with custom password.")
+            
+            # Log the activity
+            log_activity(
+                request, 'donor_added',
+                f'Added donor: {donor.full_name} ({donor.blood_type})',
+                donor_id=donor.pk
+            )
             
             return redirect('staff:donor_list')
     else:
@@ -530,6 +558,442 @@ def check_request_fulfillment(emergency_request):
         
         # You could send a notification here that request is fulfilled
         print(f"Emergency Request #{emergency_request.pk} has been fulfilled with {total_donated} units donated.")
+
+@login_required
+def blood_stock(request):
+    """View and manage blood stock levels."""
+    stocks = BloodStock.objects.all().order_by('blood_type')
+    
+    # Auto-create missing stock records
+    existing_types = stocks.values_list('blood_type', flat=True)
+    blood_types = ['A+','A-','B+','B-','AB+','AB-','O+','O-']
+    for bt in blood_types:
+        if bt not in existing_types:
+            BloodStock.objects.create(
+                blood_type=bt,
+                units_available=0,
+                minimum_threshold=3
+            )
+    stocks = BloodStock.objects.all().order_by('blood_type')
+    
+    critical_stocks = stocks.filter(
+        units_available__lte=models.F('minimum_threshold')
+    )
+    
+    context = {
+        'stocks': stocks,
+        'critical_count': critical_stocks.count(),
+        'total_units': sum(s.units_available for s in stocks),
+        'empty_types': stocks.filter(units_available=0).count(),
+    }
+    return render(request, 'staff_portal/blood_stock.html', context)
+
+
+@login_required
+def update_blood_stock(request, pk):
+    """Update units for a specific blood type."""
+    if request.method == 'POST':
+        stock = get_object_or_404(BloodStock, pk=pk)
+        try:
+            new_units = int(request.POST.get('units_available', 0))
+            new_threshold = int(request.POST.get('minimum_threshold', 3))
+            notes = request.POST.get('notes', '')
+            
+            stock.units_available = max(0, new_units)
+            stock.minimum_threshold = max(1, new_threshold)
+            stock.notes = notes
+            stock.updated_by = request.user
+            stock.save()
+            
+            # Auto-create emergency request if stock is critical
+            if stock.is_critical and stock.units_available > 0:
+                messages.warning(
+                    request,
+                    f'⚠️ {stock.blood_type} stock is critically low '
+                    f'({stock.units_available} units). '
+                    f'Consider sending an emergency alert.'
+                )
+            elif stock.units_available == 0:
+                messages.error(
+                    request,
+                    f'🚨 {stock.blood_type} stock is EMPTY! '
+                    f'Please create an emergency request immediately.'
+                )
+            else:
+                messages.success(
+                    request,
+                    f'✅ {stock.blood_type} stock updated to '
+                    f'{stock.units_available} units.'
+                )
+        except (ValueError, TypeError):
+            messages.error(request, 'Invalid value entered.')
+    
+    return redirect('staff:blood_stock')
+
+
+@login_required
+def dashboard_stats_api(request):
+    """
+    Returns live dashboard stats as JSON.
+    Called every 60 seconds by JavaScript to update stats
+    without page reload.
+    """
+    from notifications.models import SMSNotification
+    
+    stats = {
+        'total_donors': Donor.objects.count(),
+        'available_donors': Donor.objects.filter(
+            is_available=True, is_active=True
+        ).count(),
+        'total_requests': EmergencyRequest.objects.count(),
+        'open_requests': EmergencyRequest.objects.filter(
+            status='open'
+        ).count(),
+        'total_sms': SMSNotification.objects.count(),
+        'confirmed_responses': SMSNotification.objects.filter(
+            donor_response='confirmed'
+        ).count(),
+        'critical_stocks': BloodStock.objects.filter(
+            units_available__lte=models.F('minimum_threshold')
+        ).count(),
+    }
+    return JsonResponse(stats)
+
+
+@login_required
+def request_resend_alerts(request, pk):
+    """
+    Re-send SMS alerts for an existing open emergency request.
+    Used when no donors have responded after initial alert.
+    """
+    if request.method == 'POST':
+        emergency_request = get_object_or_404(
+            EmergencyRequest, pk=pk, status='open'
+        )
+        
+        from notifications.utils import send_emergency_sms
+        from django.utils import timezone
+        
+        result = send_emergency_sms(emergency_request)
+        
+        emergency_request.alert_count += 1
+        emergency_request.last_alert_sent = timezone.now()
+        emergency_request.save(update_fields=[
+            'alert_count', 'last_alert_sent'
+        ])
+        
+        messages.success(
+            request,
+            f'🔔 Re-alert #{emergency_request.alert_count} sent to '
+            f'{result.get("sent_count", 0)} donors for '
+            f'{emergency_request.blood_type_needed} blood.'
+        )
+    
+    return redirect('staff:request_detail', pk=pk)
+
+
+@login_required
+def request_fulfill(request, pk):
+    """Mark a request as fulfilled and update units count."""
+    if request.method == 'POST':
+        emergency_request = get_object_or_404(EmergencyRequest, pk=pk)
+        units_received = int(request.POST.get('units_received', 0))
+        
+        emergency_request.units_fulfilled = units_received
+        emergency_request.status = 'fulfilled'
+        
+        from django.utils import timezone
+        emergency_request.fulfilled_at = timezone.now()
+        emergency_request.save()
+        
+        # Update blood stock if BloodStock record exists
+        try:
+            stock = BloodStock.objects.get(
+                blood_type=emergency_request.blood_type_needed
+            )
+            stock.units_available += units_received
+            stock.updated_by = request.user
+            stock.save()
+            messages.success(
+                request,
+                f'✅ Request fulfilled! {units_received} units of '
+                f'{emergency_request.blood_type_needed} received. '
+                f'Blood stock updated automatically.'
+            )
+        except BloodStock.DoesNotExist:
+            messages.success(
+                request,
+                f'✅ Request marked as fulfilled with '
+                f'{units_received} units received.'
+            )
+    
+    return redirect('staff:request_detail', pk=pk)
+
+
+@login_required
+def export_reports_pdf(request):
+    """
+    Generate PDF report of all system data.
+    Includes donors, requests, SMS stats, and blood stock.
+    """
+    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib import colors
+    from reportlab.pdfgen import canvas
+    from io import BytesIO
+    from datetime import datetime
+    
+    # Create PDF buffer
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+    
+    # Custom styles
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        spaceAfter=30,
+        alignment=1,  # Center
+        textColor=colors.HexColor('#2C3E50')
+    )
+    
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=16,
+        spaceAfter=12,
+        textColor=colors.HexColor('#34495E')
+    )
+    
+    # Title
+    story.append(Paragraph("BloodLink System Report", title_style))
+    story.append(Paragraph(f"Generated on: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}", styles['Normal']))
+    story.append(Spacer(1, 20))
+    
+    # Donor Statistics
+    story.append(Paragraph("Donor Statistics", heading_style))
+    donor_data = [
+        ['Metric', 'Count'],
+        ['Total Donors', str(Donor.objects.count())],
+        ['Available Donors', str(Donor.objects.filter(is_available=True, is_active=True).count())],
+        ['Active Donors', str(Donor.objects.filter(is_active=True).count())],
+    ]
+    donor_table = Table(donor_data, hAlign='LEFT')
+    donor_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3498DB')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#ECF0F1')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#BDC3C7'))
+    ]))
+    story.append(donor_table)
+    story.append(Spacer(1, 20))
+    
+    # Emergency Request Statistics
+    story.append(Paragraph("Emergency Request Statistics", heading_style))
+    request_data = [
+        ['Metric', 'Count'],
+        ['Total Requests', str(EmergencyRequest.objects.count())],
+        ['Open Requests', str(EmergencyRequest.objects.filter(status='open').count())],
+        ['Fulfilled Requests', str(EmergencyRequest.objects.filter(status='fulfilled').count())],
+        ['Critical Requests', str(EmergencyRequest.objects.filter(status='open', urgency_level='critical').count())],
+    ]
+    request_table = Table(request_data, hAlign='LEFT')
+    request_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E74C3C')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#FADBD8')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#E5B9B7'))
+    ]))
+    story.append(request_table)
+    story.append(Spacer(1, 20))
+    
+    # SMS Statistics
+    story.append(Paragraph("SMS Notification Statistics", heading_style))
+    from notifications.models import SMSNotification
+    sms_data = [
+        ['Metric', 'Count'],
+        ['Total SMS Sent', str(SMSNotification.objects.count())],
+        ['Delivered SMS', str(SMSNotification.objects.filter(delivery_status='delivered').count())],
+        ['Failed SMS', str(SMSNotification.objects.filter(delivery_status='failed').count())],
+        ['Confirmed Responses', str(SMSNotification.objects.filter(donor_response='confirmed').count())],
+        ['Declined Responses', str(SMSNotification.objects.filter(donor_response='declined').count())],
+    ]
+    sms_table = Table(sms_data, hAlign='LEFT')
+    sms_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#27AE60')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#D5F5E3')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#A9DFBF'))
+    ]))
+    story.append(sms_table)
+    story.append(Spacer(1, 20))
+    
+    # Blood Stock Statistics
+    story.append(Paragraph("Blood Stock Levels", heading_style))
+    stock_data = [['Blood Type', 'Units Available', 'Status', 'Critical Threshold']]
+    for stock in BloodStock.objects.all().order_by('blood_type'):
+        stock_data.append([
+            stock.blood_type,
+            str(stock.units_available),
+            stock.stock_status.title(),
+            f"{stock.minimum_threshold} units"
+        ])
+    stock_table = Table(stock_data, hAlign='LEFT')
+    stock_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#8E44AD')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#EBDEF0')),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#D7BDE2'))
+    ]))
+    story.append(stock_table)
+    
+    # Build PDF
+    doc.build(story)
+    
+    # Get PDF value
+    pdf_value = buffer.getvalue()
+    buffer.close()
+    
+    # Create response
+    response = HttpResponse(pdf_value, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="bloodlink_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf"'
+    return response
+
+
+@login_required
+def public_requests_list(request):
+    """Staff view of all public blood requests."""
+    requests_list = PublicBloodRequest.objects.all()
+    pending_count = requests_list.filter(status='pending').count()
+    
+    context = {
+        'public_requests': requests_list,
+        'pending_count': pending_count,
+    }
+    return render(request, 'staff_portal/public_requests.html', context)
+
+
+@login_required
+def approve_public_request(request, pk):
+    """
+    Approve a public blood request and automatically
+    create an EmergencyRequest + send SMS alerts.
+    """
+    if request.method == 'POST':
+        from django.utils import timezone
+        public_req = get_object_or_404(PublicBloodRequest, pk=pk)
+        
+        # Create emergency request
+        emergency = EmergencyRequest.objects.create(
+            blood_type_needed=public_req.blood_type_needed,
+            units_needed=public_req.units_needed,
+            patient_name=public_req.patient_name,
+            ward=public_req.hospital_ward,
+            urgency_level=public_req.urgency_level,
+            notes=(f"Public request by {public_req.requester_name} "
+                   f"({public_req.requester_relationship}). "
+                   f"{public_req.additional_notes}"),
+            created_by=request.user,
+            status='open',
+        )
+        
+        # Send SMS alerts
+        from notifications.utils import send_emergency_sms
+        result = send_emergency_sms(emergency)
+        
+        # Update public request status
+        public_req.status = 'approved'
+        public_req.reviewed_by = request.user
+        public_req.reviewed_at = timezone.now()
+        public_req.linked_emergency_request = emergency
+        public_req.save()
+        
+        # Log activities
+        log_activity(
+            request, 'public_approved',
+            f'Approved public blood request from {public_req.requester_name} '
+            f'for {public_req.blood_type_needed} blood',
+            request_id=emergency.pk
+        )
+        log_activity(
+            request, 'request_created',
+            f'Created emergency request for {emergency.blood_type_needed} '
+            f'blood — {emergency.units_needed} units — '
+            f'{emergency.urgency_level}',
+            request_id=emergency.pk
+        )
+        
+        messages.success(
+            request,
+            f'✅ Request approved! Emergency Request #{emergency.pk} created. '
+            f'SMS alerts sent to {result.get("sent_count", 0)} donors.'
+        )
+        return redirect('staff:request_detail', pk=emergency.pk)
+    
+    return redirect('staff:public_requests_list')
+
+
+@login_required
+def reject_public_request(request, pk):
+    """Reject a public blood request with reason."""
+    if request.method == 'POST':
+        from django.utils import timezone
+        public_req = get_object_or_404(PublicBloodRequest, pk=pk)
+        reason = request.POST.get('rejection_reason', 'No reason provided')
+        
+        public_req.status = 'rejected'
+        public_req.reviewed_by = request.user
+        public_req.reviewed_at = timezone.now()
+        public_req.rejection_reason = reason
+        public_req.save()
+        
+        # Log activity
+        log_activity(
+            request, 'public_rejected',
+            f'Rejected public blood request from {public_req.requester_name} '
+            f'for {public_req.blood_type_needed} blood',
+            request_id=public_req.pk
+        )
+        
+        messages.warning(
+            request,
+            f'Request from {public_req.requester_name} has been rejected.'
+        )
+    return redirect('staff:public_requests_list')
+
+
+@login_required
+def activity_log(request):
+    """View staff activity log — superuser only."""
+    if not request.user.is_superuser:
+        messages.error(request, 'Access denied. Superuser only.')
+        return redirect('staff:dashboard')
+    
+    logs = ActivityLog.objects.select_related('staff_user').all()[:200]
+    return render(request, 'staff_portal/activity_log.html', {
+        'logs': logs
+    })
+
 
 @login_required
 def donation_detail(request, pk):

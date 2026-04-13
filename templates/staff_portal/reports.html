@@ -13,9 +13,9 @@
         <button type="button" class="btn btn-outline-primary" onclick="window.print()">
             <i class="bi bi-printer"></i> Print Report
         </button>
-        <button type="button" class="btn btn-outline-success" onclick="downloadReport('pdf')">
+        <a href="{% url 'staff:export_reports_pdf' %}" class="btn btn-outline-success">
             <i class="bi bi-file-earmark-pdf"></i> Download PDF
-        </button>
+        </a>
         <button type="button" class="btn btn-outline-info" onclick="downloadReport('excel')">
             <i class="bi bi-file-earmark-excel"></i> Download Excel
         </button>

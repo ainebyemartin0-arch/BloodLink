@@ -33,6 +33,56 @@
         </div>
     </div>
 
+    <!-- Eligibility Status Card -->
+    <div class="bl-card mt-3">
+        <div class="bl-card-header">
+            <div class="bl-card-header-left">
+                <div class="bl-card-header-icon">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+                <div>
+                    <h5 class="bl-card-title">My Donation Eligibility</h5>
+                </div>
+            </div>
+        </div>
+        <div class="bl-card-body">
+            {% if donor.is_eligible_to_donate %}
+                <div class="bl-alert bl-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <div class="bl-alert-body">
+                        <span class="bl-alert-title">You are eligible to donate!</span>
+                        <span>Your blood type {{ donor.blood_type }} is needed. 
+                        Visit St. Francis Hospital Nsambya blood bank anytime.</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="bl-alert bl-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div class="bl-alert-body">
+                        <span class="bl-alert-title">Not eligible right now</span>
+                        <span>{{ donor.eligibility_reason }}</span>
+                    </div>
+                </div>
+            {% if donor.days_until_eligible > 0 %}
+            <div style="margin-top:12px;">
+                <div style="background:var(--staff-bg);border-radius:8px;
+                            padding:12px;text-align:center;">
+                    <span style="font-family:'JetBrains Mono',monospace;
+                                 font-size:2rem;color:var(--bl-red);
+                                 font-weight:700;">
+                        {{ donor.days_until_eligible }}
+                    </span>
+                    <span style="display:block;font-size:0.78rem;
+                                 color:var(--staff-muted);">
+                        days until you can donate again
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
     <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
@@ -235,7 +285,74 @@
         </div>
     </div>
 
-    <!-- Motivational Message -->
+    <!-- Achievement Badges -->
+<div class="bl-card mt-3" style="background:white;border-radius:12px;
+     box-shadow:var(--shadow-sm);border:1px solid var(--staff-border);">
+    <div style="padding:18px 24px;border-bottom:1px solid var(--staff-border);
+                display:flex;align-items:center;gap:12px;">
+        <div style="width:34px;height:34px;background:var(--bl-red-light);
+                    border-radius:8px;display:flex;align-items:center;
+                    justify-content:center;color:var(--bl-red);">
+            <i class="bi bi-award-fill"></i>
+        </div>
+        <h5 style="font-family:'Playfair Display',serif;font-size:1rem;margin:0;">
+            My Achievements
+        </h5>
+    </div>
+    <div style="padding:20px 24px;">
+        {% if donor.badges %}
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+            {% for badge in donor.badges %}
+            <div style="background:white;border:2px solid {{ badge.color }};
+                        border-radius:12px;padding:14px 16px;
+                        text-align:center;min-width:110px;
+                        transition:transform 0.2s ease;">
+                <div style="font-size:2rem;margin-bottom:6px;">
+                    {{ badge.icon }}
+                </div>
+                <div style="font-weight:700;font-size:0.8rem;
+                            color:{{ badge.color }};">
+                    {{ badge.name }}
+                </div>
+                <div style="font-size:0.68rem;color:var(--staff-muted);
+                            margin-top:2px;">
+                    {{ badge.description }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:20px;color:var(--staff-muted);">
+            <span style="font-size:2.5rem;opacity:0.4;display:block;">🏅</span>
+            <p style="font-size:0.85rem;margin-top:8px;">
+                Make your first donation to earn badges!
+            </p>
+        </div>
+        {% endif %}
+        
+        {% if donor.next_badge %}
+        <div style="background:var(--staff-bg);border-radius:10px;padding:14px;">
+            <div style="font-size:0.75rem;color:var(--staff-muted);
+                        font-weight:600;text-transform:uppercase;
+                        letter-spacing:0.8px;margin-bottom:8px;">
+                Next Badge: {{ donor.next_badge.name }}
+            </div>
+            <div style="background:var(--staff-border);border-radius:4px;
+                        height:8px;overflow:hidden;">
+                <div style="background:var(--bl-red);height:100%;
+                            border-radius:4px;transition:width 0.5s ease;
+                            width:{% widthratio donor.next_badge.current donor.next_badge.needed 100 %}%;">
+                </div>
+            </div>
+            <div style="font-size:0.72rem;color:var(--staff-muted);margin-top:4px;">
+                {{ donor.next_badge.current }} / {{ donor.next_badge.needed }} donations
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Motivational Message -->
     <div class="row">
         <div class="col-12">
             <div class="card bg-success text-white">

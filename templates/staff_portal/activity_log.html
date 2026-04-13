@@ -1,0 +1,78 @@
+{% extends 'base_staff_modern.html' %}
+{% load static %}
+
+{% block title %}Activity Log{% endblock %}
+{% block page_title %}Staff Activity Log{% endblock %}
+
+{% block content %}
+<div class="bl-card">
+    <div class="bl-card-header">
+        <div class="bl-card-header-left">
+            <div class="bl-card-header-icon">
+                <i class="bi bi-journal-text"></i>
+            </div>
+            <div>
+                <h5 class="bl-card-title">Activity Log</h5>
+                <span class="bl-card-subtitle">Last 200 actions by staff</span>
+            </div>
+        </div>
+    </div>
+    <div class="bl-card-body p-0">
+        <div class="bl-table-wrap">
+            <table class="bl-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Staff Member</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td style="font-size:0.78rem;color:var(--staff-muted);
+                                   white-space:nowrap;">
+                            {{ log.timestamp|date:"M d, Y" }}<br>
+                            <span class="mono">{{ log.timestamp|date:"H:i:s" }}</span>
+                        </td>
+                        <td>
+                            <span style="font-weight:600;">
+                                {{ log.staff_user.get_full_name|default:"Unknown" }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-pill 
+                                {% if 'added' in log.action or 'approved' in log.action or 'login' in log.action %}fulfilled
+                                {% elif 'deleted' in log.action or 'rejected' in log.action %}closed
+                                {% elif 'created' in log.action or 'resent' in log.action %}open
+                                {% else %}pending{% endif %}">
+                                <span class="dot"></span>
+                                {{ log.get_action_display }}
+                            </span>
+                        </td>
+                        <td style="font-size:0.85rem;">
+                            {{ log.description }}
+                        </td>
+                        <td style="font-size:0.78rem;color:var(--staff-muted);">
+                            {{ log.ip_address|default:"—" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <span class="empty-state-icon">📋</span>
+                                <h5>No activity recorded yet</h5>
+                                <p>Actions will appear here as staff use the system.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

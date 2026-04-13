@@ -22,7 +22,24 @@ urlpatterns = [
     path('requests/<int:pk>/', views.request_detail, name='request_detail'),
     path('requests/<int:pk>/close/', views.request_close, name='request_close'),
     path('requests/<int:pk>/delete/', views.request_delete, name='request_delete'),
+    path('requests/<int:pk>/resend/', 
+     views.request_resend_alerts, name='request_resend'),
+    path('requests/<int:pk>/fulfill/', 
+     views.request_fulfill, name='request_fulfill'),
     path('reports/', views.reports, name='reports'),
+    path('reports/export/pdf/', views.export_reports_pdf, name='export_reports_pdf'),
+    path('public-requests/', 
+     views.public_requests_list, name='public_requests_list'),
+    path('public-requests/<int:pk>/approve/', 
+     views.approve_public_request, name='approve_public_request'),
+    path('public-requests/<int:pk>/reject/', 
+     views.reject_public_request, name='reject_public_request'),
+    path('activity-log/', views.activity_log, name='activity_log'),
+    
+    # Blood stock management
+    path('blood-stock/', views.blood_stock, name='blood_stock'),
+    path('blood-stock/<int:pk>/update/', 
+     views.update_blood_stock, name='update_blood_stock'),
     
     # Donation management
     path('donations/', views.donation_list, name='donation_list'),
@@ -31,6 +48,11 @@ urlpatterns = [
     
     # API endpoints for blood shortage
     path('api/check-shortage/', views.check_shortage_api, name='api_check_shortage'),
+    
+    # API endpoints for dashboard stats
+    path('api/dashboard-stats/', 
+     views.dashboard_stats_api, 
+     name='dashboard_stats_api'),
     
     # API endpoints for notifications
     path('api/notifications/check/', api_views.check_notifications, name='api_check_notifications'),
