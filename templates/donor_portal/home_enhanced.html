@@ -1,0 +1,503 @@
+{% extends 'donor_portal/base_donor_material.html' %}
+{% load static %}
+
+{% block title %}BloodLink - Save Lives at St. Francis Hospital{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+    color: white;
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('{% static "images/blood-cells-hero.jpg" %}') center/cover;
+    opacity: 0.1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.hero-buttons {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stats-section {
+    padding: 4rem 0;
+    background: #f8fafc;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #dc2626;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.125rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.features-section {
+    padding: 4rem 0;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.feature-description {
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.cta-section {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.cta-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.blood-types {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.blood-type {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.125rem;
+    transition: all 0.3s ease;
+}
+
+.blood-type:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.1);
+}
+
+.testimonial-section {
+    padding: 4rem 0;
+    background: #f8fafc;
+}
+
+.testimonial-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    height: 100%;
+}
+
+.testimonial-text {
+    font-style: italic;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+}
+
+.author-info {
+    text-align: left;
+}
+
+.author-name {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.author-role {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.emergency-banner {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.emergency-banner h4 {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.125rem;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+    }
+    
+    .cta-title {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">Save Lives Today</h1>
+                    <p class="hero-subtitle">Join BloodLink at St. Francis Hospital and become a hero in your community. Your blood donation can save up to 3 lives.</p>
+                    <div class="hero-buttons">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'donor:dashboard' %}" class="btn md-btn md-btn-primary btn-lg me-3">
+                                <span class="material-icons">dashboard</span>
+                                Go to Dashboard
+                            </a>
+                            <a href="{% url 'donor:request_blood' %}" class="btn md-btn md-btn-secondary btn-lg">
+                                <span class="material-icons">bloodtype</span>
+                                Request Blood
+                            </a>
+                        {% else %}
+                            <a href="{% url 'donor:register' %}" class="btn md-btn md-btn-primary btn-lg me-3">
+                                <span class="material-icons">person_add</span>
+                                Become a Donor
+                            </a>
+                            <a href="{% url 'donor:login' %}" class="btn md-btn md-btn-secondary btn-lg">
+                                <span class="material-icons">login</span>
+                                Sign In
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="blood-types">
+                        <div class="blood-type">A+</div>
+                        <div class="blood-type">A-</div>
+                        <div class="blood-type">B+</div>
+                        <div class="blood-type">B-</div>
+                        <div class="blood-type">O+</div>
+                        <div class="blood-type">O-</div>
+                        <div class="blood-type">AB+</div>
+                        <div class="blood-type">AB-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">10,000+</div>
+                    <div class="stat-label">Active Donors</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">50,000+</div>
+                    <div class="stat-label">Lives Saved</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Emergency Service</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Minutes Average</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4 fw-bold mb-3">Why Choose BloodLink?</h2>
+            <p class="lead text-muted">We make blood donation simple, safe, and rewarding</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">notifications_active</span>
+                    </div>
+                    <h3 class="feature-title">Emergency Alerts</h3>
+                    <p class="feature-description">Get instant notifications when your blood type is urgently needed. Save lives when it matters most.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">redeem</span>
+                    </div>
+                    <h3 class="feature-title">Rewards Program</h3>
+                    <p class="feature-description">Earn points for each donation and redeem exciting rewards. Your generosity deserves recognition.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">health_and_safety</span>
+                    </div>
+                    <h3 class="feature-title">Health Monitoring</h3>
+                    <p class="feature-description">Track your donation history and health impact over time. Stay informed about your contribution.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">schedule</span>
+                    </div>
+                    <h3 class="feature-title">Flexible Scheduling</h3>
+                    <p class="feature-description">Choose donation times that work for you. Our system adapts to your schedule and availability.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">security</span>
+                    </div>
+                    <h3 class="feature-title">Safe & Sterile</h3>
+                    <p class="feature-description">All donations follow strict medical protocols. Your safety is our top priority.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span class="material-icons">support_agent</span>
+                    </div>
+                    <h3 class="feature-title">24/7 Support</h3>
+                    <p class="feature-description">Our team is always here to help. Get assistance whenever you need it.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonial-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4 fw-bold mb-3">Hero Stories</h2>
+            <p class="lead text-muted">Real stories from our amazing donors</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"BloodLink made it so easy for me to donate. The emergency alerts helped me save a life during a critical time. I feel proud to be part of this community."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JD</div>
+                        <div class="author-info">
+                            <div class="author-name">John Doe</div>
+                            <div class="author-role">O+ Donor, 2 years</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The rewards program is fantastic! I've earned enough points for a free health check-up. It's great to be recognized for helping others."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SM</div>
+                        <div class="author-info">
+                            <div class="author-name">Sarah Miller</div>
+                            <div class="author-role">A- Donor, 1 year</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"As a first-time donor, I was nervous. The BloodLink team made me feel comfortable and explained everything. It was a wonderful experience!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MJ</div>
+                        <div class="author-info">
+                            <div class="author-name">Michael Johnson</div>
+                            <div class="author-role">B+ Donor, 6 months</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Ready to Save Lives?</h2>
+        <p class="cta-subtitle">Join thousands of heroes in our community. Your donation can make the difference between life and death.</p>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'donor:dashboard' %}" class="btn md-btn md-btn-primary btn-lg me-3">
+                <span class="material-icons">dashboard</span>
+                Go to Dashboard
+            </a>
+            <a href="{% url 'donor:request_blood' %}" class="btn md-btn md-btn-secondary btn-lg">
+                <span class="material-icons">bloodtype</span>
+                Request Blood
+            </a>
+        {% else %}
+            <a href="{% url 'donor:register' %}" class="btn md-btn md-btn-primary btn-lg me-3">
+                <span class="material-icons">person_add</span>
+                Become a Donor
+            </a>
+            <a href="{% url 'donor:login' %}" class="btn md-btn md-btn-secondary btn-lg">
+                <span class="material-icons">login</span>
+                Sign In
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

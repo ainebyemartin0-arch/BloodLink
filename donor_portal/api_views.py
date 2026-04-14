@@ -71,3 +71,29 @@ def notification_stats(request):
     }
     
     return JsonResponse(stats)
+
+@require_http_methods(["POST"])
+def toggle_availability(request):
+    """Toggle donor availability status"""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return JsonResponse({'error': 'Not logged in'}, status=401)
+    
+    try:
+        import json
+        data = json.loads(request.body)
+        available = data.get('available', False)
+        
+        donor.is_available = available
+        donor.save()
+        
+        return JsonResponse({
+            'success': True,
+            'available': donor.is_available,
+            'message': 'Availability updated successfully'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

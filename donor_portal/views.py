@@ -44,7 +44,7 @@ def donor_home(request):
         'available_donors': available_donors,
         'blood_types': BLOOD_TYPE_CHOICES,
     }
-    return render(request, 'donor_portal/home.html', context)
+    return render(request, 'donor_portal/home_enhanced.html', context)
 
 def test_page(request):
     """Simple test page to debug issues"""
@@ -115,7 +115,7 @@ def donor_login(request):
     else:
         form = DonorLoginForm()
     
-    return render(request, 'donor_portal/login.html', {'form': form})
+    return render(request, 'donor_portal/login_enhanced.html', {'form': form})
 
 def donor_logout(request):
     donor_id = request.session.pop('donor_id', None)
@@ -136,11 +136,30 @@ def donor_dashboard(request):
     donation_count = donor.donation_records.count()
     recent_donations = donor.donation_records.order_by('-donation_date')[:3]
     
+    # Check for urgent requests
+    urgent_requests = PublicBloodRequest.objects.filter(
+        blood_type_needed=donor.blood_type,
+        status='pending'
+    ).order_by('-created_at')[:3]
+    
+    # Calculate stats
+    total_donations = donor.donation_records.count()
+    lives_saved = total_donations * 3  # Each donation saves up to 3 lives
+    points = donor.points or 0
+    
+    # Calculate days until next donation (56 days between donations)
+    from django.utils import timezone
+    last_donation = donor.donation_records.order_by('-donation_date').first()
+    if last_donation:
+        days_since_last = (timezone.now().date() - last_donation.donation_date).days
+        days_until_next = max(0, 56 - days_since_last)
+    else:
+        days_until_next = 0
+    
     # Check for unread alerts (no response and not fulfilled) and mark as viewed
     unread_alerts = donor.sms_notifications.filter(donor_response='no_response', is_fulfilled=False).order_by('-sent_at')
     
     # Mark alerts as viewed when donor accesses dashboard
-    from django.utils import timezone
     donor.sms_notifications.filter(last_viewed_at__isnull=True).update(
         last_viewed_at=timezone.now(),
         view_count=F('view_count') + 1
@@ -156,13 +175,37 @@ def donor_dashboard(request):
         'donation_count': donation_count,
         'recent_donations': recent_donations,
         'unread_alerts': unread_alerts,
+        'urgent_requests': urgent_requests,
+        'total_donations': total_donations,
+        'lives_saved': lives_saved,
+        'points': points,
+        'days_until_next': days_until_next,
     }
-    return render(request, 'donor_portal/dashboard.html', context)
+    return render(request, 'donor_portal/dashboard_enhanced.html', context)
 
 @donor_login_required
 def donor_profile(request):
     donor = get_logged_in_donor(request)
-    return render(request, 'donor_portal/profile.html', {'donor': donor})
+    
+    # Get recent donations
+    recent_donations = donor.donation_records.order_by('-donation_date')[:5]
+    
+    # Calculate stats
+    total_donations = donor.donation_records.count()
+    lives_saved = total_donations * 3  # Each donation saves up to 3 lives
+    
+    # Get recent requests
+    from django.utils import timezone
+    recent_requests = donor.sms_notifications.select_related('emergency_request').order_by('-sent_at')[:3]
+    
+    context = {
+        'donor': donor,
+        'recent_donations': recent_donations,
+        'total_donations': total_donations,
+        'lives_saved': lives_saved,
+        'recent_requests': recent_requests,
+    }
+    return render(request, 'donor_portal/profile_enhanced.html', context)
 
 @donor_login_required
 def donor_profile_edit(request):

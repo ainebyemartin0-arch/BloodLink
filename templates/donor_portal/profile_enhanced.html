@@ -1,0 +1,641 @@
+{% extends 'donor_portal/base_donor_material.html' %}
+{% load static %}
+
+{% block title %}My Profile - BloodLink{% endblock %}
+
+{% block extra_css %}
+<style>
+.profile-header {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('{% static "images/blood-cells-hero.jpg" %}') center/cover;
+    opacity: 0.1;
+}
+
+.profile-content {
+    position: relative;
+    z-index: 1;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.2);
+    border: 4px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 3rem;
+    color: white;
+}
+
+.profile-info {
+    text-align: center;
+}
+
+.profile-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.profile-blood-type {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+.profile-stat {
+    text-align: center;
+}
+
+.profile-stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+}
+
+.profile-stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.profile-section {
+    padding: 3rem 0;
+}
+
+.section-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.info-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(220, 38, 38, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dc2626;
+    flex-shrink: 0;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    color: #6b7280;
+}
+
+.donation-history {
+    margin-top: 1.5rem;
+}
+
+.donation-item {
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.donation-item:hover {
+    background: #e5e7eb;
+    transform: translateX(5px);
+}
+
+.donation-date {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.donation-details {
+    text-align: right;
+}
+
+.donation-units {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.donation-location {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.achievement-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.achievement-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.achievement-title {
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.achievement-description {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.availability-toggle {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background: #f8fafc;
+    border-radius: 2rem;
+    margin: 1rem 0;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #dc2626;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.edit-profile-btn {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.edit-profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+@media (max-width: 768px) {
+    .profile-stats {
+        gap: 2rem;
+    }
+    
+    .profile-stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .donation-item {
+        flex-direction: column;
+        text-align: left;
+        gap: 0.5rem;
+    }
+    
+    .donation-details {
+        text-align: left;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Header -->
+<section class="profile-header">
+    <div class="container">
+        <div class="profile-content">
+            <div class="profile-avatar">
+                <span class="material-icons" style="font-size: 4rem;">person</span>
+            </div>
+            
+            <div class="profile-info">
+                <h1 class="profile-name">{{ donor.user.first_name|default:donor.user.username }} {{ donor.user.last_name }}</h1>
+                <div class="profile-blood-type">Blood Type: {{ donor.blood_type }}</div>
+                <p class="mb-0">Member since {{ donor.user.date_joined|date:"F Y" }}</p>
+                
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <span class="profile-stat-number">{{ total_donations }}</span>
+                        <span class="profile-stat-label">Donations</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="profile-stat-number">{{ lives_saved }}</span>
+                        <span class="profile-stat-label">Lives Saved</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="profile-stat-number">{{ donor.points|default:0 }}</span>
+                        <span class="profile-stat-label">Points</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Profile Sections -->
+<section class="profile-section">
+    <div class="container">
+        <div class="row">
+            <!-- Personal Information -->
+            <div class="col-lg-6">
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <span class="material-icons">person</span>
+                        Personal Information
+                    </h2>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <span class="material-icons">email</span>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">{{ donor.user.email }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <span class="material-icons">phone</span>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Phone</div>
+                                <div class="info-value">{{ donor.phone_number }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <span class="material-icons">cake</span>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Date of Birth</div>
+                                <div class="info-value">{{ donor.date_of_birth|date:"F d, Y" }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <span class="material-icons">location_on</span>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Address</div>
+                                <div class="info-value">{{ donor.address }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <span class="material-icons">work</span>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Occupation</div>
+                                <div class="info-value">{{ donor.occupation|default:"Not specified" }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <span class="material-icons">bloodtype</span>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Blood Type</div>
+                                <div class="info-value">{{ donor.blood_type }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'donor:profile_edit' %}" class="edit-profile-btn">
+                            <span class="material-icons">edit</span>
+                            Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Availability Status -->
+            <div class="col-lg-6">
+                <div class="availability-toggle">
+                    <h3 class="section-title">
+                        <span class="material-icons">notifications</span>
+                        Availability Status
+                    </h3>
+                    
+                    <p class="text-muted mb-3">Toggle your availability to receive emergency blood donation alerts</p>
+                    
+                    <div class="toggle-switch">
+                        <span>Unavailable</span>
+                        <label class="switch">
+                            <input type="checkbox" {% if donor.is_available %}checked{% endif %} id="availability-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <span>Available</span>
+                    </div>
+                    
+                    <p class="text-muted small">
+                        {% if donor.is_available %}
+                            You will receive notifications when your blood type is urgently needed.
+                        {% else %}
+                            You will not receive emergency notifications. Toggle to enable alerts.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Recent Donations -->
+            <div class="col-lg-8">
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <span class="material-icons">history</span>
+                        Recent Donations
+                    </h2>
+                    
+                    <div class="donation-history">
+                        {% if recent_donations %}
+                            {% for donation in recent_donations %}
+                            <div class="donation-item">
+                                <div>
+                                    <div class="donation-date">{{ donation.donation_date|date:"F d, Y" }}</div>
+                                    <div class="donation-location">{{ donation.location|default:"St. Francis Hospital" }}</div>
+                                </div>
+                                <div class="donation-details">
+                                    <div class="donation-units">{{ donation.units }} unit{% if donation.units != 1 %}s{% endif %}</div>
+                                    <div class="donation-location">{{ donation.blood_type }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <span class="material-icons text-muted" style="font-size: 3rem;">history</span>
+                                <p class="text-muted mt-2">No donations yet</p>
+                                <a href="{% url 'donor:request_blood' %}" class="btn md-btn md-btn-primary mt-2">Schedule First Donation</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if recent_donations %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'donor:donations' %}" class="btn md-btn md-btn-secondary">
+                            View All Donations
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Achievements -->
+            <div class="col-lg-4">
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <span class="material-icons">emoji_events</span>
+                        Achievements
+                    </h2>
+                    
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="achievement-card">
+                                <div class="achievement-icon">
+                                    <span class="material-icons">star</span>
+                                </div>
+                                <div class="achievement-title">First Donation</div>
+                                <div class="achievement-description">Made your first life-saving donation</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 mb-3">
+                            <div class="achievement-card">
+                                <div class="achievement-icon">
+                                    <span class="material-icons">favorite</span>
+                                </div>
+                                <div class="achievement-title">Life Saver</div>
+                                <div class="achievement-description">Saved 5+ lives through donations</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 mb-3">
+                            <div class="achievement-card">
+                                <div class="achievement-icon">
+                                    <span class="material-icons">local_hospital</span>
+                                </div>
+                                <div class="achievement-title">Regular Donor</div>
+                                <div class="achievement-description">Donated 3+ times this year</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6 mb-3">
+                            <div class="achievement-card">
+                                <div class="achievement-icon">
+                                    <span class="material-icons">military_tech</span>
+                                </div>
+                                <div class="achievement-title">Hero Status</div>
+                                <div class="achievement-description">Reached 100+ points</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript for Availability Toggle -->
+<script>
+document.getElementById('availability-toggle').addEventListener('change', function() {
+    const isChecked = this.checked;
+    fetch('/donor/api/toggle-availability/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            'available': isChecked
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Availability updated successfully!', 'success');
+            // Update the status text
+            const statusText = document.querySelector('.availability-toggle .text-muted.small');
+            if (isChecked) {
+                statusText.textContent = 'You will receive notifications when your blood type is urgently needed.';
+            } else {
+                statusText.textContent = 'You will not receive emergency notifications. Toggle to enable alerts.';
+            }
+        } else {
+            showNotification('Error updating availability', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error updating availability', 'error');
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}
