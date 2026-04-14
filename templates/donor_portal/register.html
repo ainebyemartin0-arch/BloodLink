@@ -1098,12 +1098,18 @@
                     <!-- Terms and Conditions -->
                     <div class="terms-section">
                         <div class="terms-checkbox">
-                            <input type="checkbox" id="terms" name="terms" required>
-                            <label for="terms">
+                            {{ form.terms }}
+                            <label for="{{ form.terms.id_for_label }}">
                                 I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. 
                                 I understand that my information will be used for blood donation coordination and emergency notifications. 
                                 I confirm that I am at least 18 years old and meet the eligibility requirements for blood donation.
                             </label>
+                            {% if form.terms.errors %}
+                                <div class="error-message">
+                                    <span class="material-symbols-outlined">error</span>
+                                    {{ form.terms.errors.0 }}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                     
@@ -1121,43 +1127,15 @@
     </div>
 
     <script>
-        // Form validation
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            const requiredFields = this.querySelectorAll('input[required], select[required]');
-            let isValid = true;
-            
-            requiredFields.forEach(field => {
-                if (!field.value) {
-                    field.classList.add('error');
-                    isValid = false;
-                } else {
-                    field.classList.remove('error');
-                }
-            });
-            
-            // Check blood type selection
-            const bloodTypeSelected = document.querySelector('input[name="blood_type"]:checked');
-            if (!bloodTypeSelected) {
-                isValid = false;
-                alert('Please select your blood type');
-            }
-            
-            // Check terms checkbox
-            const termsChecked = document.getElementById('terms').checked;
-            if (!termsChecked) {
-                isValid = false;
-                alert('Please accept the terms and conditions');
-            }
-            
-            if (!isValid) {
-                e.preventDefault();
-            }
-        });
-
-        // Remove error states on input
-        document.querySelectorAll('input, select, textarea').forEach(field => {
-            field.addEventListener('input', function() {
-                this.classList.remove('error');
+        // Form submission enhancement
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.querySelector('.submit-btn');
+        
+        if (form) {
+            form.addEventListener('submit', function() {
+                // Show loading state
+                submitBtn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Creating Account...';
+                submitBtn.disabled = true;
             });
         });
 

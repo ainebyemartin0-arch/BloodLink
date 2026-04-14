@@ -44,6 +44,10 @@ class DonorRegistrationForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your physical address (optional)'})
     )
+    terms = forms.BooleanField(
+        required=True,
+        error_messages={'required': 'You must accept the terms and conditions to register.'}
+    )
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
