@@ -310,9 +310,21 @@ def donor_delete(request, pk):
 
 @login_required
 def request_list(request):
+    from notifications.models import SMSNotification
+    from django.db.models import Count, Q
+    
     requests = EmergencyRequest.objects.select_related('created_by').all()
+    
+    # Annotate each request with confirmed donor count
+    requests_with_counts = requests.annotate(
+        confirmed_donors=Count(
+            'smsnotification',
+            filter=Q(smsnotification__donor_response='confirmed')
+        )
+    )
+    
     return render(request, 'staff_portal/request_list.html', {
-        'requests': requests,
+        'requests': requests_with_counts,
         'open_requests': requests.filter(status='open'),
         'fulfilled_requests': requests.filter(status='fulfilled'),
     })

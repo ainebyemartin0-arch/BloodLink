@@ -51,6 +51,7 @@
                             <th>Units</th>
                             <th>Urgency</th>
                             <th>Status</th>
+                            <th>Confirmed Donors</th>
                             <th>Created By</th>
                             <th>Time</th>
                             <th>Actions</th>
@@ -78,6 +79,13 @@
                                     <span class="badge bg-success">Fulfilled</span>
                                 {% else %}
                                     <span class="badge bg-secondary">Closed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if req.confirmed_donors > 0 %}
+                                    <span class="badge bg-success">{{ req.confirmed_donors }} Donor{{ req.confirmed_donors|pluralize }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">0 Donors</span>
                                 {% endif %}
                             </td>
                             <td>{{ req.created_by.get_full_name|default:req.created_by.username }}</td>

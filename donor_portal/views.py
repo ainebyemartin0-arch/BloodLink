@@ -290,6 +290,28 @@ def respond_to_alert(request, pk):
                 notification.is_fulfilled = True
                 notification.fulfilled_at = timezone.now()
                 
+                # Check if this is the first confirmed donor for this emergency request
+                emergency_request = notification.emergency_request
+                confirmed_count = SMSNotification.objects.filter(
+                    emergency_request=emergency_request,
+                    donor_response='confirmed'
+                ).exclude(pk=notification.pk).count()
+                
+                # If this is the first confirmed donor, mark request as fulfilled
+                if confirmed_count == 0 and emergency_request.status == 'open':
+                    emergency_request.status = 'fulfilled'
+                    emergency_request.fulfilled_at = timezone.now()
+                    emergency_request.save()
+                    
+                    # Log the fulfillment
+                    from staff_portal.models import ActivityLog
+                    ActivityLog.objects.create(
+                        staff_user=None,  # System action
+                        action='request_fulfilled',
+                        description=f'Emergency request for {emergency_request.blood_type_needed} blood automatically marked as fulfilled when {donor.full_name} confirmed availability',
+                        related_request_id=emergency_request.pk
+                    )
+                
                 messages.success(request, "Thank you for confirming! The hospital will contact you soon.")
             else:
                 notification.message_status = 'declined'
