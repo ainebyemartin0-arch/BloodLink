@@ -1,610 +1,250 @@
-{% extends 'base_donor_modern.html' %}
-{% load static %}
-
-{% block title %}Home{% endblock %}
-
-{% block content %}
-<!-- Enhanced Hero Section -->
-<section class="hero-blood position-relative overflow-hidden">
-  <div class="hero-background">
-    <img src="{% static 'images/blood-cells.png' %}" alt="Blood Cells Background" class="hero-bg-image">
-  </div>
-  <div class="container position-relative">
-    <div class="row align-items-center min-vh-75">
-      <div class="col-lg-7">
-        <div class="hero-blood-content reveal">
-          <h1 class="blood-heading-primary mb-4">
-            Save Lives at <em>St. Francis Hospital</em><br>
-            <span>Donate Blood Today</span>
-          </h1>
-          <p class="hero-sub lead mb-4">
-            Join our community of life-saving donors at St. Francis Hospital Nsambya. 
-            Your donation can save up to 3 lives and help meet's urgent blood needs 
-            of patients across Kampala.
-          </p>
-          <div class="hero-cta-group mb-4">
-            <a href="{% url 'donor:register' %}" class="btn-blood btn-lg">
-              <i class="bi bi-heart-fill me-2"></i> Become a Donor
-            </a>
-            <a href="{% url 'donor:about' %}" class="btn-health btn-lg">
-              <i class="bi bi-info-circle me-2"></i> Learn More
-            </a>
-          </div>
-          
-          <!-- Enhanced Hero Stats -->
-          <div class="row g-3">
-            <div class="col-6 col-md-3">
-              <div class="stat-card-enhanced stat-card-blood">
-                <div class="stat-number-enhanced">{{ total_donors|default:2847 }}</div>
-                <div class="stat-label-enhanced">Active Donors</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="stat-card-enhanced stat-card-life">
-                <div class="stat-number-enhanced">15,234</div>
-                <div class="stat-label-enhanced">Lives Saved</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="stat-card-enhanced stat-card-health">
-                <div class="stat-number-enhanced">24/7</div>
-                <div class="stat-label-enhanced">Emergency Support</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="stat-card-enhanced stat-card-emergency">
-                <div class="stat-number-enhanced">{{ available_donors|default:1250 }}</div>
-                <div class="stat-label-enhanced">Available Now</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-5 d-none d-lg-flex align-items-center justify-content-center">
-        <div class="hero-image-container position-relative">
-          <img src="{% static 'images/hero-donation.png' %}" alt="Blood Donation Hero" class="img-fluid rounded-4 shadow-lg hero-main-image">
-          <div class="floating-badge">
-            <i class="bi bi-heart-fill text-danger"></i>
-            <span>Save Lives</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Enhanced How It Works Section -->
-<section class="how-section py-5">
-  <div class="container">
-    <div class="text-center mb-5">
-      <span class="section-eyebrow text-uppercase fw-bold text-primary">How It Works</span>
-      <h2 class="section-heading display-5 fw-bold mb-3">Simple 3-Step Process</h2>
-      <p class="section-sub lead text-muted">Becoming a blood donor is quick, easy, and makes a huge difference</p>
-    </div>
-    
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="step-card step-1 h-100 reveal">
-          <div class="step-num-wrap position-relative">
-            <div class="step-icon-circle">
-              <img src="{% static 'images/lab-staff1.jpg' %}" alt="Register" class="step-icon-img">
-            </div>
-            <span class="step-num">1</span>
-          </div>
-          <h5 class="fw-bold">Register</h5>
-          <p class="text-muted">Sign up as a donor with your basic information and blood type. Registration takes less than 2 minutes.</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="step-card step-2 h-100 reveal reveal-delay-1">
-          <div class="step-num-wrap position-relative">
-            <div class="step-icon-circle">
-              <img src="{% static 'images/blood-cells.png' %}" alt="Receive Alerts" class="step-icon-img">
-            </div>
-            <span class="step-num">2</span>
-          </div>
-          <h5 class="fw-bold">Receive Alerts</h5>
-          <p class="text-muted">Get instant SMS notifications when your blood type is urgently needed at hospital.</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="step-card step-3 h-100 reveal reveal-delay-2">
-          <div class="step-num-wrap position-relative">
-            <div class="step-icon-circle">
-              <img src="{% static 'images/hero-donation1.jpg' %}" alt="Save Lives" class="step-icon-img">
-            </div>
-            <span class="step-num">3</span>
-          </div>
-          <h5 class="fw-bold">Save Lives</h5>
-          <p class="text-muted">Visit hospital to donate your blood and help save lives in your community.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Enhanced Blood Type Section -->
-<section class="bt-section py-5 bg-light">
-  <div class="container">
-    <div class="text-center mb-5">
-      <span class="section-eyebrow text-uppercase fw-bold text-danger">Blood Types</span>
-      <h2 class="section-heading display-5 fw-bold mb-3">All Blood Types Welcome</h2>
-      <p class="section-sub lead text-muted">Every blood type is valuable and needed to save lives</p>
-    </div>
-    
-    <div class="row g-3 justify-content-center">
-      <div class="col-6 col-md-3">
-        <div class="text-center">
-          <div class="blood-type-badge o-positive mb-2">O+</div>
-          <span class="fw-bold d-block">Universal Donor</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="text-center">
-          <div class="blood-type-badge o-negative mb-2">O-</div>
-          <span class="fw-bold d-block">Universal Rare</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="text-center">
-          <div class="blood-type-badge a-positive mb-2">A+</div>
-          <span class="fw-bold d-block">Common</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="text-center">
-          <div class="blood-type-badge a-negative mb-2">A-</div>
-          <span class="fw-bold d-block">Rare</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="text-center">
-          <div class="blood-type-badge b-positive mb-2">B+</div>
-          <span class="fw-bold d-block">Common</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="text-center">
-          <div class="blood-type-badge b-negative mb-2">B-</div>
-          <span class="fw-bold d-block">Rare</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="text-center">
-          <div class="blood-type-badge ab-positive mb-2">AB+</div>
-          <span class="fw-bold d-block">Universal Recipient</span>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="text-center">
-          <div class="blood-type-badge ab-negative mb-2">AB-</div>
-          <span class="fw-bold d-block">Very Rare</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Enhanced Emergency Alert Section -->
-<section class="py-5 alert-emergency position-relative overflow-hidden">
-  <div class="container position-relative">
-    <div class="row align-items-center">
-      <div class="col-lg-8">
-        <div class="blood-card blood-card-emergency">
-          <div class="row align-items-center">
-            <div class="col-auto">
-              <div class="stat-icon" style="background: var(--gradient-emergency); color: white; width: 60px; height: 60px;">
-                <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.5rem;"></i>
-              </div>
-            </div>
-            <div class="col">
-              <div class="blood-subheading">
-                <h5 class="fw-bold mb-1">Emergency Blood Needed</h5>
-                <span>Type O+ and A- blood urgently needed for emergency surgeries</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 text-center mt-3 mt-lg-0">
-        <a href="{% url 'donor:register' %}" class="btn-emergency">
-          <i class="bi bi-heart-fill me-2"></i> Donate Now
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Enhanced Impact Section -->
-<section class="py-5">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="stat-card-enhanced stat-card-health h-100 reveal">
-          <div class="stat-icon" style="background: var(--gradient-health); color: white; width: 60px; height: 60px; margin: 0 auto 20px;">
-            <i class="bi bi-hospital" style="font-size: 1.5rem;"></i>
-          </div>
-          <div class="stat-number-enhanced">St. Francis</div>
-          <div class="stat-label-enhanced">Trusted Hospital Partner</div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="stat-card-enhanced stat-card-life h-100 reveal reveal-delay-1">
-          <div class="stat-icon" style="background: var(--gradient-life); color: white; width: 60px; height: 60px; margin: 0 auto 20px;">
-            <i class="bi bi-clock" style="font-size: 1.5rem;"></i>
-          </div>
-          <div class="stat-number-enhanced">30 min</div>
-          <div class="stat-label-enhanced">Average Donation Time</div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="stat-card-enhanced stat-card-blood h-100 reveal reveal-delay-2">
-          <div class="stat-icon" style="background: var(--gradient-blood); color: white; width: 60px; height: 60px; margin: 0 auto 20px;">
-            <i class="bi bi-heart-fill" style="font-size: 1.5rem;"></i>
-          </div>
-          <div class="stat-number-enhanced">3 lives</div>
-          <div class="stat-label-enhanced">Saved Per Donation</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Enhanced Call to Action Section -->
-<section class="py-5 text-center position-relative overflow-hidden" style="background: var(--gradient-hero);">
-  <div class="container position-relative">
-    <div class="reveal">
-      <h2 class="blood-heading-primary mb-4 text-white">Ready to Save Lives?</h2>
-      <p class="lead mb-4 text-white opacity-90">Join thousands of Ugandans making a difference in their community</p>
-      <div class="d-flex gap-3 justify-content-center flex-wrap">
-        <a href="{% url 'donor:register' %}" class="btn-blood btn-lg">
-          <i class="bi bi-heart-fill me-2"></i> Register Now
-        </a>
-        <a href="{% url 'donor:login' %}" class="btn-health btn-lg">
-          <i class="bi bi-box-arrow-in-right me-2"></i> Login
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<script>
-// Parallax hero effect
-window.addEventListener('scroll', function() {
-    const hero = document.querySelector('.donor-hero');
-    if (hero) {
-        const scrolled = window.pageYOffset;
-        hero.style.backgroundPositionY = scrolled * 0.4 + 'px';
-    }
-});
-
-// Enhanced animations when page loads
-document.addEventListener('DOMContentLoaded', function() {
-  // Animate hero stats on scroll
-  const heroStats = document.querySelectorAll('.hero-stat-num');
-  const heroObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        const el = entry.target;
-        const text = el.textContent;
-        const number = parseInt(text.replace(/[^0-9]/g, ''));
-        
-        if (number) {
-          let current = 0;
-          const increment = number / 50;
-          const timer = setInterval(() => {
-            current += increment;
-            if (current >= number) {
-              current = number;
-              clearInterval(timer);
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#4c616c",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed-variant": "#354a53",
+                    "surface-dim": "#d9dadb",
+                    "secondary-container": "#cfe6f2",
+                    "on-tertiary-container": "#e9f7ff",
+                    "tertiary-container": "#00799c",
+                    "on-tertiary-fixed": "#001f2a",
+                    "on-background": "#191c1d",
+                    "surface-bright": "#f8f9fa",
+                    "on-tertiary-fixed-variant": "#004d65",
+                    "on-error": "#ffffff",
+                    "tertiary": "#005f7b",
+                    "tertiary-fixed-dim": "#7bd1f8",
+                    "inverse-surface": "#2e3132",
+                    "surface": "#f8f9fa",
+                    "primary-container": "#d32f2f",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#af101a",
+                    "on-primary-fixed-variant": "#930010",
+                    "error": "#ba1a1a",
+                    "on-surface": "#191c1d",
+                    "primary-fixed-dim": "#ffb3ac",
+                    "surface-container-low": "#f3f4f5",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container": "#edeeef",
+                    "on-surface-variant": "#5b403d",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#b4cad6",
+                    "outline": "#8f6f6c",
+                    "background": "#f8f9fa",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#bee9ff",
+                    "on-secondary-container": "#526772",
+                    "on-primary-fixed": "#410003",
+                    "surface-container-high": "#e7e8e9",
+                    "outline-variant": "#e4beba"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
             }
-            el.textContent = Math.floor(current).toLocaleString() + text.replace(/[0-9,]/g, '');
-          }, 30);
-        }
-        
-        heroObserver.unobserve(el);
+          },
+        },
       }
-    });
-  }, { threshold: 0.5 });
-  
-  heroStats.forEach(stat => heroObserver.observe(stat));
-
-  // Reveal animations
-  const reveals = document.querySelectorAll('.reveal');
-  const revealObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('active');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-
-  reveals.forEach(reveal => revealObserver.observe(reveal));
-});
-</script>
-
+    </script>
 <style>
-/* Enhanced Hero Section */
-.donor-hero {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-  position: relative;
-}
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #af101a 0%, #d32f2f 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- Top Navigation Shell -->
+<header class="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl fixed top-0 w-full z-50 shadow-sm">
+<nav class="flex justify-between items-center px-8 h-20 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-black tracking-tighter text-red-700 dark:text-red-500 font-inter tracking-tight">BloodLink</span>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-red-600 transition-colors duration-200 ease-in-out" href="#">Home</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-red-600 transition-colors duration-200 ease-in-out" href="#">Request Blood</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-red-600 transition-colors duration-200 ease-in-out" href="#">Dashboard</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-red-600 transition-colors duration-200 ease-in-out" href="#">Donations</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="p-2 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-zinc-200 dark:border-zinc-800">
+<img alt="User avatar" class="w-10 h-10 rounded-full object-cover" data-alt="Close-up portrait of a professional male doctor in a clean clinical environment, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwXKPEyF8eHi_W2mLLgt1_9P6_6d-gHmXMjGZLFTlAAtnozHeKOH84axBL0wyH6qNY7MH5ClgaBx1myi02y4XecXtdwBZNM2ufgb_i2iLtfQWwSVEtfmsymlDTKmZ5vBmw4O8fepY49M0dxHT15K72ugLDr-CR-Dc8W5KxocSxj3byTgskgR6qecNfHW1Uk8b_JlQAH7VG8lPSdbcD72seD_QJprXSu_Pafc4Q8U12vZXb-5JEpFZJ6xsfjLLL1ikGTnwmrTQtE9M"/>
+<button class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest hover:text-red-500 transition-all duration-300">Logout</button>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[716px] flex items-center overflow-hidden bg-surface-container-low">
+<div class="absolute inset-0 z-0">
+<img alt="Hospital corridor" class="w-full h-full object-cover opacity-15 grayscale" data-alt="Wide shot of a modern, sterile hospital hallway with soft recessed lighting and clean white architectural lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwXKPEyF8eHi_W2mLLgt1_9P6_6d-gHmXMjGZLFTlAAtnozHeKOH84axBL0wyH6qNY7MH5ClgaBx1myi02y4XecXtdwBZNM2ufgb_i2iLtfQWwSVEtfmsymlDTKmZ5vBmw4O8fepY49M0dxHT15K72ugLDr-CR-Dc8W5KxocSxj3byTgskgR6qecNfHW1Uk8b_JlQAH7VG8lPSdbcD72seD_QJprXSu_Pafc4Q8U12vZXb-5JEpFZJ6xsfjLLL1ikGTnwmrTQtE9M"/>
+</div>
+<div class="container mx-auto px-8 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+<div class="space-y-8 max-w-2xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">emergency</span>
+                        Emergency Response Active
+                    </div>
+<h1 class="text-6xl md:text-7xl font-extrabold tracking-tighter text-on-surface leading-[1.1]">
+                        Save Lives at <span class="text-primary italic">St. Francis Hospital.</span><br>
+                        Donate Blood Today.
+                    </h1>
+<p class="text-xl text-secondary leading-relaxed max-w-lg">
+                        Your singular contribution can provide a lifeline for those in urgent need. Join our community of clinical curators today.
+                    </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="px-8 py-4 hero-gradient text-on-primary font-bold rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform flex items-center gap-2">
+                            Become a Donor
+                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+<button class="px-8 py-4 bg-surface-container-lowest text-on-surface font-bold rounded-xl shadow-sm hover:bg-surface-container transition-colors">
+                            Learn More
+                        </button>
+</div>
+</div>
+<div class="hidden lg:block relative">
+<div class="absolute -top-12 -right-12 w-64 h-64 bg-primary-fixed/30 rounded-full blur-3xl"></div>
+<img alt="Medical professional" class="relative z-10 w-full aspect-[4/5] object-cover rounded-2xl shadow-2xl" data-alt="Highly professional close-up of a hand holding a medical blood bag in a bright laboratory, clean and authoritative" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC_UmNLnYRW0RKwrD-mZkr3qdA0_KNpj-Mry8GLwQqw8hl9C5sXwOnCB0oPlyxrOwpK_Xm2M9Sd8w0f3EuMJDdwbmJvA5BFkdT9sJdpcMLJyVf2urHIFNX8S8gMbb8qzek6OrU5HAAAxY-Eb7mOaqJ6R0aCzmQQPYS5gM0PdWnu9nCExJc_UMFrw8xvlfzvUeRnvorEgAuMe6RQHYxnnRtyMwnFiJg7fUEzIx-Ler-MVY09SCQs7Hxedl7JxzLdhp_68nHtsFYzvc"/>
+</div>
+</div>
+</div>
+</section>
 
-.hero-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.1;
-}
+<!-- Impact Stats (Bento Grid) -->
+<section class="py-24 px-8 max-w-screen-2xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="group bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-outline-variant/20">
+<div class="w-14 h-14 rounded-lg bg-primary-fixed flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">person_pin_circle</span>
+</div>
+<div class="space-y-1">
+<div class="text-4xl font-black tracking-tighter text-on-surface">1</div>
+<div class="text-sm font-bold uppercase tracking-widest text-secondary">Active Donor</div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed">Verified and ready for immediate contribution in the St. Francis zone.</p>
+</div>
+<!-- Card 2 -->
+<div class="group bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-outline-variant/20">
+<div class="w-14 h-14 rounded-lg bg-primary-fixed flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+</div>
+<div class="space-y-1">
+<div class="text-4xl font-black tracking-tighter text-on-surface">15,234</div>
+<div class="text-sm font-bold uppercase tracking-widest text-secondary">Lives Saved</div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed">A testament to the collective impact of our growing donor network.</p>
+</div>
+<!-- Card 3 -->
+<div class="group bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-outline-variant/20">
+<div class="w-14 h-14 rounded-lg bg-primary-fixed flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">emergency_home</span>
+</div>
+<div class="space-y-1">
+<div class="text-4xl font-black tracking-tighter text-on-surface">24/7</div>
+<div class="text-sm font-bold uppercase tracking-widest text-secondary">Emergency Support</div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed">Round-the-clock coordination for critical blood supply chains.</p>
+</div>
+<!-- Card 4 -->
+<div class="group bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-outline-variant/20">
+<div class="w-14 h-14 rounded-lg bg-primary-fixed flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">bloodtype</span>
+</div>
+<div class="space-y-1">
+<div class="text-4xl font-black tracking-tighter text-on-surface">1</div>
+<div class="text-sm font-bold uppercase tracking-widest text-secondary">Available Now</div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed">Real-time availability of O-Negative universal supply units.</p>
+</div>
+</div>
+</section>
 
-.hero-bg-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+<!-- How It Works -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8">
+<div class="text-center mb-20 space-y-4">
+<h2 class="text-4xl font-extrabold tracking-tighter text-on-surface mb-3">How BloodLink Works</h2>
+<p class="text-xl text-secondary">Editorial precision meets life-saving urgency</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-5xl mx-auto px-8">
+<!-- Step 1 -->
+<div class="relative text-center space-y-6 group-hover:scale-110 transition-transform">
+<div class="mx-auto w-24 h-24 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">how_to_reg</span>
+</div>
+<h3 class="text-xl font-bold">1. Register as Donor</h3>
+<p class="text-secondary leading-relaxed px-4">Sign up in minutes, provide your blood type and availability. Join our life-saving community with editorial precision.</p>
+<a href="{% url 'donor:register' %}" class="inline-flex items-center justify-center rounded-full bg-primary text-white px-8 py-3 font-semibold hover:bg-primary/90 transition-colors">
+    Register Now
+    <span class="material-symbols-outlined ml-2">arrow_forward</span>
+</a>
+<div class="hidden md:block absolute top-12 left-[60%] w-[80%] border-t-2 border-dashed border-outline-variant/30"></div>
+</div>
+<!-- Step 2 -->
+<div class="relative text-center space-y-6 group-hover:scale-110 transition-transform">
+<div class="mx-auto w-24 h-24 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+</div>
+<h3 class="text-xl font-bold">2. Receive Alerts</h3>
+<p class="text-secondary leading-relaxed px-4">Get instant notifications when your blood type is needed. SMS and push notifications keep you informed with clinical urgency.</p>
+<a href="{% url 'donor:about' %}" class="inline-flex items-center justify-center rounded-full bg-surface-container-low text-on-surface px-8 py-3 font-semibold hover:bg-surface-container transition-colors">
+    Learn More
+    <span class="material-symbols-outlined ml-2">info</span>
+</a>
+<div class="hidden md:block absolute top-12 left-[60%] w-[80%] border-t-2 border-dashed border-outline-variant/30"></div>
+</div>
+<!-- Step 3 -->
+<div class="relative text-center space-y-6 group-hover:scale-110 transition-transform">
+<div class="mx-auto w-24 h-24 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<h3 class="text-xl font-bold">3. Save Lives</h3>
+<p class="text-secondary leading-relaxed px-4">Respond to emergency requests immediately. Your donation can make the difference between life and death with editorial impact.</p>
+<a href="{% url 'donor:request_blood' %}" class="inline-flex items-center justify-center rounded-full bg-primary text-white px-8 py-3 font-semibold hover:bg-primary/90 transition-colors">
+    Request Blood
+    <span class="material-symbols-outlined ml-2">emergency</span>
+</a>
+<div class="hidden md:block absolute top-12 left-[60%] w-[80%] border-t-2 border-dashed border-outline-variant/30"></div>
+</div>
+</div>
+</section>
+</main>
 
-.min-vh-75 {
-  min-height: 75vh;
-}
-
-.text-highlight {
-  color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.text-accent {
-  color: #ffd700;
-}
-
-.hero-main-image {
-  max-height: 400px;
-  animation: float 3s ease-in-out infinite;
-}
-
-.floating-badge {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  background: white;
-  color: #dc3545;
-  padding: 10px 15px;
-  border-radius: 50px;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  animation: pulse 2s infinite;
-}
-
-.hero-stat-icon {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 1rem;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-}
-
-.stat-icon-img {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-/* Enhanced Steps */
-.step-icon-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-  position: relative;
-}
-
-.step-icon-img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid white;
-}
-
-/* Enhanced Blood Types */
-.bt-type-display {
-  width: 50px;
-  height: 50px;
-  margin: 0 auto;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bt-type-img {
-  width: 30px;
-  height: 30px;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.bt-tile {
-  border: 2px solid;
-  border-radius: 15px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.bt-tile:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-/* Enhanced Emergency Section */
-.emergency-section {
-  background: linear-gradient(135deg, #FDEDEC, #fff5f5);
-}
-
-.emergency-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.05;
-}
-
-.emergency-bg-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.emergency-icon-img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-/* Enhanced Impact Cards */
-.donor-stat-image {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto;
-  border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-card-img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-/* Enhanced CTA Section */
-.bg-gradient-cta {
-  background: linear-gradient(135deg, #198754 0%, #20c997 100%);
-}
-
-.cta-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.1;
-}
-
-.cta-bg-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-/* Reveal animations */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.6s ease;
-}
-
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-delay-1 {
-  transition-delay: 0.2s;
-}
-
-.reveal-delay-2 {
-  transition-delay: 0.4s;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .donor-hero {
-    min-height: auto;
-    padding: 2rem 0;
-  }
-  
-  .hero-main-image {
-    max-height: 250px;
-  }
-  
-  .floating-badge {
-    top: -10px;
-    right: -10px;
-    padding: 8px 12px;
-    font-size: 0.875rem;
-  }
-  
-  .hero-stat-icon {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .stat-icon-img {
-    width: 30px;
-    height: 30px;
-  }
-  
-  .step-icon-circle {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .step-icon-img {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-@media (max-width: 576px) {
-  .hero-cta-group {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .btn-hero-primary, .btn-hero-outline {
-    width: 100%;
-  }
-  
-  .bt-tile {
-    padding: 1rem !important;
-  }
-  
-  .emergency-banner {
-    padding: 1.5rem !important;
-  }
-}
-</style>
-{% endblock %}
+<!-- Footer Shell -->
+<footer class="bg-zinc-50 dark:bg-zinc-900 w-full py-12 px-8 border-t border-zinc-200 dark:border-zinc-800">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
+<div class="flex flex-col gap-2">
+<span class="text-lg font-bold text-zinc-900 dark:text-zinc-100 font-inter tracking-tight">BloodLink</span>
+<p class="text-zinc-500 dark:text-zinc-400 text-sm">© 2024 BloodLink. The Clinical Curator Editorial.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-red-500 underline-offset-4 hover:underline transition-all duration-300" href="#">Privacy Policy</a>
+<a class="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-red-500 underline-offset-4 hover:underline transition-all duration-300" href="#">Terms of Service</a>
+<a class="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-red-500 underline-offset-4 hover:underline transition-all duration-300" href="#">Contact Support</a>
+<a class="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-red-500 underline-offset-4 hover:underline transition-all duration-300" href="#">Global Impact</a>
+</div>
+</div>
+</footer>
+</body>
+</html>
