@@ -33,6 +33,7 @@ def notification_list(request):
     delivered = SMSNotification.objects.filter(delivery_status='delivered').count()
     failed = SMSNotification.objects.filter(delivery_status='failed').count()
     opened = SMSNotification.objects.filter(opened_at__isnull=False).count()
+    delivered_and_opened = SMSNotification.objects.filter(delivery_status='delivered', opened_at__isnull=False).count()
     confirmed = SMSNotification.objects.filter(donor_response='confirmed').count()
     sent_delivered = sent + delivered
     
@@ -43,6 +44,7 @@ def notification_list(request):
         'delivered': delivered,
         'failed': failed,
         'opened': opened,
+        'delivered_and_opened': delivered_and_opened,
         'confirmed': confirmed,
         'sent_delivered': sent_delivered,
         'status_filter': status_filter,

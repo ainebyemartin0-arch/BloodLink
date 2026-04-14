@@ -165,53 +165,53 @@ def send_emergency_sms(emergency_request):
             except Exception as e:
                 print(f"Error formatting phone number: {e}")
                 phone = donor.phone_number
-                
-                response = sms_service.send(message, [phone], sender_id=settings.AT_SENDER_ID)
-                
-                # Parse response
-                if response and 'SMSMessageData' in response:
-                    recipients = response['SMSMessageData'].get('Recipients', [])
-                    if recipients:
-                        recipient_data = recipients[0]
-                        status = recipient_data.get('status', 'failed')
-                        message_id = recipient_data.get('messageId', '')
-                        cost = recipient_data.get('cost', 'UGX 0').replace('UGX ', '')
-                        
-                        # Enhanced status tracking
-                        if status == 'Success':
-                            notification.delivery_status = 'sent'
-                            notification.at_message_id = message_id
-                        elif status == 'Submitted':
-                            notification.delivery_status = 'sent'
-                            notification.at_message_id = message_id
-                        else:
-                            notification.delivery_status = 'failed'
-                        
+            
+            response = sms_service.send(message, [phone], sender_id=settings.AT_SENDER_ID)
+            
+            # Parse response
+            if response and 'SMSMessageData' in response:
+                recipients = response['SMSMessageData'].get('Recipients', [])
+                if recipients:
+                    recipient_data = recipients[0]
+                    status = recipient_data.get('status', 'failed')
+                    message_id = recipient_data.get('messageId', '')
+                    cost = recipient_data.get('cost', 'UGX 0').replace('UGX ', '')
+                    
+                    # Enhanced status tracking
+                    if status == 'Success':
+                        notification.delivery_status = 'sent'
                         notification.at_message_id = message_id
-                        try:
-                            notification.cost = float(cost)
-                        except (ValueError, TypeError):
-                            notification.cost = 0.0
-                        notification.save()
-                        
-                        if status in ['Success', 'Submitted']:
-                            result['sent_count'] += 1
-                            print(f"SUCCESS SMS sent successfully to {donor.full_name}")
-                        else:
-                            result['failed_count'] += 1
-                            print(f"SMS failed for {donor.full_name}: {status}")
+                    elif status == 'Submitted':
+                        notification.delivery_status = 'sent'
+                        notification.at_message_id = message_id
                     else:
                         notification.delivery_status = 'failed'
-                        notification.save()
+                    
+                    notification.at_message_id = message_id
+                    try:
+                        notification.cost = float(cost)
+                    except (ValueError, TypeError):
+                        notification.cost = 0.0
+                    notification.save()
+                    
+                    if status in ['Success', 'Submitted']:
+                        result['sent_count'] += 1
+                        print(f"SUCCESS SMS sent successfully to {donor.full_name}")
+                    else:
                         result['failed_count'] += 1
-                        print(f"SMS failed for {donor.full_name}: No recipients data")
+                        print(f"SMS failed for {donor.full_name}: {status}")
                 else:
                     notification.delivery_status = 'failed'
                     notification.save()
                     result['failed_count'] += 1
-                    print(f"SMS failed for {donor.full_name}: Invalid API response")
+                    print(f"SMS failed for {donor.full_name}: No recipients data")
+            else:
+                notification.delivery_status = 'failed'
+                notification.save()
+                result['failed_count'] += 1
+                print(f"SMS failed for {donor.full_name}: Invalid API response")
                     
-            except Exception as e:
+        except Exception as e:
                 notification.delivery_status = 'failed'
                 notification.save()
                 result['failed_count'] += 1

@@ -643,10 +643,69 @@
             50% { opacity: 0.8; }
         }
 
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .mobile-menu-btn:active {
+            transform: scale(0.95);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
             .nav-links {
                 display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 1rem;
+                min-width: 200px;
+                z-index: 1000;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 0.75rem 1rem;
+                border-radius: 0.25rem;
+                transition: all 0.3s ease;
+                color: #1a1a1a;
+                text-decoration: none;
+                display: block;
+            }
+
+            .nav-links a:hover {
+                background: rgba(220, 38, 38, 0.1);
+                color: #dc2626;
+            }
+
+            .nav-links a.active {
+                background: #dc2626;
+                color: white;
             }
 
             .hero-container {
@@ -674,6 +733,10 @@
             .features-grid {
                 grid-template-columns: 1fr;
             }
+
+            .user-menu {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -686,11 +749,23 @@
                 BloodLink
             </a>
             
-            <div class="nav-links">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            
+            <div class="nav-links" id="navLinks">
                 <a href="{% url 'donor:home' %}" class="active">Home</a>
+                <a href="{% url 'donor:about' %}">About</a>
                 <a href="{% url 'donor:request_blood' %}">Request Blood</a>
                 <a href="{% url 'donor:dashboard' %}">Dashboard</a>
                 <a href="{% url 'donor:donations' %}">Donations</a>
+                {% if donor %}
+                    <a href="{% url 'donor:profile' %}">Profile</a>
+                    <a href="{% url 'donor:logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'donor:login' %}">Login</a>
+                    <a href="{% url 'donor:register' %}">Register</a>
+                {% endif %}
             </div>
             
             <div class="user-menu">
@@ -1128,6 +1203,34 @@
             }
         `;
         document.head.appendChild(style);
+    </script>
+<script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('navLinks');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (!navLinks.contains(event.target) && !menuBtn.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Initialize animations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation classes to elements
+            const animatedElements = document.querySelectorAll('.animate-on-load');
+            animatedElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                }, index * 100);
+            });
+        });
     </script>
 </body>
 </html>
