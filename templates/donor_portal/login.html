@@ -412,7 +412,6 @@
             <div class="nav-links">
                 <a href="{% url 'donor:home' %}">Home</a>
                 <a href="{% url 'donor:about' %}">About</a>
-                <a href="{% url 'donor:contact' %}">Contact</a>
             </div>
         </div>
     </nav>
@@ -505,7 +504,7 @@
                             <input type="checkbox" id="remember" name="remember">
                             <label for="remember">Remember me</label>
                         </div>
-                        <a href="{% url 'donor:password_reset' %}" class="forgot-password">Forgot password?</a>
+                        <span class="forgot-password">Forgot password?</span>
                     </div>
                     
                     <button type="submit" class="submit-btn">
