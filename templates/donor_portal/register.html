@@ -390,9 +390,9 @@
         body .form-group select,
         body .form-group textarea {
             width: 100% !important;
-            padding: 0.75rem 1rem !important;
+            padding: 1rem !important;
             border: 2px solid #e5e7eb !important;
-            border-radius: 0.5rem !important;
+            border-radius: 0.75rem !important;
             font-size: 1rem !important;
             background: white !important;
             color: #1a1a1a !important;
@@ -402,6 +402,53 @@
             margin: 0 !important;
             opacity: 1 !important;
             visibility: visible !important;
+            font-family: 'Inter', sans-serif !important;
+            line-height: 1.5 !important;
+        }
+
+        /* Enhanced focus states */
+        body .form-group input:focus,
+        body .form-group select:focus,
+        body .form-group textarea:focus {
+            outline: none !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* Enhanced hover states */
+        body .form-group input:hover,
+        body .form-group select:hover,
+        body .form-group textarea:hover {
+            border-color: #dc2626 !important;
+        }
+
+        /* Placeholder styling */
+        body .form-group input::placeholder,
+        body .form-group textarea::placeholder {
+            color: #9ca3af !important;
+            opacity: 1 !important;
+        }
+
+        /* Select dropdown styling */
+        body .form-group select {
+            cursor: pointer !important;
+            appearance: none !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") !important;
+            background-position: right 0.75rem center !important;
+            background-repeat: no-repeat !important;
+            background-size: 1.25rem !important;
+            padding-right: 2.5rem !important;
+        }
+
+        /* Date input styling */
+        body .form-group input[type="date"] {
+            cursor: pointer !important;
+        }
+
+        /* Password field styling */
+        body .form-group input[type="password"] {
+            letter-spacing: 0.05em !important;
         }
 
         /* Bootstrap form-control class styling */
@@ -754,35 +801,38 @@
                             Personal Information
                         </h3>
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label for="{{ form.first_name.id_for_label }}">First Name <span class="required">*</span></label>
-                                {{ form.first_name }}
-                                {% if form.first_name.errors %}
-                                    <div class="error-message">{{ form.first_name.errors.0 }}</div>
+                            <div class="form-group full-width">
+                                <label for="{{ form.full_name.id_for_label }}">Full Name <span class="required">*</span></label>
+                                {{ form.full_name }}
+                                {% if form.full_name.errors %}
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.full_name.errors.0 }}
+                                    </div>
                                 {% endif %}
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.last_name.id_for_label }}">Last Name <span class="required">*</span></label>
-                                {{ form.last_name }}
-                                {% if form.last_name.errors %}
-                                    <div class="error-message">{{ form.last_name.errors.0 }}</div>
-                                {% endif %}
+                                <div class="help-text">Enter your complete legal name as it appears on your ID</div>
                             </div>
                             
                             <div class="form-group">
                                 <label for="{{ form.email.id_for_label }}">Email Address <span class="required">*</span></label>
                                 {{ form.email }}
                                 {% if form.email.errors %}
-                                    <div class="error-message">{{ form.email.errors.0 }}</div>
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.email.errors.0 }}
+                                    </div>
                                 {% endif %}
+                                <div class="help-text">We'll send account updates to this email</div>
                             </div>
                             
                             <div class="form-group">
-                                <label for="{{ form.phone.id_for_label }}">Phone Number <span class="required">*</span></label>
-                                {{ form.phone }}
-                                {% if form.phone.errors %}
-                                    <div class="error-message">{{ form.phone.errors.0 }}</div>
+                                <label for="{{ form.phone_number.id_for_label }}">Phone Number <span class="required">*</span></label>
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.phone_number.errors.0 }}
+                                    </div>
                                 {% endif %}
                                 <div class="help-text">We'll use this to send emergency notifications</div>
                             </div>
@@ -791,7 +841,10 @@
                                 <label for="{{ form.date_of_birth.id_for_label }}">Date of Birth <span class="required">*</span></label>
                                 {{ form.date_of_birth }}
                                 {% if form.date_of_birth.errors %}
-                                    <div class="error-message">{{ form.date_of_birth.errors.0 }}</div>
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.date_of_birth.errors.0 }}
+                                    </div>
                                 {% endif %}
                                 <div class="help-text">You must be at least 18 years old to donate</div>
                             </div>
@@ -800,7 +853,10 @@
                                 <label for="{{ form.gender.id_for_label }}">Gender <span class="required">*</span></label>
                                 {{ form.gender }}
                                 {% if form.gender.errors %}
-                                    <div class="error-message">{{ form.gender.errors.0 }}</div>
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.gender.errors.0 }}
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
@@ -813,123 +869,73 @@
                             Blood Information
                         </h3>
                         <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label>Blood Type <span class="required">*</span></label>
-                                <div class="blood-type-grid">
-                                    <div class="blood-type-option">
-                                        <input type="radio" name="blood_type" value="A+" id="blood_a_plus">
-                                        <label for="blood_a_plus">A+</label>
-                                    </div>
-                                    <div class="blood-type-option">
-                                        <input type="radio" name="blood_type" value="A-" id="blood_a_minus">
-                                        <label for="blood_a_minus">A-</label>
-                                    </div>
-                                    <div class="blood-type-option">
-                                        <input type="radio" name="blood_type" value="B+" id="blood_b_plus">
-                                        <label for="blood_b_plus">B+</label>
-                                    </div>
-                                    <div class="blood-type-option">
-                                        <input type="radio" name="blood_type" value="B-" id="blood_b_minus">
-                                        <label for="blood_b_minus">B-</label>
-                                    </div>
-                                    <div class="blood-type-option">
-                                        <input type="radio" name="blood_type" value="O+" id="blood_o_plus">
-                                        <label for="blood_o_plus">O+</label>
-                                    </div>
-                                    <div class="blood-type-option">
-                                        <input type="radio" name="blood_type" value="O-" id="blood_o_minus">
-                                        <label for="blood_o_minus">O-</label>
-                                    </div>
-                                    <div class="blood-type-option">
-                                        <input type="radio" name="blood_type" value="AB+" id="blood_ab_plus">
-                                        <label for="blood_ab_plus">AB+</label>
-                                    </div>
-                                    <div class="blood-type-option">
-                                        <input type="radio" name="blood_type" value="AB-" id="blood_ab_minus">
-                                        <label for="blood_ab_minus">AB-</label>
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <label for="{{ form.blood_type.id_for_label }}">Blood Type <span class="required">*</span></label>
+                                {{ form.blood_type }}
                                 {% if form.blood_type.errors %}
-                                    <div class="error-message">{{ form.blood_type.errors.0 }}</div>
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.blood_type.errors.0 }}
+                                    </div>
                                 {% endif %}
+                                <div class="help-text">Select your blood type for emergency matching</div>
                             </div>
                             
                             <div class="form-group">
-                                <label for="{{ form.last_donation_date.id_for_label }}">Last Donation Date</label>
-                                {{ form.last_donation_date }}
-                                {% if form.last_donation_date.errors %}
-                                    <div class="error-message">{{ form.last_donation_date.errors.0 }}</div>
+                                <label for="{{ form.location.id_for_label }}">Location <span class="required">*</span></label>
+                                {{ form.location }}
+                                {% if form.location.errors %}
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.location.errors.0 }}
+                                    </div>
                                 {% endif %}
-                                <div class="help-text">Leave blank if you've never donated</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.medical_conditions.id_for_label }}">Medical Conditions</label>
-                                {{ form.medical_conditions }}
-                                {% if form.medical_conditions.errors %}
-                                    <div class="error-message">{{ form.medical_conditions.errors.0 }}</div>
-                                {% endif %}
-                                <div class="help-text">List any medical conditions that might affect donation</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Location Information -->
-                    <div class="form-section">
-                        <h3>
-                            <span class="material-symbols-outlined">location_on</span>
-                            Location Information
-                        </h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="{{ form.district.id_for_label }}">District <span class="required">*</span></label>
-                                {{ form.district }}
-                                {% if form.district.errors %}
-                                    <div class="error-message">{{ form.district.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.sub_county.id_for_label }}">Sub-County</label>
-                                {{ form.sub_county }}
-                                {% if form.sub_county.errors %}
-                                    <div class="error-message">{{ form.sub_county.errors.0 }}</div>
-                                {% endif %}
+                                <div class="help-text">Your preferred donation location</div>
                             </div>
                             
                             <div class="form-group full-width">
-                                <label for="{{ form.address.id_for_label }}">Physical Address</label>
-                                {{ form.address }}
-                                {% if form.address.errors %}
-                                    <div class="error-message">{{ form.address.errors.0 }}</div>
+                                <label for="{{ form.physical_address.id_for_label }}">Physical Address</label>
+                                {{ form.physical_address }}
+                                {% if form.physical_address.errors %}
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.physical_address.errors.0 }}
+                                    </div>
                                 {% endif %}
-                                <div class="help-text">Detailed address for emergency notifications</div>
+                                <div class="help-text">Optional: Your residential address for better coordination</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Account Information -->
+                    <!-- Account Security -->
                     <div class="form-section">
                         <h3>
-                            <span class="material-symbols-outlined">lock</span>
+                            <span class="material-symbols-outlined">security</span>
                             Account Security
                         </h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="{{ form.password.id_for_label }}">Password <span class="required">*</span></label>
-                                {{ form.password }}
-                                {% if form.password.errors %}
-                                    <div class="error-message">{{ form.password.errors.0 }}</div>
+                                <label for="{{ form.password1.id_for_label }}">Create Password <span class="required">*</span></label>
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.password1.errors.0 }}
+                                    </div>
                                 {% endif %}
-                                <div class="help-text">Minimum 8 characters with letters and numbers</div>
+                                <div class="help-text">Use at least 8 characters with letters and numbers</div>
                             </div>
                             
                             <div class="form-group">
-                                <label for="{{ form.confirm_password.id_for_label }}">Confirm Password <span class="required">*</span></label>
-                                {{ form.confirm_password }}
-                                {% if form.confirm_password.errors %}
-                                    <div class="error-message">{{ form.confirm_password.errors.0 }}</div>
+                                <label for="{{ form.password2.id_for_label }}">Confirm Password <span class="required">*</span></label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <div class="error-message">
+                                        <span class="material-symbols-outlined">error</span>
+                                        {{ form.password2.errors.0 }}
+                                    </div>
                                 {% endif %}
+                                <div class="help-text">Re-enter your password to confirm</div>
                             </div>
                         </div>
                     </div>
