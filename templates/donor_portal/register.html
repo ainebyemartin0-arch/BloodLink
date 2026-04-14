@@ -33,28 +33,103 @@
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             position: fixed;
             top: 0;
-            width: 100%;
+            left: 0;
+            right: 0;
             z-index: 1000;
-            transition: all 0.3s ease;
+            padding: 1rem 0;
         }
 
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #dc2626;
-            text-decoration: none;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        .logo .material-symbols-outlined {
+            font-size: 2rem;
+            color: #dc2626;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .mobile-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .nav-links a:hover {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .nav-links a.active {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #dc2626;
+        }
+
+        .nav-link-highlight {
+            background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+
+        .nav-link-highlight:hover {
+            background: linear-gradient(135deg, #b91c1c, #dc2626) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
 
         /* Main Container */
@@ -706,6 +781,50 @@
             }
         }
 
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 1rem;
+                min-width: 200px;
+                z-index: 1000;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 0.75rem 1rem;
+                border-radius: 0.25rem;
+                transition: all 0.3s ease;
+                color: #1a1a1a;
+                text-decoration: none;
+                display: block;
+            }
+
+            .nav-links a:hover {
+                background: rgba(220, 38, 38, 0.1);
+                color: #dc2626;
+            }
+
+            .nav-links a.active {
+                background: #dc2626;
+                color: white;
+            }
+        }
+
         @media (max-width: 600px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -734,9 +853,17 @@
                 BloodLink
             </a>
             
-            <div class="nav-links">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            
+            <div class="nav-links" id="navLinks">
                 <a href="{% url 'donor:home' %}">Home</a>
                 <a href="{% url 'donor:about' %}">About</a>
+                <a href="{% url 'donor:request_blood' %}">Request Blood</a>
+                <a href="{% url 'donor:dashboard' %}">Dashboard</a>
+                <a href="{% url 'donor:donations' %}">Donations</a>
+                <a href="{% url 'donor:login' %}" class="nav-link-highlight">Login</a>
             </div>
         </div>
     </nav>
@@ -1041,10 +1168,10 @@
             item.classList.add('animate-fadeInUp');
         });
 
-        // Enhanced blood type selection
+        // Enhanced blood type selection - Simplified
         const bloodTypeSelect = document.getElementById('id_blood_type');
         if (bloodTypeSelect) {
-            // Add custom styling for blood type selection
+            // Simple change event for visual feedback
             bloodTypeSelect.addEventListener('change', function() {
                 if (this.value) {
                     this.style.color = '#dc2626';
@@ -1054,33 +1181,9 @@
                     this.style.fontWeight = '400';
                 }
             });
-
-            // Ensure dropdown opens properly
-            bloodTypeSelect.addEventListener('mousedown', function(e) {
-                e.preventDefault();
-                this.focus();
-                // Trigger dropdown opening
-                const event = new MouseEvent('mousedown', {
-                    bubbles: true,
-                    cancelable: true,
-                    view: window
-                });
-                this.dispatchEvent(event);
-            });
-
-            // Add visual feedback on focus
-            bloodTypeSelect.addEventListener('focus', function() {
-                this.style.borderColor = '#dc2626';
-                this.style.boxShadow = '0 0 0 4px rgba(220, 38, 38, 0.1)';
-            });
-
-            bloodTypeSelect.addEventListener('blur', function() {
-                this.style.borderColor = '#e5e7eb';
-                this.style.boxShadow = 'none';
-            });
         }
 
-        // Enhanced all select dropdowns
+        // Enhanced all select dropdowns - Simplified
         const allSelects = document.querySelectorAll('select');
         allSelects.forEach(select => {
             select.addEventListener('change', function() {
@@ -1100,6 +1203,22 @@
                 this.setCustomValidity('Passwords do not match');
             } else {
                 this.setCustomValidity('');
+            }
+        });
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('navLinks');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (!navLinks.contains(event.target) && !menuBtn.contains(event.target)) {
+                navLinks.classList.remove('active');
             }
         });
     </script>
