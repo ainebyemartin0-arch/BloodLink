@@ -439,6 +439,34 @@
             background-repeat: no-repeat !important;
             background-size: 1.25rem !important;
             padding-right: 2.5rem !important;
+            min-height: 52px !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+
+        /* Enhanced select options styling */
+        body .form-group select option {
+            padding: 0.75rem 1rem !important;
+            background: white !important;
+            color: #1a1a1a !important;
+            font-size: 1rem !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        /* Blood type specific styling */
+        body .form-group select#id_blood_type {
+            font-weight: 600 !important;
+            color: #dc2626 !important;
+        }
+
+        body .form-group select#id_blood_type option {
+            color: #1a1a1a !important;
+            font-weight: 400 !important;
+        }
+
+        body .form-group select#id_blood_type option:first-child {
+            color: #9ca3af !important;
+            font-style: italic !important;
         }
 
         /* Date input styling */
@@ -1003,6 +1031,63 @@
         document.querySelectorAll('input, select, textarea').forEach(field => {
             field.addEventListener('input', function() {
                 this.classList.remove('error');
+            });
+        });
+
+        // Add floating animation to benefits
+        const benefitItems = document.querySelectorAll('.benefit-item');
+        benefitItems.forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.1}s`;
+            item.classList.add('animate-fadeInUp');
+        });
+
+        // Enhanced blood type selection
+        const bloodTypeSelect = document.getElementById('id_blood_type');
+        if (bloodTypeSelect) {
+            // Add custom styling for blood type selection
+            bloodTypeSelect.addEventListener('change', function() {
+                if (this.value) {
+                    this.style.color = '#dc2626';
+                    this.style.fontWeight = '600';
+                } else {
+                    this.style.color = '#1a1a1a';
+                    this.style.fontWeight = '400';
+                }
+            });
+
+            // Ensure dropdown opens properly
+            bloodTypeSelect.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                this.focus();
+                // Trigger dropdown opening
+                const event = new MouseEvent('mousedown', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                });
+                this.dispatchEvent(event);
+            });
+
+            // Add visual feedback on focus
+            bloodTypeSelect.addEventListener('focus', function() {
+                this.style.borderColor = '#dc2626';
+                this.style.boxShadow = '0 0 0 4px rgba(220, 38, 38, 0.1)';
+            });
+
+            bloodTypeSelect.addEventListener('blur', function() {
+                this.style.borderColor = '#e5e7eb';
+                this.style.boxShadow = 'none';
+            });
+        }
+
+        // Enhanced all select dropdowns
+        const allSelects = document.querySelectorAll('select');
+        allSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    this.style.color = '#1a1a1a';
+                    this.style.fontWeight = '500';
+                }
             });
         });
 
