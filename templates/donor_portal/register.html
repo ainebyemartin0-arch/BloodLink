@@ -278,6 +278,17 @@
             background: white;
         }
 
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            box-sizing: border-box;
+        }
+
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
@@ -290,11 +301,44 @@
         .form-group select.error,
         .form-group textarea.error {
             border-color: #ef4444;
+            background: #fef2f2;
         }
 
         .form-group textarea {
             resize: vertical;
             min-height: 100px;
+        }
+
+        /* Django form field overrides */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100% !important;
+            padding: 0.75rem 1rem !important;
+            border: 2px solid #e5e7eb !important;
+            border-radius: 0.5rem !important;
+            font-size: 1rem !important;
+            background: white !important;
+            transition: all 0.3s ease !important;
+            box-sizing: border-box !important;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="tel"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
         }
 
         .error-message {
