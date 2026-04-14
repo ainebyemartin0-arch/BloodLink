@@ -44,7 +44,7 @@ def donor_home(request):
         'available_donors': available_donors,
         'blood_types': BLOOD_TYPE_CHOICES,
     }
-    return render(request, 'donor_portal/home.html', context)
+    return render(request, 'donor_portal/home_stitch.html', context)
 
 def test_page(request):
     """Simple test page to debug issues"""
