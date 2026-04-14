@@ -1,0 +1,143 @@
+{% extends 'base_donor_modern.html' %}
+{% load static %}
+
+{% block title %}Response Confirmation - BloodLink{% endblock %}
+
+{% block content %}
+<div style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:48px 0;">
+<div class="container" style="max-width:600px;text-align:center;">
+    
+    <!-- Success Header -->
+    <div style="font-size:4rem;margin-bottom:16px;">
+        {% if notification.donor_response == 'confirmed' %}
+            ✅
+        {% elif notification.donor_response == 'declined' %}
+            ❌
+        {% else %}
+            📋
+        {% endif %}
+    </div>
+    
+    <h1 style="font-family:'Playfair Display',serif;color:var(--bl-red);font-size:1.8rem;margin-bottom:16px;">
+        {% if notification.donor_response == 'confirmed' %}
+            Donation Confirmed!
+        {% elif notification.donor_response == 'declined' %}
+            Response Recorded
+        {% else %}
+            Response Details
+        {% endif %}
+    </h1>
+    
+    <!-- Response Details -->
+    <div class="card" style="background:var(--donor-bg);border-radius:12px;padding:24px;margin-bottom:24px;text-align:left;">
+        <div class="card-body">
+            <h5 style="color:var(--bl-red);margin-bottom:16px;">
+                <i class="bi bi-chat-dots"></i> Your Response Details
+            </h5>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Your Response:</strong>
+                </div>
+                <div class="col-md-8">
+                    {% if notification.donor_response == 'confirmed' %}
+                        <span class="badge bg-success text-white">I Can Donate</span>
+                    {% elif notification.donor_response == 'declined' %}
+                        <span class="badge bg-secondary text-white">Not Available</span>
+                    {% else %}
+                        <span class="badge bg-info text-white">Viewed</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Response Time:</strong>
+                </div>
+                <div class="col-md-8">
+                    {% if notification.fulfilled_at %}
+                        {{ notification.fulfilled_at|date:"M d, Y g:i A" }}
+                    {% else %}
+                        Not yet recorded
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Blood Request:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ emergency_request.blood_type_needed }} - {{ emergency_request.units_needed }} unit{{ emergency_request.units_needed|pluralize }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Urgency Level:</strong>
+                </div>
+                <div class="col-md-8">
+                    {{ emergency_request.get_urgency_level_display }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Hospital:</strong>
+                </div>
+                <div class="col-md-8">
+                    St. Francis Hospital Nsambya
+                </div>
+            </div>
+            
+            {% if notification.donor_response == 'confirmed' %}
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Next Steps:</strong>
+                </div>
+                <div class="col-md-8">
+                    <p class="mb-0">The hospital will contact you soon with donation details.</p>
+                    <p><small>Please keep your phone available and ensure you've eaten well before donating.</small></p>
+                </div>
+            </div>
+            {% elif notification.donor_response == 'declined' %}
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Thank You:</strong>
+                </div>
+                <div class="col-md-8">
+                    <p class="mb-0">We understand you're not available at this time.</p>
+                    <p><small>Your response helps us plan better for emergency needs.</small></p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="d-grid gap-2" style="grid-template-columns:1fr 1fr;">
+        <a href="{% url 'donor:dashboard' %}" class="btn btn-outline-primary">
+            <i class="bi bi-house"></i> Back to Dashboard
+        </a>
+        
+        {% if notification.donor_response != 'confirmed' and notification.donor_response != 'declined' %}
+        <a href="{% url 'donor:respond_to_alert' notification.pk %}" class="btn btn-success">
+            <i class="bi bi-reply"></i> Respond to Alert
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Contact Info -->
+    <div class="mt-4 p-3" style="background:var(--bl-red-light);border-radius:8px;">
+        <h6 style="color:var(--bl-red);margin-bottom:8px;">
+            <i class="bi bi-telephone"></i> Need to Contact Hospital?
+        </h6>
+        <p style="font-size:0.9rem;margin:0;">
+            <strong>Emergency Hotline:</strong> +256 414 267 462<br>
+            <strong>Location:</strong> St. Francis Hospital Nsambya<br>
+            <small>Please call if you need to change your response or have questions.</small>
+        </p>
+    </div>
+</div>
+</div>
+{% endblock %}

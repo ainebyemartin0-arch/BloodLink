@@ -327,6 +327,7 @@ def mark_sms_opened(request, pk):
     donor = get_logged_in_donor(request)
     notification = get_object_or_404(SMSNotification, pk=pk, donor=donor)
     
+    # Mark as opened when donor views alert
     if notification.opened_at is None:
         notification.opened_at = timezone.now()
         
@@ -337,9 +338,28 @@ def mark_sms_opened(request, pk):
         elif notification.message_status in ['sent', 'submitted']:
             notification.delivery_status = 'sent'
         
-        # Update view tracking
+        # Update last viewed and view count
         notification.last_viewed_at = timezone.now()
         notification.view_count += 1
+        
+        # Save all updates
         notification.save()
+                
+        return redirect('donor:respond_to_alert', pk=pk)
     
-    return redirect('donor:donations')
+    return redirect('donor:respond_to_alert', pk=pk)
+
+
+@donor_login_required  
+def response_confirmation(request, pk):
+    """Show detailed response confirmation page"""
+    donor = get_logged_in_donor(request)
+    notification = get_object_or_404(SMSNotification, pk=pk, donor=donor)
+    
+    context = {
+        'donor': donor,
+        'notification': notification,
+        'emergency_request': notification.emergency_request,
+    }
+    
+    return render(request, 'donor_portal/response_confirmation.html', context)

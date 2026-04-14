@@ -16,6 +16,7 @@ urlpatterns = [
     path('donations/', views.donor_donations, name='donations'),
     path('change-password/', views.donor_change_password, name='change_password'),
     path('respond/<int:pk>/', views.respond_to_alert, name='respond_to_alert'),
+    path('respond/<int:pk>/confirmation/', views.response_confirmation, name='response_confirmation'),
     path('sms/opened/<int:pk>/', views.mark_sms_opened, name='mark_sms_opened'),
     path('request-blood/', views.request_blood, name='request_blood'),
     path('request-blood/success/<int:pk>/', views.request_blood_success, name='request_blood_success'),
