@@ -1,139 +1,909 @@
-{% extends 'base_donor_modern.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Blood - BloodLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% block title %}Request Blood{% endblock %}
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
+            min-height: 100vh;
+        }
 
-{% block content %}
-<div style="background:var(--donor-bg);padding:48px 0;">
-<div class="container" style="max-width:680px;">
-    
-    <!-- Header -->
-    <div class="text-center mb-4">
-        <span style="font-size:3rem;">🩸</span>
-        <h1 style="font-family:'Playfair Display',serif;
-                   color:var(--bl-red);font-size:2rem;margin-top:8px;">
-            Request Blood
-        </h1>
-        <p style="color:var(--staff-muted);font-size:0.95rem;max-width:500px;margin:0 auto;">
-            Fill in the details below. Hospital staff will review your 
-            request and immediately alert compatible donors.
-        </p>
-    </div>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
 
-    <!-- Emergency Note -->
-    <div class="emergency-banner mb-4">
-        <span class="emergency-banner-icon">⚠️</span>
-        <div class="emergency-banner-text">
-            <strong>In a life-threatening emergency</strong>
-            <span>Call St. Francis Hospital Nsambya directly: 
-            <strong>+256 414 267 462</strong></span>
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #dc2626;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #dc2626;
+        }
+
+        .nav-links a.active {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Main Container */
+        .main-container {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Emergency Header */
+        .emergency-header {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .emergency-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('{% static "images/hospital-nsambya.jpg" %}') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .emergency-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .emergency-text h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .emergency-text p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .emergency-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .emergency-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        /* Request Form */
+        .request-form {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .form-header p {
+            color: #6b7280;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .form-group label .required {
+            color: #dc2626;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        /* Urgency Level */
+        .urgency-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .urgency-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .urgency-option {
+            position: relative;
+        }
+
+        .urgency-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .urgency-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .urgency-option input[type="radio"]:checked + label {
+            border-color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .urgency-option label:hover {
+            border-color: #dc2626;
+        }
+
+        .urgency-icon {
+            width: 50px;
+            height: 50px;
+            background: #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .urgency-option input[type="radio"]:checked + label .urgency-icon {
+            background: #dc2626;
+        }
+
+        .urgency-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .urgency-desc {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        /* Blood Type Selection */
+        .blood-type-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .blood-type-option {
+            position: relative;
+        }
+
+        .blood-type-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .blood-type-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            background: white;
+        }
+
+        .blood-type-option input[type="radio"]:checked + label {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: white;
+        }
+
+        .blood-type-option label:hover {
+            border-color: #dc2626;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Recent Requests */
+        .recent-requests {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .recent-requests h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .request-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        .request-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .request-content {
+            flex: 1;
+        }
+
+        .request-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #1a1a1a;
+        }
+
+        .request-content p {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .request-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+        }
+
+        .urgency-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .urgency-critical {
+            background: #dc2626;
+            color: white;
+        }
+
+        .urgency-urgent {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .urgency-normal {
+            background: #10b981;
+            color: white;
+        }
+
+        .request-time {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .emergency-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .emergency-text h1 {
+                font-size: 2rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .urgency-options {
+                grid-template-columns: 1fr;
+            }
+
+            .blood-type-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .request-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .request-meta {
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'donor:home' %}" class="logo">
+                <span class="material-symbols-outlined">bloodtype</span>
+                BloodLink
+            </a>
+            
+            <div class="nav-links">
+                <a href="{% url 'donor:home' %}">Home</a>
+                <a href="{% url 'donor:dashboard' %}">Dashboard</a>
+                <a href="{% url 'donor:request_blood' %}" class="active">Request Blood</a>
+                <a href="{% url 'donor:donations' %}">Donations</a>
+            </div>
+            
+            <div class="user-menu">
+                {% if donor %}
+                    <img src="{% static 'images/donor-smiling.png' %}" alt="User" class="user-avatar">
+                    <span>{{ donor.first_name }} {{ donor.last_name }}</span>
+                    <a href="{% url 'donor:logout' %}" class="btn btn-secondary">Logout</a>
+                {% else %}
+                    <a href="{% url 'donor:login' %}" class="btn btn-secondary">Login</a>
+                    <a href="{% url 'donor:register' %}" class="btn btn-primary">Register</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Form -->
-    <div class="form-card">
-        <div class="form-card-header">
-            <h2>Blood Request Form</h2>
-            <p>All fields marked * are required</p>
-        </div>
-        <div class="form-card-body">
-            <form method="post" class="bl-validate">
-                {% csrf_token %}
-                
-                <div class="form-section-title" style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--staff-text);border-bottom:2px solid var(--bl-red-soft);padding-bottom:8px;margin-bottom:18px;">
-                    <i class="bi bi-person-fill" style="color:var(--bl-red);"></i>
-                    Your Information
-                </div>
-                
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <div class="bl-field">
-                            <label class="bl-label">
-                                Your Full Name <span class="req">*</span>
-                            </label>
-                            {{ form.requester_name }}
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="container">
+            <!-- Emergency Header -->
+            <section class="emergency-header">
+                <div class="emergency-content">
+                    <div class="emergency-text">
+                        <h1>Emergency Blood Request</h1>
+                        <p>Get immediate blood donation support from our verified donors</p>
+                        <div class="emergency-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">{{ available_donors }}</div>
+                                <div class="stat-label">Available Donors</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">15 min</div>
+                                <div class="stat-label">Avg Response Time</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">24/7</div>
+                                <div class="stat-label">Support</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="bl-field">
-                            <label class="bl-label">
-                                Your Phone Number <span class="req">*</span>
-                            </label>
+                    <div class="emergency-icon">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emergency</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Request Form -->
+            <section class="request-form">
+                <div class="form-header">
+                    <h2>Submit Blood Request</h2>
+                    <p>Fill in the details below to send an emergency blood request</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" id="requestForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="{{ form.patient_name.id_for_label }}">Patient Name <span class="required">*</span></label>
+                            {{ form.patient_name }}
+                            {% if form.patient_name.errors %}
+                                <div class="error-message">{{ form.patient_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.patient_age.id_for_label }}">Patient Age <span class="required">*</span></label>
+                            {{ form.patient_age }}
+                            {% if form.patient_age.errors %}
+                                <div class="error-message">{{ form.patient_age.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.patient_gender.id_for_label }}">Patient Gender <span class="required">*</span></label>
+                            {{ form.patient_gender }}
+                            {% if form.patient_gender.errors %}
+                                <div class="error-message">{{ form.patient_gender.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.hospital_name.id_for_label }}">Hospital Name <span class="required">*</span></label>
+                            {{ form.hospital_name }}
+                            {% if form.hospital_name.errors %}
+                                <div class="error-message">{{ form.hospital_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.hospital_location.id_for_label }}">Hospital Location <span class="required">*</span></label>
+                            {{ form.hospital_location }}
+                            {% if form.hospital_location.errors %}
+                                <div class="error-message">{{ form.hospital_location.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.requester_phone.id_for_label }}">Contact Phone <span class="required">*</span></label>
                             {{ form.requester_phone }}
+                            {% if form.requester_phone.errors %}
+                                <div class="error-message">{{ form.requester_phone.errors.0 }}</div>
+                            {% endif %}
+                            <div class="help-text">For donor coordination and updates</div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="bl-field mb-3">
-                    <label class="bl-label">
-                        Your Relationship to Patient <span class="req">*</span>
-                    </label>
-                    {{ form.requester_relationship }}
-                    <span class="bl-field-hint">e.g. Mother, Self, Brother</span>
-                </div>
 
-                <div class="form-section-title" style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--staff-text);border-bottom:2px solid var(--bl-red-soft);padding-bottom:8px;margin-bottom:18px;margin-top:20px;">
-                    <i class="bi bi-heart-pulse-fill" style="color:var(--bl-red);"></i>
-                    Patient & Blood Details
-                </div>
-                
-                <div class="bl-field mb-3">
-                    <label class="bl-label">
-                        Patient Name <span class="req">*</span>
-                    </label>
-                    {{ form.patient_name }}
-                </div>
-                
-                <div class="row g-3 mb-3">
-                    <div class="col-md-4">
-                        <div class="bl-field">
-                            <label class="bl-label">
-                                Blood Type Needed <span class="req">*</span>
-                            </label>
-                            {{ form.blood_type_needed }}
+                    <!-- Urgency Level -->
+                    <div class="urgency-section">
+                        <label style="font-weight: 600; margin-bottom: 1rem; display: block;">Urgency Level <span class="required">*</span></label>
+                        <div class="urgency-options">
+                            <div class="urgency-option">
+                                <input type="radio" name="urgency_level" value="critical" id="urgency_critical" required>
+                                <label for="urgency_critical">
+                                    <div class="urgency-icon">
+                                        <span class="material-symbols-outlined">priority_high</span>
+                                    </div>
+                                    <div class="urgency-title">Critical</div>
+                                    <div class="urgency-desc">Life-threatening, immediate need</div>
+                                </label>
+                            </div>
+                            
+                            <div class="urgency-option">
+                                <input type="radio" name="urgency_level" value="urgent" id="urgency_urgent" required>
+                                <label for="urgency_urgent">
+                                    <div class="urgency-icon">
+                                        <span class="material-symbols-outlined">timer</span>
+                                    </div>
+                                    <div class="urgency-title">Urgent</div>
+                                    <div class="urgency-desc">Within 24 hours</div>
+                                </label>
+                            </div>
+                            
+                            <div class="urgency-option">
+                                <input type="radio" name="urgency_level" value="normal" id="urgency_normal" required>
+                                <label for="urgency_normal">
+                                    <div class="urgency-icon">
+                                        <span class="material-symbols-outlined">schedule</span>
+                                    </div>
+                                    <div class="urgency-title">Normal</div>
+                                    <div class="urgency-desc">Within 3-5 days</div>
+                                </label>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="bl-field">
-                            <label class="bl-label">
-                                Units Needed <span class="req">*</span>
-                            </label>
+
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Blood Type Required <span class="required">*</span></label>
+                            <div class="blood-type-grid">
+                                <div class="blood-type-option">
+                                    <input type="radio" name="blood_type_required" value="A+" id="blood_a_plus" required>
+                                    <label for="blood_a_plus">A+</label>
+                                </div>
+                                <div class="blood-type-option">
+                                    <input type="radio" name="blood_type_required" value="A-" id="blood_a_minus" required>
+                                    <label for="blood_a_minus">A-</label>
+                                </div>
+                                <div class="blood-type-option">
+                                    <input type="radio" name="blood_type_required" value="B+" id="blood_b_plus" required>
+                                    <label for="blood_b_plus">B+</label>
+                                </div>
+                                <div class="blood-type-option">
+                                    <input type="radio" name="blood_type_required" value="B-" id="blood_b_minus" required>
+                                    <label for="blood_b_minus">B-</label>
+                                </div>
+                                <div class="blood-type-option">
+                                    <input type="radio" name="blood_type_required" value="O+" id="blood_o_plus" required>
+                                    <label for="blood_o_plus">O+</label>
+                                </div>
+                                <div class="blood-type-option">
+                                    <input type="radio" name="blood_type_required" value="O-" id="blood_o_minus" required>
+                                    <label for="blood_o_minus">O-</label>
+                                </div>
+                                <div class="blood-type-option">
+                                    <input type="radio" name="blood_type_required" value="AB+" id="blood_ab_plus" required>
+                                    <label for="blood_ab_plus">AB+</label>
+                                </div>
+                                <div class="blood-type-option">
+                                    <input type="radio" name="blood_type_required" value="AB-" id="blood_ab_minus" required>
+                                    <label for="blood_ab_minus">AB-</label>
+                                </div>
+                            </div>
+                            {% if form.blood_type_required.errors %}
+                                <div class="error-message">{{ form.blood_type_required.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.units_needed.id_for_label }}">Units Needed <span class="required">*</span></label>
                             {{ form.units_needed }}
+                            {% if form.units_needed.errors %}
+                                <div class="error-message">{{ form.units_needed.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.transfusion_date.id_for_label }}">Transfusion Date <span class="required">*</span></label>
+                            {{ form.transfusion_date }}
+                            {% if form.transfusion_date.errors %}
+                                <div class="error-message">{{ form.transfusion_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="{{ form.medical_reason.id_for_label }}">Medical Reason <span class="required">*</span></label>
+                            {{ form.medical_reason }}
+                            {% if form.medical_reason.errors %}
+                                <div class="error-message">{{ form.medical_reason.errors.0 }}</div>
+                            {% endif %}
+                            <div class="help-text">Please provide the medical reason for blood transfusion</div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="{{ form.additional_notes.id_for_label }}">Additional Notes</label>
+                            {{ form.additional_notes }}
+                            {% if form.additional_notes.errors %}
+                                <div class="error-message">{{ form.additional_notes.errors.0 }}</div>
+                            {% endif %}
+                            <div class="help-text">Any additional information that might help donors</div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="bl-field">
-                            <label class="bl-label">
-                                Urgency Level <span class="req">*</span>
-                            </label>
-                            {{ form.urgency_level }}
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bl-field mb-3">
-                    <label class="bl-label">Hospital Ward (Optional)</label>
-                    {{ form.hospital_ward }}
-                </div>
-                
-                <div class="bl-field mb-4">
-                    <label class="bl-label">Additional Notes (Optional)</label>
-                    {{ form.additional_notes }}
-                </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <span class="material-symbols-outlined">send</span>
+                        Submit Emergency Request
+                    </button>
+                </form>
+            </section>
 
-                <button type="submit" class="btn-emergency w-100">
-                    <i class="bi bi-send-fill"></i>
-                    Submit Blood Request
-                </button>
-                
-                <p style="font-size:0.75rem;color:var(--staff-muted);
-                           text-align:center;margin-top:12px;">
-                    Your request will be reviewed by hospital staff 
-                    before donors are alerted.
-                </p>
-            </form>
+            <!-- Recent Requests -->
+            <section class="recent-requests">
+                <h2>Recent Blood Requests</h2>
+                <div class="requests-list">
+                    {% if recent_requests %}
+                        {% for request in recent_requests %}
+                        <div class="request-item">
+                            <div class="request-icon">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bloodtype</span>
+                            </div>
+                            <div class="request-content">
+                                <h3>{{ request.patient_name }} - {{ request.blood_type_required }}</h3>
+                                <p>{{ request.hospital_name }} | {{ request.units_needed }} units needed</p>
+                            </div>
+                            <div class="request-meta">
+                                <span class="urgency-badge urgency-{{ request.urgency_level }}">{{ request.urgency_level }}</span>
+                                <span class="request-time">{{ request.submitted_at|timesince }} ago</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="request-item">
+                            <div class="request-icon">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">info</span>
+                            </div>
+                            <div class="request-content">
+                                <h3>No recent requests</h3>
+                                <p>Be the first to submit a blood request</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
         </div>
     </div>
-</div>
-</div>
-{% endblock %}
+
+    <script>
+        // Form validation
+        document.getElementById('requestForm').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    field.style.borderColor = '#ef4444';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e5e7eb';
+                }
+            });
+            
+            // Check urgency level
+            const urgencySelected = document.querySelector('input[name="urgency_level"]:checked');
+            if (!urgencySelected) {
+                isValid = false;
+                alert('Please select the urgency level');
+            }
+            
+            // Check blood type
+            const bloodTypeSelected = document.querySelector('input[name="blood_type_required"]:checked');
+            if (!bloodTypeSelected) {
+                isValid = false;
+                alert('Please select the required blood type');
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        // Remove error states on input
+        document.querySelectorAll('input, select, textarea').forEach(field => {
+            field.addEventListener('input', function() {
+                this.style.borderColor = '#e5e7eb';
+            });
+        });
+
+        // Auto-set minimum date to today
+        const transfusionDate = document.querySelector('input[name="transfusion_date"]');
+        if (transfusionDate) {
+            const today = new Date().toISOString().split('T')[0];
+            transfusionDate.min = today;
+        }
+    </script>
+</body>
+</html>
