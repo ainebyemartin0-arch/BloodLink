@@ -7,7 +7,6 @@ from django.views.decorators.http import require_POST
 import json
 from .models import SMSNotification, PushSubscription
 from .utils import test_africastalking_connection
-from .push_utils import send_emergency_push_alerts
 
 @login_required
 def notification_list(request):

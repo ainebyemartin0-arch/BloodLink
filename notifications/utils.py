@@ -211,15 +211,11 @@ def send_emergency_sms(emergency_request):
                 result['failed_count'] += 1
                 print(f"SMS failed for {donor.full_name}: Invalid API response")
                     
-        except Exception as e:
-                notification.delivery_status = 'failed'
-                notification.save()
-                result['failed_count'] += 1
-                print(f"SMS failed for donor {donor.full_name}: {str(e)}")
+    except Exception as e:
+        notification.delivery_status = 'failed'
+        notification.save()
+        result['failed_count'] += 1
+        print(f"SMS failed for donor {donor.full_name}: {str(e)}")
         
         print(f"SMS Summary: {result['sent_count']} sent, {result['failed_count']} failed")
-        return result
-        
-    except Exception as e:
-        print(f"FAILED SMS system error: {str(e)}")
         return result
