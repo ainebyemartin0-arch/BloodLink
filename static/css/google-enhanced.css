@@ -1,0 +1,472 @@
+/* Google-Enhanced Design System */
+
+/* Google Color Palette */
+:root {
+  --google-blue: #4285f4;
+  --google-red: #ea4335;
+  --google-yellow: #fbbc04;
+  --google-green: #34a853;
+  --google-purple: #9f58c5;
+  --google-gray: #5f6368;
+  --google-light-gray: #f8f9fa;
+  --google-dark-gray: #202124;
+}
+
+/* Google Typography */
+.google-font-heading {
+  font-family: 'Google Sans', 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.google-font-body {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Google Button Styles */
+.google-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+  min-height: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.google-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.google-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.google-btn-primary {
+  background: var(--google-blue);
+  color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.google-btn-primary:hover {
+  background: #357ae8;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.google-btn-secondary {
+  background: white;
+  color: var(--google-blue);
+  border: 1px solid var(--google-blue);
+}
+
+.google-btn-secondary:hover {
+  background: rgba(66, 133, 244, 0.04);
+}
+
+/* Google Card Styles */
+.google-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.google-card:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  transform: translateY(-2px);
+}
+
+/* Google Hero Section */
+.google-hero-enhanced {
+  background: linear-gradient(135deg, var(--google-blue) 0%, var(--google-purple) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.google-hero-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+}
+
+.google-hero-enhanced .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Google Stats Animation */
+.google-stat-number-animated {
+  font-size: 3.5rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, var(--google-blue), var(--google-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: google-number-pulse 2s ease-in-out infinite;
+}
+
+@keyframes google-number-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Google Feature Cards */
+.google-feature-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.google-feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--google-blue), var(--google-red), var(--google-yellow), var(--google-green));
+}
+
+.google-feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+.google-feature-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, var(--google-blue), var(--google-purple));
+  color: white;
+  font-size: 24px;
+}
+
+/* Google Navigation */
+.google-nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.google-nav-brand {
+  font-family: 'Google Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--google-dark-gray);
+  text-decoration: none;
+}
+
+.google-nav-link {
+  color: var(--google-gray);
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.google-nav-link:hover {
+  background: rgba(66, 133, 244, 0.08);
+  color: var(--google-blue);
+}
+
+/* Google Form Styles */
+.google-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.google-form-group {
+  margin-bottom: 24px;
+}
+
+.google-form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--google-dark-gray);
+  font-size: 14px;
+}
+
+.google-form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.google-form-input:focus {
+  outline: none;
+  border-color: var(--google-blue);
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+}
+
+/* Google Alert Styles */
+.google-alert {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  border-left: 4px solid;
+}
+
+.google-alert-info {
+  background: #e8f0fe;
+  border-left-color: var(--google-blue);
+  color: #1967d2;
+}
+
+.google-alert-success {
+  background: #e6f4ea;
+  border-left-color: var(--google-green);
+  color: #137333;
+}
+
+.google-alert-warning {
+  background: #fef7e0;
+  border-left-color: var(--google-yellow);
+  color: #b06000;
+}
+
+.google-alert-error {
+  background: #fce8e6;
+  border-left-color: var(--google-red);
+  color: #d93025;
+}
+
+.google-alert-icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+/* Google Progress Bar */
+.google-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.google-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--google-blue), var(--google-purple));
+  transition: width 0.3s ease;
+}
+
+/* Google Badge Styles */
+.google-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.google-badge-blue {
+  background: rgba(66, 133, 244, 0.1);
+  color: var(--google-blue);
+}
+
+.google-badge-green {
+  background: rgba(52, 168, 83, 0.1);
+  color: var(--google-green);
+}
+
+.google-badge-red {
+  background: rgba(234, 67, 53, 0.1);
+  color: var(--google-red);
+}
+
+.google-badge-yellow {
+  background: rgba(251, 188, 4, 0.1);
+  color: #b06000;
+}
+
+/* Google Floating Action Button */
+.google-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--google-blue);
+  color: white;
+  border: none;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.14), 0 1px 18px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+.google-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.16), 0 3px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Google Table Styles */
+.google-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.google-table th {
+  background: var(--google-light-gray);
+  color: var(--google-gray);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.google-table td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--google-dark-gray);
+}
+
+.google-table tr:hover {
+  background: rgba(66, 133, 244, 0.04);
+}
+
+/* Google Loading Spinner */
+.google-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-top: 2px solid var(--google-blue);
+  border-radius: 50%;
+  animation: google-spin 1s linear infinite;
+}
+
+@keyframes google-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Google Responsive Design */
+@media (max-width: 768px) {
+  .google-hero-enhanced {
+    padding: 60px 0;
+  }
+  
+  .google-stat-number-animated {
+    font-size: 2.5rem;
+  }
+  
+  .google-feature-card {
+    padding: 24px;
+  }
+  
+  .google-nav {
+    padding: 12px 16px;
+  }
+  
+  .google-fab {
+    width: 48px;
+    height: 48px;
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+/* Google Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .google-btn::before,
+  .google-stat-number-animated,
+  .google-feature-card:hover,
+  .google-card:hover {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Google High Contrast Mode */
+@media (prefers-contrast: high) {
+  .google-btn-primary {
+    border: 2px solid var(--google-blue);
+  }
+  
+  .google-card {
+    border: 2px solid var(--google-gray);
+  }
+  
+  .google-form-input {
+    border: 2px solid var(--google-gray);
+  }
+}
+
+/* Google Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .google-card {
+    background: #2d2d2d;
+    color: white;
+  }
+  
+  .google-nav {
+    background: rgba(45, 45, 45, 0.95);
+  }
+  
+  .google-form-input {
+    background: #2d2d2d;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+}

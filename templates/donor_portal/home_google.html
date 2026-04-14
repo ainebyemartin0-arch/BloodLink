@@ -1,0 +1,550 @@
+{% extends 'donor_portal/base_donor_material.html' %}
+{% load static %}
+
+{% block title %}BloodLink - Modern Blood Donation Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Google-Inspired Modern Design */
+.google-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.google-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,165.3C384,171,480,149,576,128C672,107,768,85,864,96C960,107,1056,149,1152,154.7C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+    background-size: cover;
+}
+
+.google-hero-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+.google-hero-title {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    background: linear-gradient(45deg, #ffffff, #f0f0f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.google-hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.google-cards-section {
+    padding: 6rem 0;
+    background: #f8f9fa;
+}
+
+.google-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.google-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.google-card-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: white;
+}
+
+.google-card-icon.donor {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.google-card-icon.request {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.google-card-icon.emergency {
+    background: linear-gradient(135deg, #fa709a, #fee140);
+}
+
+.google-card-icon.impact {
+    background: linear-gradient(135deg, #30cfd0, #330867);
+}
+
+.google-card-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.google-card-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.google-stats {
+    padding: 4rem 0;
+    background: white;
+}
+
+.google-stat-item {
+    text-align: center;
+    padding: 2rem;
+}
+
+.google-stat-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.google-stat-label {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.google-cta {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+}
+
+.google-cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.google-cta-description {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.google-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.google-btn-primary {
+    background: white;
+    color: #667eea;
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+}
+
+.google-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
+}
+
+.google-btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.google-btn-secondary:hover {
+    background: white;
+    color: #667eea;
+}
+
+.google-features {
+    padding: 6rem 0;
+    background: #f8f9fa;
+}
+
+.google-feature-item {
+    display: flex;
+    align-items: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.google-feature-item:hover {
+    transform: translateX(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.google-feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2rem;
+    font-size: 1.5rem;
+    color: white;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    flex-shrink: 0;
+}
+
+.google-feature-content h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+}
+
+.google-feature-content p {
+    color: #666;
+    margin: 0;
+}
+
+.google-testimonial {
+    padding: 6rem 0;
+    background: white;
+}
+
+.google-testimonial-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+}
+
+.google-testimonial-quote {
+    font-size: 1.3rem;
+    font-style: italic;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.google-testimonial-author {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.google-testimonial-role {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .google-hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .google-hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .google-stat-number {
+        font-size: 2.5rem;
+    }
+    
+    .google-feature-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .google-feature-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.google-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.google-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Google-Inspired Hero Section -->
+<section class="google-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="google-hero-content">
+                    <h1 class="google-hero-title">Save Lives with BloodLink</h1>
+                    <p class="google-hero-subtitle">Connect with blood donors in real-time. Every donation matters, every second counts.</p>
+                    <div class="d-flex flex-wrap">
+                        {% if donor %}
+                        <a href="{% url 'donor:dashboard' %}" class="google-btn google-btn-primary">
+                            <i class="material-icons" style="margin-right: 8px;">dashboard</i>
+                            Go to Dashboard
+                        </a>
+                        {% else %}
+                        <a href="{% url 'donor:register' %}" class="google-btn google-btn-primary">
+                            <i class="material-icons" style="margin-right: 8px;">person_add</i>
+                            Become a Donor
+                        </a>
+                        <a href="{% url 'donor:login' %}" class="google-btn google-btn-secondary">
+                            <i class="material-icons" style="margin-right: 8px;">login</i>
+                            Sign In
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="google-float">
+                    <img src="{% static 'images/blood-donation-hero.png' %}" alt="Blood Donation" class="img-fluid rounded-4" style="width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Stats Section -->
+<section class="google-stats">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="google-stat-item">
+                    <div class="google-stat-number">{{ total_donors }}</div>
+                    <div class="google-stat-label">Active Donors</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="google-stat-item">
+                    <div class="google-stat-number">{{ available_donors }}</div>
+                    <div class="google-stat-label">Available Now</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="google-stat-item">
+                    <div class="google-stat-number">24/7</div>
+                    <div class="google-stat-label">Emergency Support</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="google-stat-item">
+                    <div class="google-stat-number">{{ blood_types|length }}</div>
+                    <div class="google-stat-label">Blood Types</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Cards Section -->
+<section class="google-cards-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 style="font-size: 2.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem;">How BloodLink Works</h2>
+            <p style="font-size: 1.2rem; color: #666;">Modern blood donation management made simple</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="google-card">
+                    <div class="google-card-icon donor">
+                        <i class="material-icons">favorite</i>
+                    </div>
+                    <h3 class="google-card-title">Register as Donor</h3>
+                    <p class="google-card-description">Sign up in minutes, provide your blood type and availability. Join our life-saving community.</p>
+                    <a href="{% url 'donor:register' %}" class="google-btn google-btn-primary">
+                        Get Started
+                        <i class="material-icons" style="margin-left: 8px;">arrow_forward</i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="google-card">
+                    <div class="google-card-icon request">
+                        <i class="material-icons">notifications_active</i>
+                    </div>
+                    <h3 class="google-card-title">Receive Alerts</h3>
+                    <p class="google-card-description">Get instant notifications when your blood type is needed. SMS and push notifications keep you informed.</p>
+                    <a href="{% url 'donor:about' %}" class="google-btn google-btn-primary">
+                        Learn More
+                        <i class="material-icons" style="margin-left: 8px;">arrow_forward</i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="google-card">
+                    <div class="google-card-icon emergency">
+                        <i class="material-icons">emergency</i>
+                    </div>
+                    <h3 class="google-card-title">Save Lives</h3>
+                    <p class="google-card-description">Respond to emergency requests immediately. Your donation can make the difference between life and death.</p>
+                    <a href="{% url 'donor:request_blood' %}" class="google-btn google-btn-primary">
+                        Request Blood
+                        <i class="material-icons" style="margin-left: 8px;">arrow_forward</i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="google-card">
+                    <div class="google-card-icon impact">
+                        <i class="material-icons">trending_up</i>
+                    </div>
+                    <h3 class="google-card-title">Track Impact</h3>
+                    <p class="google-card-description">Monitor your donation history and see the lives you've touched. Earn badges and recognition.</p>
+                    <a href="{% url 'donor:about' %}" class="google-btn google-btn-primary">
+                        View Impact
+                        <i class="material-icons" style="margin-left: 8px;">arrow_forward</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Features Section -->
+<section class="google-features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 style="font-size: 2.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 1rem;">Why Choose BloodLink?</h2>
+            <p style="font-size: 1.2rem; color: #666;">Advanced technology meets compassionate care</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="google-feature-item">
+                    <div class="google-feature-icon">
+                        <i class="material-icons">speed</i>
+                    </div>
+                    <div class="google-feature-content">
+                        <h3>Real-Time Matching</h3>
+                        <p>Our intelligent system instantly matches blood requests with available donors, reducing response time from hours to minutes.</p>
+                    </div>
+                </div>
+                
+                <div class="google-feature-item">
+                    <div class="google-feature-icon">
+                        <i class="material-icons">security</i>
+                    </div>
+                    <div class="google-feature-content">
+                        <h3>Secure & Private</h3>
+                        <p>Your medical information is protected with enterprise-grade security. Privacy is our top priority.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="google-feature-item">
+                    <div class="google-feature-icon">
+                        <i class="material-icons">phonelink</i>
+                    </div>
+                    <div class="google-feature-content">
+                        <h3>Mobile First</h3>
+                        <p>Access BloodLink from any device. Our responsive design ensures a seamless experience on phones, tablets, and desktops.</p>
+                    </div>
+                </div>
+                
+                <div class="google-feature-item">
+                    <div class="google-feature-icon">
+                        <i class="material-icons">support_agent</i>
+                    </div>
+                    <div class="google-feature-content">
+                        <h3>24/7 Support</h3>
+                        <p>Our dedicated team is available around the clock to assist donors and healthcare providers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Testimonial Section -->
+<section class="google-testimonial">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="google-testimonial-card">
+                    <div class="google-testimonial-quote">
+                        "BloodLink saved my father's life. When we needed O+ blood urgently, the system found 3 donors within 5 minutes. It's revolutionary!"
+                    </div>
+                    <div class="google-testimonial-author">Sarah Johnson</div>
+                    <div class="google-testimonial-role">Family Member, Kampala</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google CTA Section -->
+<section class="google-cta">
+    <div class="container">
+        <h2 class="google-cta-title">Ready to Save Lives?</h2>
+        <p class="google-cta-description">Join thousands of donors making a difference in their communities</p>
+        <div class="d-flex justify-content-center flex-wrap">
+            {% if donor %}
+            <a href="{% url 'donor:dashboard' %}" class="google-btn google-btn-primary">
+                <i class="material-icons" style="margin-right: 8px;">dashboard</i>
+                Go to Dashboard
+            </a>
+            {% else %}
+            <a href="{% url 'donor:register' %}" class="google-btn google-btn-primary">
+                <i class="material-icons" style="margin-right: 8px;">person_add</i>
+                Register Now
+            </a>
+            <a href="{% url 'donor:about' %}" class="google-btn google-btn-secondary">
+                <i class="material-icons" style="margin-right: 8px;">info</i>
+                Learn More
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
