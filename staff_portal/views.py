@@ -318,8 +318,8 @@ def request_list(request):
     # Annotate each request with confirmed donor count
     requests_with_counts = requests.annotate(
         confirmed_donors=Count(
-            'smsnotification',
-            filter=Q(smsnotification__donor_response='confirmed')
+            'sms_notifications',
+            filter=Q(sms_notifications__donor_response='confirmed')
         )
     )
     
