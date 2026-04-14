@@ -940,3 +940,199 @@ body {
         transparent 100%);
     animation: shimmer 2s infinite;
 }
+
+/* Performance Optimizations */
+.stitch-will-change-transform {
+    will-change: transform;
+}
+
+.stitch-will-change-opacity {
+    will-change: opacity;
+}
+
+.stitch-will-change-all {
+    will-change: transform, opacity;
+}
+
+/* GPU Acceleration */
+.stitch-gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Smooth Scrolling */
+.stitch-smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .stitch-animate-in,
+    .stitch-animate-in-left,
+    .stitch-animate-in-right,
+    .stitch-animate-fade,
+    .stitch-animate-scale {
+        animation-duration: 0.01ms;
+    }
+    
+    .stitch-btn:hover,
+    .stitch-card:hover,
+    .stitch-stat-card:hover {
+        transform: none;
+    }
+    
+    .floating-orb {
+        animation: none;
+    }
+    
+    .stitch-loading::after {
+        animation: none;
+    }
+}
+
+/* Focus Management */
+.stitch-focus-visible {
+    outline: 2px solid var(--stitch-primary);
+    outline-offset: 2px;
+}
+
+.stitch-focus-visible:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(175, 16, 26, 0.3);
+}
+
+/* High Performance Animations */
+.stitch-performance-animation {
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    transform: translateZ(0);
+}
+
+/* Image Optimization */
+.stitch-optimized-image {
+    content-visibility: auto;
+    object-fit: cover;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Text Optimization */
+.stitch-optimized-text {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Container Optimization */
+.stitch-optimized-container {
+    contain: layout style paint;
+    isolation: isolate;
+}
+
+/* Button State Management */
+.stitch-btn-state-primary {
+    background: var(--stitch-gradient-primary);
+    color: var(--stitch-on-primary);
+}
+
+.stitch-btn-state-secondary {
+    background: var(--stitch-surface-container-lowest);
+    color: var(--stitch-on-surface);
+}
+
+.stitch-btn-state-tertiary {
+    background: transparent;
+    color: var(--stitch-primary);
+}
+
+/* Card State Management */
+.stitch-card-state-default {
+    background: var(--stitch-surface-container-lowest);
+    box-shadow: var(--stitch-shadow-sm);
+}
+
+.stitch-card-state-hover {
+    background: var(--stitch-surface-container-lowest);
+    box-shadow: var(--stitch-shadow-lg);
+    transform: translateY(-2px) translateZ(0);
+}
+
+.stitch-card-state-active {
+    background: var(--stitch-surface-container-lowest);
+    box-shadow: var(--stitch-shadow-md);
+    border-color: var(--stitch-primary);
+}
+
+/* Loading Skeleton */
+.stitch-skeleton {
+    background: linear-gradient(90deg, 
+        var(--stitch-surface-container-low) 25%,
+        var(--stitch-surface-container) 50%,
+        var(--stitch-surface-container-low) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Micro-interactions */
+.stitch-micro-interaction {
+    transition: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+    cursor: pointer;
+}
+
+.stitch-micro-interaction:active {
+    transform: scale(0.95);
+}
+
+.stitch-micro-interaction:hover {
+    transform: translateY(-1px);
+}
+
+/* Accessibility Enhancements */
+.stitch-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.stitch-sr-only:focus {
+    outline: none;
+}
+
+/* Print Optimization */
+@media print {
+    .stitch-navbar,
+    .floating-orb,
+    .emergency-badge {
+        display: none;
+    }
+    
+    .stitch-hero {
+        background: none !important;
+        min-height: auto !important;
+    }
+    
+    .stitch-card,
+    .stitch-stat-card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid var(--stitch-outline) !important;
+    }
+    
+    .stitch-btn {
+        background: var(--stitch-surface-container-lowest) !important;
+        color: var(--stitch-on-surface) !important;
+        border: 1px solid var(--stitch-outline) !important;
+    }
+}

@@ -186,8 +186,8 @@
         <div class="row align-items-center g-5">
             <div class="col-lg-6 order-lg-2">
                 <div class="hero-image-container">
-                    <div class="floating-orb" style="width: 200px; height: 200px; background: var(--stitch-primary); top: -50px; right: -50px;"></div>
-                    <img src="{% static 'images/lab-staff.png' %}" alt="Medical Professional" class="hero-image" 
+                    <div class="floating-orb stitch-gpu-accelerated" style="width: 200px; height: 200px; background: var(--stitch-primary); top: -50px; right: -50px;"></div>
+                    <img src="{% static 'images/lab-staff.png' %}" alt="Medical Professional" class="hero-image stitch-optimized-image" 
                          onerror="this.src='https://via.placeholder.com/600x750/f8f9fa/191c1d?text=Medical+Professional'">
                 </div>
             </div>
@@ -271,11 +271,11 @@
 <!-- Impact Stats (Bento Grid) -->
 <section class="bento-grid">
     <!-- Active Donors Card -->
-    <div class="stitch-stat-card stitch-animate-in stitch-animate-delay-1">
-        <div class="stat-icon-large">
+    <div class="stitch-stat-card stitch-animate-in stitch-animate-delay-1 stitch-will-change-all">
+        <div class="stat-icon-large stitch-gpu-accelerated">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_pin_circle</span>
         </div>
-        <div class="stitch-stat-number">{{ total_donors }}</div>
+        <div class="stitch-stat-number stitch-optimized-text">{{ total_donors }}</div>
         <div class="stitch-stat-label">Active Donors</div>
         <p class="stitch-stat-description">
             Verified and ready for immediate contribution in the St. Francis zone.
