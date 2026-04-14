@@ -1004,3 +1004,31 @@ def donation_detail(request, pk):
         'donation': donation,
     }
     return render(request, 'staff_portal/donation_detail.html', context)
+
+
+@login_required
+def request_escalate(request, pk):
+    """Escalate an emergency request to higher authorities."""
+    emergency_request = get_object_or_404(EmergencyRequest, pk=pk)
+    
+    if request.method == 'POST':
+        # Log the escalation
+        log_activity(
+            request.user,
+            'request_escalated',
+            f'Emergency request for {emergency_request.blood_type_needed} blood escalated to higher authorities',
+            related_request_id=emergency_request.pk
+        )
+        
+        # Update the request to mark as escalated
+        emergency_request.urgency_level = 'critical'  # Upgrade to critical
+        emergency_request.save()
+        
+        messages.success(
+            request,
+            f'✅ Request escalated to higher authorities. Urgency level upgraded to critical.'
+        )
+        
+        return redirect('staff:request_detail', pk=emergency_request.pk)
+    
+    return redirect('staff:request_detail', pk=emergency_request.pk)

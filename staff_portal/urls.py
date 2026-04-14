@@ -24,6 +24,8 @@ urlpatterns = [
     path('requests/<int:pk>/delete/', views.request_delete, name='request_delete'),
     path('requests/<int:pk>/resend/', 
      views.request_resend_alerts, name='request_resend'),
+    path('requests/<int:pk>/escalate/', 
+     views.request_escalate, name='request_escalate'),
     path('requests/<int:pk>/fulfill/', 
      views.request_fulfill, name='request_fulfill'),
     path('reports/', views.reports, name='reports'),

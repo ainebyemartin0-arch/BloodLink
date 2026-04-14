@@ -217,6 +217,7 @@ class ActivityLog(models.Model):
         ('request_created', 'Emergency Request Created'),
         ('request_closed', 'Request Closed'),
         ('request_fulfilled', 'Request Fulfilled'),
+        ('request_escalated', 'Request Escalated'),
         ('request_resent', 'Alerts Re-Sent'),
         ('stock_updated', 'Blood Stock Updated'),
         ('public_approved', 'Public Request Approved'),
