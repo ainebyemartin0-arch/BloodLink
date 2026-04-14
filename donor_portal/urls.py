@@ -15,6 +15,7 @@ urlpatterns = [
     path('profile/edit/', views.donor_profile_edit, name='profile_edit'),
     path('donations/', views.donor_donations, name='donations'),
     path('requests/', views.donor_requests, name='donor_requests'),
+    path('toggle-availability/', views.toggle_availability, name='toggle_availability'),
     path('cancel-request/<int:pk>/', views.cancel_request, name='cancel_request'),
     path('change-password/', views.donor_change_password, name='change_password'),
     path('respond/<int:pk>/', views.respond_to_alert, name='respond_to_alert'),

@@ -1,0 +1,723 @@
+/* BloodLink Material Design Customizations */
+
+/* BloodLink Brand Colors with Material Design */
+:root {
+  /* BloodLink Primary - Deep Blood Red */
+  --bl-primary: #c62828;
+  --bl-primary-light: #ff5f52;
+  --bl-primary-dark: #8e0000;
+  --bl-primary-rgb: 198, 40, 40;
+  
+  /* BloodLink Secondary - Medical Blue */
+  --bl-secondary: #1565c0;
+  --bl-secondary-light: #5e92f3;
+  --bl-secondary-dark: #003c8f;
+  --bl-secondary-rgb: 21, 101, 192;
+  
+  /* BloodLink Accent - Hope Green */
+  --bl-accent: #2e7d32;
+  --bl-accent-light: #60ad5e;
+  --bl-accent-dark: #005005;
+  --bl-accent-rgb: 46, 125, 50;
+  
+  /* BloodLink Surface Colors */
+  --bl-surface: #ffffff;
+  --bl-surface-variant: #f8f9fa;
+  --bl-background: #fafbfc;
+  --bl-on-surface: #212529;
+  --bl-on-background: #212529;
+  --bl-on-primary: #ffffff;
+  --bl-on-secondary: #ffffff;
+  
+  /* BloodLink Status Colors */
+  --bl-success: #2e7d32;
+  --bl-warning: #f57c00;
+  --bl-error: #d32f2f;
+  --bl-info: #1976d2;
+  
+  /* BloodLink Typography */
+  --bl-font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+  --bl-font-weight-light: 300;
+  --bl-font-weight-regular: 400;
+  --bl-font-weight-medium: 500;
+  --bl-font-weight-bold: 700;
+  
+  /* BloodLink Spacing */
+  --bl-spacing-xs: 4px;
+  --bl-spacing-sm: 8px;
+  --bl-spacing-md: 16px;
+  --bl-spacing-lg: 24px;
+  --bl-spacing-xl: 32px;
+  --bl-spacing-xxl: 48px;
+  
+  /* BloodLink Shadows */
+  --bl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --bl-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --bl-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --bl-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  
+  /* BloodLink Border Radius */
+  --bl-radius-sm: 4px;
+  --bl-radius-md: 8px;
+  --bl-radius-lg: 12px;
+  --bl-radius-xl: 16px;
+  --bl-radius-full: 50%;
+}
+
+/* Override Material Design with BloodLink Colors */
+.md-btn-primary {
+  background: var(--bl-primary);
+  color: var(--bl-on-primary);
+  box-shadow: 0 2px 4px rgba(var(--bl-primary-rgb), 0.3);
+}
+
+.md-btn-primary:hover {
+  background: var(--bl-primary-light);
+  box-shadow: 0 4px 8px rgba(var(--bl-primary-rgb), 0.4);
+}
+
+.md-btn-secondary {
+  background: var(--bl-secondary);
+  color: var(--bl-on-secondary);
+  box-shadow: 0 2px 4px rgba(var(--bl-secondary-rgb), 0.3);
+}
+
+.md-btn-secondary:hover {
+  background: var(--bl-secondary-light);
+  box-shadow: 0 4px 8px rgba(var(--bl-secondary-rgb), 0.4);
+}
+
+.md-btn-success {
+  background: var(--bl-success);
+  color: white;
+  box-shadow: 0 2px 4px rgba(46, 125, 50, 0.3);
+}
+
+.md-btn-success:hover {
+  background: var(--bl-accent-light);
+  box-shadow: 0 4px 8px rgba(46, 125, 50, 0.4);
+}
+
+.md-btn-outlined {
+  background: transparent;
+  color: var(--bl-primary);
+  border: 1px solid var(--bl-primary);
+}
+
+.md-btn-outlined:hover {
+  background: rgba(var(--bl-primary-rgb), 0.04);
+}
+
+/* BloodLink Navbar */
+.bl-navbar {
+  background: linear-gradient(135deg, var(--bl-primary), var(--bl-primary-dark));
+  box-shadow: var(--bl-shadow-md);
+  padding: var(--bl-spacing-md) 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.bl-navbar-brand {
+  color: var(--bl-on-primary);
+  font-size: 24px;
+  font-weight: var(--bl-font-weight-bold);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: var(--bl-spacing-sm) 0;
+}
+
+.bl-navbar-brand:hover {
+  color: var(--bl-on-primary);
+  text-decoration: none;
+}
+
+.bl-navbar-nav {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bl-navbar-nav li {
+  margin-left: var(--bl-spacing-md);
+}
+
+.bl-navbar-nav a {
+  color: var(--bl-on-primary);
+  text-decoration: none;
+  padding: var(--bl-spacing-sm) var(--bl-spacing-md);
+  border-radius: var(--bl-radius-sm);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.bl-navbar-nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--bl-on-primary);
+}
+
+/* BloodLink Cards */
+.bl-card {
+  background: var(--bl-surface);
+  border-radius: var(--bl-radius-lg);
+  box-shadow: var(--bl-shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.bl-card:hover {
+  box-shadow: var(--bl-shadow-lg);
+  transform: translateY(-2px);
+}
+
+.bl-card-header {
+  background: var(--bl-surface-variant);
+  padding: var(--bl-spacing-lg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.bl-card-body {
+  padding: var(--bl-spacing-lg);
+}
+
+.bl-card-footer {
+  background: var(--bl-surface-variant);
+  padding: var(--bl-spacing-lg);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Blood Type Badge */
+.blood-type-badge {
+  background: linear-gradient(135deg, var(--bl-primary), var(--bl-primary-light));
+  color: white;
+  padding: var(--bl-spacing-sm) var(--bl-spacing-md);
+  border-radius: var(--bl-radius-md);
+  font-weight: var(--bl-font-weight-bold);
+  font-size: 14px;
+  box-shadow: var(--bl-shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.blood-type-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: var(--bl-radius-full);
+  margin-right: var(--bl-spacing-sm);
+  opacity: 0.8;
+}
+
+/* Urgency Indicators */
+.urgency-critical {
+  background: linear-gradient(135deg, var(--bl-error), #ff6659);
+  color: white;
+  animation: pulse-red 2s infinite;
+}
+
+.urgency-urgent {
+  background: linear-gradient(135deg, var(--bl-warning), #ff9800);
+  color: white;
+}
+
+.urgency-normal {
+  background: linear-gradient(135deg, var(--bl-info), #42a5f5);
+  color: white;
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+}
+
+/* BloodLink Stats Cards */
+.bl-stats-card {
+  background: var(--bl-surface);
+  border-radius: var(--bl-radius-xl);
+  padding: var(--bl-spacing-xl);
+  text-align: center;
+  box-shadow: var(--bl-shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.bl-stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--bl-primary), var(--bl-secondary));
+}
+
+.bl-stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--bl-shadow-xl);
+}
+
+.bl-stats-number {
+  font-size: 2.5rem;
+  font-weight: var(--bl-font-weight-light);
+  color: var(--bl-primary);
+  margin-bottom: var(--bl-spacing-sm);
+  display: block;
+}
+
+.bl-stats-label {
+  color: var(--bl-on-surface);
+  font-size: 14px;
+  font-weight: var(--bl-font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.bl-stats-icon {
+  font-size: 2.5rem;
+  color: var(--bl-primary);
+  margin-bottom: var(--bl-spacing-md);
+  opacity: 0.8;
+}
+
+/* BloodLink Forms */
+.bl-form-group {
+  margin-bottom: var(--bl-spacing-lg);
+}
+
+.bl-form-label {
+  display: block;
+  margin-bottom: var(--bl-spacing-sm);
+  font-weight: var(--bl-font-weight-medium);
+  color: var(--bl-on-surface);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bl-form-control {
+  width: 100%;
+  padding: var(--bl-spacing-md);
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-surface);
+  color: var(--bl-on-surface);
+  font-family: var(--bl-font-family);
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.bl-form-control:focus {
+  outline: none;
+  border-color: var(--bl-primary);
+  box-shadow: 0 0 0 3px rgba(var(--bl-primary-rgb), 0.1);
+}
+
+.bl-form-control::placeholder {
+  color: rgba(0, 0, 0, 0.38);
+}
+
+/* BloodLink Buttons */
+.bl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bl-spacing-md) var(--bl-spacing-lg);
+  border: none;
+  border-radius: var(--bl-radius-md);
+  font-family: var(--bl-font-family);
+  font-weight: var(--bl-font-weight-medium);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.bl-btn:focus {
+  outline: none;
+}
+
+.bl-btn:active {
+  transform: scale(0.98);
+}
+
+.bl-btn-primary {
+  background: linear-gradient(135deg, var(--bl-primary), var(--bl-primary-light));
+  color: var(--bl-on-primary);
+  box-shadow: 0 4px 6px rgba(var(--bl-primary-rgb), 0.3);
+}
+
+.bl-btn-primary:hover {
+  background: linear-gradient(135deg, var(--bl-primary-light), var(--bl-primary));
+  box-shadow: 0 6px 12px rgba(var(--bl-primary-rgb), 0.4);
+  transform: translateY(-1px);
+}
+
+.bl-btn-secondary {
+  background: linear-gradient(135deg, var(--bl-secondary), var(--bl-secondary-light));
+  color: var(--bl-on-secondary);
+  box-shadow: 0 4px 6px rgba(var(--bl-secondary-rgb), 0.3);
+}
+
+.bl-btn-secondary:hover {
+  background: linear-gradient(135deg, var(--bl-secondary-light), var(--bl-secondary));
+  box-shadow: 0 6px 12px rgba(var(--bl-secondary-rgb), 0.4);
+  transform: translateY(-1px);
+}
+
+.bl-btn-success {
+  background: linear-gradient(135deg, var(--bl-success), var(--bl-accent-light));
+  color: white;
+  box-shadow: 0 4px 6px rgba(46, 125, 50, 0.3);
+}
+
+.bl-btn-success:hover {
+  background: linear-gradient(135deg, var(--bl-accent-light), var(--bl-success));
+  box-shadow: 0 6px 12px rgba(46, 125, 50, 0.4);
+  transform: translateY(-1px);
+}
+
+.bl-btn-outline {
+  background: transparent;
+  color: var(--bl-primary);
+  border: 2px solid var(--bl-primary);
+}
+
+.bl-btn-outline:hover {
+  background: rgba(var(--bl-primary-rgb), 0.04);
+  transform: translateY(-1px);
+}
+
+/* BloodLink Alerts */
+.bl-alert {
+  padding: var(--bl-spacing-lg);
+  border-radius: var(--bl-radius-md);
+  margin-bottom: var(--bl-spacing-lg);
+  display: flex;
+  align-items: center;
+  box-shadow: var(--bl-shadow-sm);
+  border-left: 4px solid;
+}
+
+.bl-alert-success {
+  background: #e8f5e8;
+  color: var(--bl-success);
+  border-left-color: var(--bl-success);
+}
+
+.bl-alert-warning {
+  background: #fff8e1;
+  color: var(--bl-warning);
+  border-left-color: var(--bl-warning);
+}
+
+.bl-alert-error {
+  background: #ffebee;
+  color: var(--bl-error);
+  border-left-color: var(--bl-error);
+}
+
+.bl-alert-info {
+  background: #e3f2fd;
+  color: var(--bl-info);
+  border-left-color: var(--bl-info);
+}
+
+.bl-alert-icon {
+  margin-right: var(--bl-spacing-md);
+  font-size: 20px;
+}
+
+/* BloodLink Tables */
+.bl-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bl-surface);
+  box-shadow: var(--bl-shadow-sm);
+  border-radius: var(--bl-radius-lg);
+  overflow: hidden;
+}
+
+.bl-table th {
+  background: var(--bl-surface-variant);
+  color: var(--bl-on-surface);
+  font-weight: var(--bl-font-weight-medium);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--bl-spacing-lg);
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.bl-table td {
+  padding: var(--bl-spacing-lg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--bl-on-surface);
+}
+
+.bl-table tr:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.bl-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* BloodLink Footer */
+.bl-footer {
+  background: var(--bl-surface-variant);
+  padding: var(--bl-spacing-xxl) 0;
+  margin-top: var(--bl-spacing-xxl);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.bl-footer h5 {
+  color: var(--bl-primary);
+  font-weight: var(--bl-font-weight-bold);
+  margin-bottom: var(--bl-spacing-lg);
+}
+
+.bl-footer a {
+  color: var(--bl-on-surface);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.bl-footer a:hover {
+  color: var(--bl-primary);
+}
+
+/* BloodLink Floating Action Button */
+.bl-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--bl-primary), var(--bl-primary-light));
+  color: var(--bl-on-primary);
+  border: none;
+  box-shadow: var(--bl-shadow-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  position: fixed;
+  bottom: var(--bl-spacing-xl);
+  right: var(--bl-spacing-xl);
+  z-index: 1000;
+}
+
+.bl-fab:hover {
+  transform: scale(1.1);
+  box-shadow: var(--bl-shadow-xl);
+}
+
+.bl-fab:active {
+  transform: scale(0.95);
+}
+
+/* BloodLink Progress Bar */
+.bl-progress {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bl-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--bl-primary), var(--bl-secondary));
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+/* BloodLink Responsive Design */
+@media (max-width: 768px) {
+  .bl-stats-card {
+    padding: var(--bl-spacing-lg);
+  }
+  
+  .bl-stats-number {
+    font-size: 2rem;
+  }
+  
+  .bl-navbar {
+    padding: var(--bl-spacing-sm) 0;
+  }
+  
+  .bl-navbar-brand {
+    font-size: 20px;
+  }
+  
+  .bl-card-body {
+    padding: var(--bl-spacing-md);
+  }
+  
+  .bl-table {
+    font-size: 14px;
+  }
+  
+  .bl-table th,
+  .bl-table td {
+    padding: var(--bl-spacing-md);
+  }
+  
+  .bl-fab {
+    width: 48px;
+    height: 48px;
+    bottom: var(--bl-spacing-lg);
+    right: var(--bl-spacing-lg);
+  }
+}
+
+/* BloodLink Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.bl-animate-slide-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.bl-animate-slide-down {
+  animation: slideInDown 0.5s ease-out;
+}
+
+.bl-animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* BloodLink Loading States */
+.bl-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.bl-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* BloodLink Status Indicators */
+.bl-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--bl-spacing-xs) var(--bl-spacing-sm);
+  border-radius: var(--bl-radius-full);
+  font-size: 12px;
+  font-weight: var(--bl-font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bl-status-online {
+  background: var(--bl-success);
+  color: white;
+}
+
+.bl-status-offline {
+  background: var(--bl-on-surface);
+  color: white;
+}
+
+.bl-status-busy {
+  background: var(--bl-warning);
+  color: white;
+}
+
+/* BloodLink Typography */
+.bl-heading-1 {
+  font-size: 2.5rem;
+  font-weight: var(--bl-font-weight-light);
+  color: var(--bl-primary);
+  margin-bottom: var(--bl-spacing-lg);
+}
+
+.bl-heading-2 {
+  font-size: 2rem;
+  font-weight: var(--bl-font-weight-light);
+  color: var(--bl-primary);
+  margin-bottom: var(--bl-spacing-md);
+}
+
+.bl-heading-3 {
+  font-size: 1.5rem;
+  font-weight: var(--bl-font-weight-medium);
+  color: var(--bl-primary);
+  margin-bottom: var(--bl-spacing-md);
+}
+
+.bl-body-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--bl-on-surface);
+  margin-bottom: var(--bl-spacing-md);
+}
+
+.bl-caption {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: var(--bl-spacing-sm);
+}

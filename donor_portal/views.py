@@ -157,7 +157,7 @@ def donor_dashboard(request):
         'recent_donations': recent_donations,
         'unread_alerts': unread_alerts,
     }
-    return render(request, 'donor_portal/dashboard.html', context)
+    return render(request, 'donor_portal/dashboard_material.html', context)
 
 @donor_login_required
 def donor_profile(request):
@@ -448,6 +448,37 @@ def cancel_request(request, pk):
                 'success': False,
                 'error': 'Request not found or already processed.'
             })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'error': 'Invalid request method.'
+    })
+
+
+@donor_login_required
+def toggle_availability(request):
+    """Toggle donor availability status"""
+    donor = get_logged_in_donor(request)
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            is_available = data.get('available', False)
+            
+            donor.is_available = is_available
+            donor.save()
+            
+            return JsonResponse({
+                'success': True,
+                'available': is_available,
+                'message': f'You are now {"available" if is_available else "unavailable"} for donations.'
+            })
+            
         except Exception as e:
             return JsonResponse({
                 'success': False,
