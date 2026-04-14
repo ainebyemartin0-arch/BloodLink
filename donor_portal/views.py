@@ -44,7 +44,7 @@ def donor_home(request):
         'available_donors': available_donors,
         'blood_types': BLOOD_TYPE_CHOICES,
     }
-    return render(request, 'donor_portal/home_google.html', context)
+    return render(request, 'donor_portal/home.html', context)
 
 def test_page(request):
     """Simple test page to debug issues"""
@@ -157,7 +157,7 @@ def donor_dashboard(request):
         'recent_donations': recent_donations,
         'unread_alerts': unread_alerts,
     }
-    return render(request, 'donor_portal/dashboard_material.html', context)
+    return render(request, 'donor_portal/dashboard.html', context)
 
 @donor_login_required
 def donor_profile(request):
