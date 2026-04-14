@@ -1,33 +1,704 @@
+{% extends 'donor_portal/base_donor_material.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Requests - BloodLink</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
-            min-height: 100vh;
-        }
+{% block title %}My Requests - BloodLink{% endblock %}
 
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+{% block extra_css %}
+<style>
+.requests-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
 
-        /* Advanced Animations */
-        @keyframes float {
+.stats-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius-large);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--md-shadow-1);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--md-shadow-3);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--md-primary);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--md-on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.requests-section {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius-large);
+    box-shadow: var(--md-shadow-2);
+    overflow: hidden;
+}
+
+.section-header {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+.filters-bar {
+    padding: 1.5rem 2rem;
+    background: var(--md-surface-variant);
+    border-bottom: 1px solid var(--md-outline);
+}
+
+.filters-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: var(--md-on-surface);
+    white-space: nowrap;
+}
+
+.filter-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.requests-list {
+    padding: 1rem;
+}
+
+.request-card {
+    background: var(--md-surface);
+    border: 1px solid var(--md-outline);
+    border-radius: var(--md-border-radius-large);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.request-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--md-shadow-2);
+}
+
+.request-card.urgent {
+    border-left: 4px solid var(--md-error);
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.request-card.urgent::before {
+    content: 'URGENT';
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--md-error);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-bottom-left-radius: var(--md-border-radius);
+}
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.request-info {
+    flex: 1;
+}
+
+.request-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--md-on-surface);
+    margin-bottom: 0.5rem;
+}
+
+.request-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--md-on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.blood-type-badge {
+    background: var(--md-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.status-confirmed {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.status-completed {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.status-cancelled {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.request-details {
+    margin-bottom: 1rem;
+    color: var(--md-on-surface-variant);
+    line-height: 1.5;
+}
+
+.request-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--md-border-radius);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-primary {
+    background: var(--md-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #b91c1c;
+}
+
+.btn-secondary {
+    background: var(--md-secondary);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #059669;
+}
+
+.btn-danger {
+    background: var(--md-error);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--md-on-surface-variant);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-description {
+    margin-bottom: 2rem;
+}
+
+.pagination-container {
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--md-surface-variant);
+}
+
+.pagination-info {
+    color: var(--md-on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.pagination-links {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pagination-link {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.pagination-link:hover {
+    border-color: var(--md-primary);
+    color: var(--md-primary);
+}
+
+.pagination-link.active {
+    background: var(--md-primary);
+    color: white;
+    border-color: var(--md-primary);
+}
+
+.urgency-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.urgency-high {
+    background: var(--md-error);
+}
+
+.urgency-medium {
+    background: #f59e0b;
+}
+
+.urgency-low {
+    background: var(--md-secondary);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+@media (max-width: 768px) {
+    .requests-container {
+        margin: 1rem auto;
+    }
+    
+    .stats-header {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+    
+    .filters-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .request-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .request-actions {
+        justify-content: center;
+    }
+    
+    .pagination-container {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="requests-container">
+    <!-- Statistics Header -->
+    <div class="stats-header">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">pending_actions</span>
+            </div>
+            <div class="stat-number">{{ pending_requests }}</div>
+            <div class="stat-label">Pending Requests</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">check_circle</span>
+            </div>
+            <div class="stat-number">{{ confirmed_requests }}</div>
+            <div class="stat-label">Confirmed</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">history</span>
+            </div>
+            <div class="stat-number">{{ completed_requests }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">bloodtype</span>
+            </div>
+            <div class="stat-number">{{ total_requests }}</div>
+            <div class="stat-label">Total Requests</div>
+        </div>
+    </div>
+
+    <!-- Requests Section -->
+    <div class="requests-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">My Blood Requests</h2>
+                <p class="section-subtitle">Track and manage your blood donation requests</p>
+            </div>
+            <a href="{% url 'donor:request_blood' %}" class="btn-action btn-primary">
+                <span class="material-icons">add</span>
+                New Request
+            </a>
+        </div>
+        
+        <div class="filters-bar">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label">Status:</label>
+                    <select class="filter-select" id="status-filter">
+                        <option value="">All Status</option>
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="confirmed" {% if request.GET.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                        <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Urgency:</label>
+                    <select class="filter-select" id="urgency-filter">
+                        <option value="">All Levels</option>
+                        <option value="high" {% if request.GET.urgency == 'high' %}selected{% endif %}>High</option>
+                        <option value="medium" {% if request.GET.urgency == 'medium' %}selected{% endif %}>Medium</option>
+                        <option value="low" {% if request.GET.urgency == 'low' %}selected{% endif %}>Low</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Date Range:</label>
+                    <select class="filter-select" id="date-filter">
+                        <option value="">All Time</option>
+                        <option value="today" {% if request.GET.date == 'today' %}selected{% endif %}>Today</option>
+                        <option value="week" {% if request.GET.date == 'week' %}selected{% endif %}>This Week</option>
+                        <option value="month" {% if request.GET.date == 'month' %}selected{% endif %}>This Month</option>
+                        <option value="year" {% if request.GET.date == 'year' %}selected{% endif %}>This Year</option>
+                    </select>
+                </div>
+                
+                <button class="btn-action btn-primary" onclick="applyFilters()">
+                    <span class="material-icons">filter_list</span>
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+        
+        <div class="requests-list">
+            {% if requests %}
+                {% for request in requests %}
+                <div class="request-card {% if request.urgency_level == 'urgent' %}urgent{% endif %}">
+                    {% if request.urgency_level == 'urgent' %}
+                    <div class="urgency-indicator urgency-high"></div>
+                    {% endif %}
+                    
+                    <div class="request-header">
+                        <div class="request-info">
+                            <h3 class="request-title">
+                                Blood Request - {{ request.blood_type_needed }}
+                                {% if request.emergency_request %}
+                                    <small class="text-muted">(Emergency)</small>
+                                {% endif %}
+                            </h3>
+                            
+                            <div class="request-meta">
+                                <div class="meta-item">
+                                    <span class="material-icons">calendar_today</span>
+                                    {{ request.created_at|date:"M d, Y" }}
+                                </div>
+                                <div class="meta-item">
+                                    <span class="material-icons">schedule</span>
+                                    {{ request.created_at|date:"h:i A" }}
+                                </div>
+                                <div class="meta-item">
+                                    <span class="material-icons">location_on</span>
+                                    {{ request.hospital_name|default:"St. Francis Hospital" }}
+                                </div>
+                            </div>
+                            
+                            <div class="blood-type-badge">{{ request.blood_type_needed }}</div>
+                        </div>
+                        
+                        <div class="status-badge status-{{ request.status }}">
+                            {{ request.get_status_display }}
+                        </div>
+                    </div>
+                    
+                    <div class="request-details">
+                        <p><strong>Patient:</strong> {{ request.patient_name }}</p>
+                        <p><strong>Units Needed:</strong> {{ request.units_needed }} unit{% if request.units_needed != 1 %}s{% endif %}</p>
+                        <p><strong>Ward/Department:</strong> {{ request.ward|default:"Emergency Department" }}</p>
+                        {% if request.notes %}
+                        <p><strong>Additional Notes:</strong> {{ request.notes }}</p>
+                        {% endif %}
+                        
+                        {% if request.medical_condition %}
+                        <p><strong>Medical Condition:</strong> {{ request.medical_condition }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="request-actions">
+                        {% if request.status == 'pending' %}
+                            <a href="{% url 'donor:cancel_request' request.pk %}" class="btn-action btn-danger" onclick="return confirm('Are you sure you want to cancel this request?')">
+                                <span class="material-icons">cancel</span>
+                                Cancel Request
+                            </a>
+                        {% endif %}
+                        
+                        {% if request.status == 'confirmed' %}
+                            <button class="btn-action btn-primary" onclick="showDetails({{ request.id }})">
+                                <span class="material-icons">info</span>
+                                View Details
+                            </button>
+                        {% endif %}
+                        
+                        {% if request.status == 'completed' %}
+                            <button class="btn-action btn-secondary" onclick="downloadCertificate({{ request.id }})">
+                                <span class="material-icons">download</span>
+                                Download Certificate
+                            </button>
+                        {% endif %}
+                        
+                        <button class="btn-action btn-secondary" onclick="printRequest({{ request.id }})">
+                            <span class="material-icons">print</span>
+                            Print
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <span class="material-icons">request_page</span>
+                    </div>
+                    <h3 class="empty-title">No Blood Requests Yet</h3>
+                    <p class="empty-description">You haven't made any blood requests yet. Create your first request to get started.</p>
+                    <a href="{% url 'donor:request_blood' %}" class="btn md-btn md-btn-primary">
+                        <span class="material-icons">add</span>
+                        Create Your First Request
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if is_paginated %}
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Showing {{ requests.start_index }}-{{ requests.end_index }} of {{ requests.paginator.count }} requests
+            </div>
+            <div class="pagination-links">
+                {% if requests.has_previous %}
+                    <a href="?page=1" class="pagination-link">First</a>
+                    <a href="?page={{ requests.previous_page_number }}" class="pagination-link">Previous</a>
+                {% endif %}
+                
+                {% for num in requests.paginator.page_range %}
+                    {% if requests.number == num %}
+                        <span class="pagination-link active">{{ num }}</span>
+                    {% else %}
+                        <a href="?page={{ num }}" class="pagination-link">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if requests.has_next %}
+                    <a href="?page={{ requests.next_page_number }}" class="pagination-link">Next</a>
+                    <a href="?page={{ requests.paginator.num_pages }}" class="pagination-link">Last</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function applyFilters() {
+    const status = document.getElementById('status-filter').value;
+    const urgency = document.getElementById('urgency-filter').value;
+    const date = document.getElementById('date-filter').value;
+    
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    if (urgency) params.append('urgency', urgency);
+    if (date) params.append('date', date);
+    
+    const url = new URL(window.location);
+    url.search = params.toString();
+    window.location.href = url.toString();
+}
+
+function showDetails(requestId) {
+    // Implement modal or redirect to details page
+    window.open(`/donor/requests/${requestId}/`, '_blank');
+}
+
+function downloadCertificate(requestId) {
+    window.open(`/donor/requests/${requestId}/certificate/`, '_blank');
+}
+
+function printRequest(requestId) {
+    window.open(`/donor/requests/${requestId}/print/`, '_blank');
+}
+
+// Auto-submit filters on change
+document.querySelectorAll('.filter-select').forEach(select => {
+    select.addEventListener('change', function() {
+        if (this.value) {
+            applyFilters();
+        }
+    });
+});
+
+// Auto-refresh for urgent requests
+function refreshUrgentRequests() {
+    const urgentCards = document.querySelectorAll('.request-card.urgent');
+    if (urgentCards.length > 0) {
+        // Refresh every 30 seconds for urgent requests
+        setTimeout(() => {
+            location.reload();
+        }, 30000);
+    }
+}
+
+refreshUrgentRequests();
+</script>
+
+<style>
+@media print {
+    .filters-bar,
+    .request-actions,
+    .pagination-container {
+        display: none !important;
+    }
+    
+    .request-card {
+        break-inside: avoid;
+        border: 1px solid #ccc;
+    }
+    
+    .urgency-indicator {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(180deg); }
         }

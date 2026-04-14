@@ -64,7 +64,7 @@ def donor_register(request):
         return redirect('donor:dashboard')
     
     if request.method == 'POST':
-        form = DonorRegistrationForm(request.POST)
+        form = DonorRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             # Create donor
             donor = Donor.objects.create(
@@ -76,6 +76,7 @@ def donor_register(request):
                 blood_type=form.cleaned_data['blood_type'],
                 location=form.cleaned_data['location'],
                 physical_address=form.cleaned_data['physical_address'],
+                profile_picture=form.cleaned_data.get('profile_picture'),
                 is_available=True,
                 is_active=True,
                 date_registered=timezone.now()

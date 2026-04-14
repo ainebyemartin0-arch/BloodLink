@@ -15,6 +15,7 @@ class Donor(models.Model):
     blood_type = models.CharField(max_length=3, choices=BLOOD_TYPE_CHOICES)
     location = models.CharField(max_length=100, choices=LOCATION_CHOICES, default='Other')
     physical_address = models.CharField(max_length=200, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     is_available = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     last_donation_date = models.DateField(null=True, blank=True)
@@ -26,6 +27,13 @@ class Donor(models.Model):
     
     def check_password(self, raw_password):
         return check_password(raw_password, self.password_hash)
+    
+    @property
+    def profile_picture_url(self):
+        """Get profile picture URL or return default avatar."""
+        if self.profile_picture:
+            return self.profile_picture.url
+        return 'https://ui-avatars.com/api/?name=' + self.full_name.replace(' ', '+') + '&background=dc2626&color=fff&size=200'
     
     @property
     def is_eligible(self):

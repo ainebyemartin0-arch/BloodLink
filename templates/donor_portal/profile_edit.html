@@ -1,33 +1,522 @@
-{% extends 'base_donor_modern.html' %}
+{% extends 'donor_portal/base_donor_material.html' %}
+{% load static %}
 
 {% block title %}Update My Profile - BloodLink{% endblock %}
 
 {% block extra_css %}
 <style>
-/* Enhanced Form Styles */
+.profile-edit-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.profile-card {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius-large);
+    box-shadow: var(--md-shadow-2);
+    overflow: hidden;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.profile-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.profile-header p {
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+.profile-body {
+    padding: 2rem;
+}
+
+.info-box {
+    background: #f0f9ff;
+    border-left: 4px solid #0ea5e9;
+    padding: 1.5rem;
+    border-radius: var(--md-border-radius);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.info-icon {
+    color: #0284c7;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.info-content p {
+    color: #075985;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--md-on-surface);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--md-on-surface);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
 .form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--md-surface-variant);
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--md-surface-variant);
+    box-sizing: border-box;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--md-surface-variant);
+    resize: vertical;
+    min-height: 100px;
+    box-sizing: border-box;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.help-text {
+    font-size: 0.875rem;
+    color: var(--md-on-surface-variant);
+    margin-top: 0.25rem;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--md-surface-variant);
+    border-radius: var(--md-border-radius);
+    border: 2px solid var(--md-outline);
+    transition: all 0.3s ease;
+}
+
+.form-check:hover {
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+}
+
+.form-check-input {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid var(--md-primary);
+    background: var(--md-surface);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-check-input:checked {
+    background: var(--md-primary);
+    border-color: var(--md-primary);
+}
+
+.form-check-label {
+    font-weight: 600;
+    color: var(--md-on-surface);
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.error-message {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 0.75rem;
+    border-radius: var(--md-border-radius);
+    border-left: 4px solid #dc2626;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+}
+
+.btn-secondary {
+    background: var(--md-surface-variant);
+    color: var(--md-on-surface);
+    border: 2px solid var(--md-outline);
+    padding: 1rem 2rem;
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+    border-color: var(--md-primary);
+    color: var(--md-primary);
+    background: var(--md-surface);
+}
+
+@media (max-width: 768px) {
+    .profile-edit-container {
+        margin: 1rem auto;
+    }
+    
+    .profile-header,
+    .profile-body {
+        padding: 1.5rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .info-box {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Django form field overrides */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
     width: 100% !important;
     padding: 0.75rem 1rem !important;
-    border: 2px solid #e5e7eb !important;
-    border-radius: 0.5rem !important;
+    border: 2px solid var(--md-outline) !important;
+    border-radius: var(--md-border-radius) !important;
     font-size: 1rem !important;
-    background: white !important;
+    background: var(--md-surface-variant) !important;
     transition: all 0.3s ease !important;
     box-sizing: border-box !important;
 }
 
-.form-control:focus {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
     outline: none !important;
-    border-color: #dc2626 !important;
+    border-color: var(--md-primary) !important;
+    background: var(--md-surface) !important;
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
 }
+</style>
+{% endblock %}
 
-.form-check-input {
-    width: 1.2rem !important;
-    height: 1.2rem !important;
-    border: 2px solid #dc2626 !important;
-    background: white !important;
-}
+{% block content %}
+<div class="profile-edit-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <h2>Update My Profile</h2>
+            <p>Keep your information up to date for better donation coordination</p>
+        </div>
+        
+        <div class="profile-body">
+            <div class="info-box">
+                <div class="info-icon">
+                    <span class="material-icons">info</span>
+                </div>
+                <div class="info-content">
+                    <p><strong>Note:</strong> Email and blood type cannot be changed. Contact the hospital to update these details.</p>
+                </div>
+            </div>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="material-icons">contact_phone</span>
+                        Contact Information
+                    </h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                                <div class="error-message">{{ form.phone_number.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.location.id_for_label }}">Location</label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                                <div class="error-message">{{ form.location.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.physical_address.id_for_label }}">Physical Address</label>
+                        {{ form.physical_address }}
+                        {% if form.physical_address.errors %}
+                            <div class="error-message">{{ form.physical_address.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="material-icons">medical_information</span>
+                        Medical Information
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.profile_notes.id_for_label }}">Profile Notes</label>
+                        {{ form.profile_notes }}
+                        <small class="help-text">Any medical conditions, allergies, or other important information</small>
+                        {% if form.profile_notes.errors %}
+                            <div class="error-message">{{ form.profile_notes.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="material-icons">availability</span>
+                        Availability Status
+                    </h3>
+                    
+                    <div class="form-check">
+                        {{ form.is_available }}
+                        <label class="form-check-label" for="{{ form.is_available.id_for_label }}">
+                            I am available for blood donation
+                        </label>
+                    </div>
+                    <small class="help-text">Uncheck this if you're temporarily unavailable (travel, illness, etc.)</small>
+                    {% if form.is_available.errors %}
+                        <div class="error-message">{{ form.is_available.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn-primary">
+                        <span class="material-icons">save</span>
+                        Save Changes
+                    </button>
+                    <a href="{% url 'donor:profile' %}" class="btn-secondary">
+                        <span class="material-icons">cancel</span>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation and enhancement
+    const form = document.querySelector('form');
+    const phoneNumber = document.querySelector('input[name="phone_number"]');
+    const location = document.querySelector('input[name="location"]');
+    const physicalAddress = document.querySelector('textarea[name="physical_address"]');
+    const submitBtn = document.querySelector('.btn-primary');
+
+    function validateForm() {
+        let isValid = true;
+        
+        // Basic validation
+        if (phoneNumber && !phoneNumber.value.trim()) {
+            isValid = false;
+        }
+        
+        if (location && !location.value.trim()) {
+            isValid = false;
+        }
+        
+        submitBtn.disabled = !isValid;
+        return isValid;
+    }
+
+    // Phone number formatting
+    if (phoneNumber) {
+        phoneNumber.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = value;
+                } else if (value.length <= 6) {
+                    value = value.slice(0, 3) + '-' + value.slice(3);
+                } else {
+                    value = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6, 10);
+                }
+            }
+            e.target.value = value;
+            validateForm();
+        });
+    }
+
+    if (location) {
+        location.addEventListener('input', validateForm);
+    }
+    
+    if (physicalAddress) {
+        physicalAddress.addEventListener('input', validateForm);
+    }
+
+    // Auto-save draft functionality
+    let autoSaveTimer;
+    function autoSave() {
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => {
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            localStorage.setItem('profileEditDraft', JSON.stringify(data));
+        }, 2000);
+    }
+
+    // Auto-save on input
+    form.addEventListener('input', autoSave);
+    
+    // Restore draft on page load
+    const draftData = localStorage.getItem('profileEditDraft');
+    if (draftData) {
+        const data = JSON.parse(draftData);
+        for (let [key, value] of Object.entries(data)) {
+            const field = form.querySelector(`[name="${key}"]`);
+            if (field) {
+                field.value = value;
+            }
+        }
+    }
+
+    // Clear draft on successful submission
+    form.addEventListener('submit', function() {
+        localStorage.removeItem('profileEditDraft');
+    });
+
+    // Initial validation
+    validateForm();
+});
+</script>
+{% endblock %}
 
 .form-check-input:checked {
     background: #dc2626 !important;

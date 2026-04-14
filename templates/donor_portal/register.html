@@ -1,33 +1,594 @@
+{% extends 'donor_portal/base_donor_material.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register as Donor - BloodLink</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+
+{% block title %}Register as Donor - BloodLink{% endblock %}
+
+{% block extra_css %}
+<style>
+.register-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.register-card {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius-large);
+    box-shadow: var(--md-shadow-2);
+    overflow: hidden;
+}
+
+.register-header {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.register-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.register-header p {
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+.register-body {
+    padding: 2rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--md-on-surface);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--md-surface-variant);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--md-surface-variant);
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.profile-picture-section {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.profile-picture-upload {
+    display: inline-block;
+    position: relative;
+}
+
+.profile-picture-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid var(--md-outline);
+    background: var(--md-surface-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.profile-picture-preview:hover {
+    border-color: var(--md-primary);
+    transform: scale(1.05);
+}
+
+.profile-picture-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-picture-placeholder {
+    font-size: 3rem;
+    color: var(--md-on-surface-variant);
+}
+
+.profile-picture-input {
+    display: none;
+}
+
+.profile-picture-label {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--md-surface-variant);
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    color: var(--md-on-surface);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.profile-picture-label:hover {
+    background: var(--md-primary);
+    color: white;
+    border-color: var(--md-primary);
+}
+
+.profile-picture-help {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--md-on-surface-variant);
+}
+
+.terms-section {
+    background: var(--md-surface-variant);
+    border-radius: var(--md-border-radius);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.terms-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.terms-checkbox input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: var(--md-primary);
+    margin-top: 0.25rem;
+}
+
+.terms-text {
+    flex: 1;
+    color: var(--md-on-surface-variant);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.btn-register {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+}
+
+.btn-register:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--md-on-surface-variant);
+}
+
+.login-link a {
+    color: var(--md-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.progress-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    gap: 0.5rem;
+}
+
+.progress-step {
+    width: 40px;
+    height: 4px;
+    background: var(--md-outline);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active {
+    background: var(--md-primary);
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .register-container {
+        margin: 1rem auto;
+    }
+    
+    .register-header,
+    .register-body {
+        padding: 1.5rem;
+    }
+}
+
+.error-message {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 0.75rem;
+    border-radius: var(--md-border-radius);
+    border-left: 4px solid #dc2626;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.success-message {
+    background: #f0fdf4;
+    color: #16a34a;
+    padding: 0.75rem;
+    border-radius: var(--md-border-radius);
+    border-left: 4px solid #16a34a;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h2>Join BloodLink</h2>
+            <p>Become a life-saving donor today</p>
+        </div>
+        
+        <div class="register-body">
+            <div class="progress-indicator">
+                <div class="progress-step active"></div>
+                <div class="progress-step active"></div>
+                <div class="progress-step active"></div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.first_name.id_for_label }}">First Name</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="{{ form.first_name.id_for_label }}" 
+                               name="{{ form.first_name.name }}" 
+                               value="{{ form.first_name.value|default:'' }}"
+                               placeholder="Enter your first name"
+                               required>
+                        {% if form.first_name.errors %}
+                            <small class="text-danger">{{ form.first_name.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.last_name.id_for_label }}">Last Name</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="{{ form.last_name.id_for_label }}" 
+                               name="{{ form.last_name.name }}" 
+                               value="{{ form.last_name.value|default:'' }}"
+                               placeholder="Enter your last name"
+                               required>
+                        {% if form.last_name.errors %}
+                            <small class="text-danger">{{ form.last_name.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.email.id_for_label }}">Email Address</label>
+                    <input type="email" 
+                           class="form-control" 
+                           id="{{ form.email.id_for_label }}" 
+                           name="{{ form.email.name }}" 
+                           value="{{ form.email.value|default:'' }}"
+                           placeholder="Enter your email address"
+                           required>
+                    {% if form.email.errors %}
+                        <small class="text-danger">{{ form.email.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                    <input type="tel" 
+                           class="form-control" 
+                           id="{{ form.phone_number.id_for_label }}" 
+                           name="{{ form.phone_number.name }}" 
+                           value="{{ form.phone_number.value|default:'' }}"
+                           placeholder="Enter your phone number"
+                           required>
+                    {% if form.phone_number.errors %}
+                        <small class="text-danger">{{ form.phone_number.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.blood_type.id_for_label }}">Blood Type</label>
+                        <select class="form-select" 
+                                id="{{ form.blood_type.id_for_label }}" 
+                                name="{{ form.blood_type.name }}"
+                                required>
+                            <option value="">Select your blood type</option>
+                            {% for value, label in form.blood_type.field.choices %}
+                                <option value="{{ value }}" {% if form.blood_type.value == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.blood_type.errors %}
+                            <small class="text-danger">{{ form.blood_type.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.date_of_birth.id_for_label }}">Date of Birth</label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="{{ form.date_of_birth.id_for_label }}" 
+                               name="{{ form.date_of_birth.name }}" 
+                               value="{{ form.date_of_birth.value|default:'' }}"
+                               required>
+                        {% if form.date_of_birth.errors %}
+                            <small class="text-danger">{{ form.date_of_birth.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.address.id_for_label }}">Address</label>
+                    <textarea class="form-control" 
+                              id="{{ form.address.id_for_label }}" 
+                              name="{{ form.address.name }}" 
+                              rows="3"
+                              placeholder="Enter your residential address"
+                              required>{{ form.address.value|default:'' }}</textarea>
+                    {% if form.address.errors %}
+                        <small class="text-danger">{{ form.address.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <!-- Profile Picture Upload -->
+                <div class="profile-picture-section">
+                    <label class="form-label">Profile Picture (Optional)</label>
+                    <div class="profile-picture-upload">
+                        <div class="profile-picture-preview" id="profilePreview">
+                            <span class="material-icons profile-picture-placeholder">account_circle</span>
+                        </div>
+                        <label for="{{ form.profile_picture.id_for_label }}" class="profile-picture-label">
+                            <span class="material-icons" style="font-size: 1rem; margin-right: 0.5rem; vertical-align: middle;">photo_camera</span>
+                            Choose Photo
+                        </label>
+                        {{ form.profile_picture }}
+                        {% if form.profile_picture.errors %}
+                            <small class="text-danger">{{ form.profile_picture.errors.0 }}</small>
+                        {% endif %}
+                        <div class="profile-picture-help">
+                            Upload a professional photo. Optional - you can add this later in your profile.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.occupation.id_for_label }}">Occupation (Optional)</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="{{ form.occupation.id_for_label }}" 
+                           name="{{ form.occupation.name }}" 
+                           value="{{ form.occupation.value|default:'' }}"
+                           placeholder="Enter your occupation">
+                    {% if form.occupation.errors %}
+                        <small class="text-danger">{{ form.occupation.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="{{ form.password.id_for_label }}" 
+                               name="{{ form.password.name }}" 
+                               placeholder="Create a strong password"
+                               required>
+                        {% if form.password.errors %}
+                            <small class="text-danger">{{ form.password.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.confirm_password.id_for_label }}">Confirm Password</label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="{{ form.confirm_password.id_for_label }}" 
+                               name="{{ form.confirm_password.name }}" 
+                               placeholder="Confirm your password"
+                               required>
+                        {% if form.confirm_password.errors %}
+                            <small class="text-danger">{{ form.confirm_password.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <div class="terms-checkbox">
+                        <input type="checkbox" 
+                               id="{{ form.is_available.id_for_label }}" 
+                               name="{{ form.is_available.name }}" 
+                               {% if form.is_available.value %}checked{% endif %}>
+                        <div class="terms-text">
+                            <label for="{{ form.is_available.id_for_label }}">
+                                <strong>I am available for emergency blood donations</strong><br>
+                                By checking this box, you agree to receive SMS notifications when your blood type is urgently needed. You can change this setting anytime in your profile.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="terms" required>
+                        <div class="terms-text">
+                            <label for="terms">
+                                <strong>I agree to the terms and conditions</strong><br>
+                                By registering, I confirm that I am at least 18 years old, in good health, and willing to donate blood voluntarily. I understand that my information will be used for blood donation coordination purposes only.
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register">
+                    <span class="material-icons">person_add</span>
+                    Create My Donor Account
+                </button>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a href="{% url 'donor:login' %}">Sign in here</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('form');
+    const password = document.querySelector('input[name="password"]');
+    const confirmPassword = document.querySelector('input[name="confirm_password"]');
+    const termsCheckbox = document.getElementById('terms');
+    const submitBtn = document.querySelector('.btn-register');
+
+    function validateForm() {
+        let isValid = true;
+
+        // Check password match
+        if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Passwords do not match');
+            isValid = false;
+        } else {
+            confirmPassword.setCustomValidity('');
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
-            min-height: 100vh;
+        // Check terms
+        if (!termsCheckbox.checked) {
+            isValid = false;
         }
 
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+        submitBtn.disabled = !isValid;
+        return isValid;
+    }
 
-        /* Navigation */
-        .navbar {
+    password.addEventListener('input', validateForm);
+    confirmPassword.addEventListener('input', validateForm);
+    termsCheckbox.addEventListener('change', validateForm);
+
+    // Password strength indicator
+    password.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]+/)) strength++;
+        if (password.match(/[A-Z]+/)) strength++;
+        if (password.match(/[0-9]+/)) strength++;
+        if (password.match(/[$@#&!]+/)) strength++;
+
+        // You could add a visual strength indicator here
+        console.log(`Password strength: ${strength}/5`);
+    });
+
+    // Profile picture preview
+    const profilePictureInput = document.querySelector('input[type="file"]');
+    const profilePreview = document.getElementById('profilePreview');
+    
+    if (profilePictureInput && profilePreview) {
+        profilePictureInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePreview.innerHTML = `<img src="${e.target.result}" alt="Profile preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Auto-enable/disable submit button
+    validateForm();
+});
+</script>
+{% endblock %}
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);

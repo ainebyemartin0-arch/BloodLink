@@ -1,33 +1,581 @@
+{% extends 'donor_portal/base_donor_material.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request Blood - BloodLink</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+
+{% block title %}Request Blood - BloodLink{% endblock %}
+
+{% block extra_css %}
+<style>
+.request-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.request-card {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius-large);
+    box-shadow: var(--md-shadow-2);
+    overflow: hidden;
+}
+
+.request-header {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.request-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.request-header p {
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+.request-body {
+    padding: 2rem;
+}
+
+.urgency-section {
+    background: var(--md-surface-variant);
+    border-radius: var(--md-border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.urgency-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--md-on-surface);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.urgency-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.urgency-option {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.urgency-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.urgency-card {
+    background: var(--md-surface);
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.urgency-option input[type="radio"]:checked + .urgency-card {
+    border-color: var(--md-primary);
+    background: rgba(220, 38, 38, 0.05);
+}
+
+.urgency-option input[type="radio"]:checked + .urgency-card .urgency-icon {
+    background: var(--md-primary);
+    color: white;
+}
+
+.urgency-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--md-surface-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    color: var(--md-on-surface-variant);
+    transition: all 0.3s ease;
+}
+
+.urgency-label {
+    font-weight: 600;
+    color: var(--md-on-surface);
+    margin-bottom: 0.5rem;
+}
+
+.urgency-description {
+    font-size: 0.875rem;
+    color: var(--md-on-surface-variant);
+    line-height: 1.4;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--md-on-surface);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--md-on-surface);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--md-surface-variant);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--md-surface-variant);
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--md-surface-variant);
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    background: var(--md-surface);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.help-text {
+    font-size: 0.875rem;
+    color: var(--md-on-surface-variant);
+    margin-top: 0.25rem;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.info-box {
+    background: #f0f9ff;
+    border-left: 4px solid #0ea5e9;
+    padding: 1rem;
+    border-radius: var(--md-border-radius);
+    margin-bottom: 2rem;
+}
+
+.info-box h4 {
+    color: #0c4a6e;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-box p {
+    color: #075985;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.warning-box {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 1rem;
+    border-radius: var(--md-border-radius);
+    margin-bottom: 2rem;
+}
+
+.warning-box h4 {
+    color: #92400e;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.warning-box p {
+    color: #78350f;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .request-container {
+        margin: 1rem auto;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .urgency-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .request-header,
+    .request-body {
+        padding: 1.5rem;
+    }
+}
+
+.error-message {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 0.75rem;
+    border-radius: var(--md-border-radius);
+    border-left: 4px solid #dc2626;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.success-message {
+    background: #f0fdf4;
+    color: #16a34a;
+    padding: 0.75rem;
+    border-radius: var(--md-border-radius);
+    border-left: 4px solid #16a34a;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="request-container">
+    <div class="request-card">
+        <div class="request-header">
+            <h2>Request Blood</h2>
+            <p>Submit your blood donation request and we'll match you with available donors</p>
+        </div>
+        
+        <div class="request-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="info-box">
+                <h4>
+                    <span class="material-icons">info</span>
+                    How It Works
+                </h4>
+                <p>Once you submit your request, we'll immediately notify matching donors in your area. Most requests receive responses within 30-60 minutes during business hours.</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="material-icons">priority_high</span>
+                        Urgency Level
+                    </h3>
+                    
+                    <div class="urgency-section">
+                        <div class="urgency-options">
+                            <div class="urgency-option">
+                                <input type="radio" id="urgency-low" name="urgency_level" value="low" {% if form.urgency_level.value == 'low' %}checked{% endif %}>
+                                <div class="urgency-card">
+                                    <div class="urgency-icon">
+                                        <span class="material-icons">schedule</span>
+                                    </div>
+                                    <div class="urgency-label">Low Priority</div>
+                                    <div class="urgency-description">Non-urgent, can wait up to 24 hours</div>
+                                </div>
+                            </div>
+                            
+                            <div class="urgency-option">
+                                <input type="radio" id="urgency-medium" name="urgency_level" value="medium" {% if form.urgency_level.value == 'medium' or not form.urgency_level.value %}checked{% endif %}>
+                                <div class="urgency-card">
+                                    <div class="urgency-icon">
+                                        <span class="material-icons">timer</span>
+                                    </div>
+                                    <div class="urgency-label">Medium Priority</div>
+                                    <div class="urgency-description">Needed within 6-12 hours</div>
+                                </div>
+                            </div>
+                            
+                            <div class="urgency-option">
+                                <input type="radio" id="urgency-urgent" name="urgency_level" value="urgent" {% if form.urgency_level.value == 'urgent' %}checked{% endif %}>
+                                <div class="urgency-card">
+                                    <div class="urgency-icon">
+                                        <span class="material-icons">emergency</span>
+                                    </div>
+                                    <div class="urgency-label">Emergency</div>
+                                    <div class="urgency-description">Critical - needed immediately</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="material-icons">person</span>
+                        Patient Information
+                    </h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.patient_name.id_for_label }}">Patient Name *</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="{{ form.patient_name.id_for_label }}" 
+                                   name="{{ form.patient_name.name }}" 
+                                   value="{{ form.patient_name.value|default:'' }}"
+                                   placeholder="Enter patient's full name"
+                                   required>
+                            {% if form.patient_name.errors %}
+                                <small class="text-danger">{{ form.patient_name.errors.0 }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.blood_type_needed.id_for_label }}">Blood Type Needed *</label>
+                            <select class="form-select" 
+                                    id="{{ form.blood_type_needed.id_for_label }}" 
+                                    name="{{ form.blood_type_needed.name }}"
+                                    required>
+                                <option value="">Select blood type</option>
+                                {% for value, label in form.blood_type_needed.field.choices %}
+                                    <option value="{{ value }}" {% if form.blood_type_needed.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.blood_type_needed.errors %}
+                                <small class="text-danger">{{ form.blood_type_needed.errors.0 }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.units_needed.id_for_label }}">Units Needed *</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="{{ form.units_needed.id_for_label }}" 
+                                   name="{{ form.units_needed.name }}" 
+                                   value="{{ form.units_needed.value|default:1 }}"
+                                   min="1"
+                                   max="10"
+                                   placeholder="Number of units"
+                                   required>
+                            {% if form.units_needed.errors %}
+                                <small class="text-danger">{{ form.units_needed.errors.0 }}</small>
+                            {% endif %}
+                            <small class="help-text">Typically 1-2 units per request</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.ward.id_for_label }}">Ward/Department *</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="{{ form.ward.id_for_label }}" 
+                                   name="{{ form.ward.name }}" 
+                                   value="{{ form.ward.value|default:'' }}"
+                                   placeholder="e.g., Emergency, ICU, Surgery"
+                                   required>
+                            {% if form.ward.errors %}
+                                <small class="text-danger">{{ form.ward.errors.0 }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="material-icons">medical_services</span>
+                        Medical Information
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.medical_condition.id_for_label }}">Medical Condition (Optional)</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="{{ form.medical_condition.id_for_label }}" 
+                               name="{{ form.medical_condition.name }}" 
+                               value="{{ form.medical_condition.value|default:'' }}"
+                               placeholder="e.g., Surgery, Anemia, Trauma">
+                        {% if form.medical_condition.errors %}
+                            <small class="text-danger">{{ form.medical_condition.errors.0 }}</small>
+                        {% endif %}
+                        <small class="help-text">Helps us understand the medical context</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.notes.id_for_label }}">Additional Notes</label>
+                        <textarea class="form-textarea" 
+                                  id="{{ form.notes.id_for_label }}" 
+                                  name="{{ form.notes.name }}" 
+                                  placeholder="Any additional information that might help donors understand the urgency...">{{ form.notes.value|default:'' }}</textarea>
+                        {% if form.notes.errors %}
+                            <small class="text-danger">{{ form.notes.errors.0 }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>
+                        <span class="material-icons">warning</span>
+                        Important Notice
+                    </h4>
+                    <p>Please ensure all information is accurate. False requests may result in account suspension and prevent genuine patients from receiving timely blood donations.</p>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <span class="material-icons">send</span>
+                    Submit Blood Request
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('form');
+    const patientName = document.querySelector('input[name="patient_name"]');
+    const bloodType = document.querySelector('select[name="blood_type_needed"]');
+    const unitsNeeded = document.querySelector('input[name="units_needed"]');
+    const ward = document.querySelector('input[name="ward"]');
+    const submitBtn = document.querySelector('.btn-submit');
+
+    function validateForm() {
+        let isValid = true;
+
+        // Check required fields
+        if (!patientName.value.trim()) {
+            isValid = false;
+        }
+        
+        if (!bloodType.value) {
+            isValid = false;
+        }
+        
+        if (!unitsNeeded.value || unitsNeeded.value < 1) {
+            isValid = false;
+        }
+        
+        if (!ward.value.trim()) {
+            isValid = false;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
-            min-height: 100vh;
-        }
+        submitBtn.disabled = !isValid;
+        return isValid;
+    }
 
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+    patientName.addEventListener('input', validateForm);
+    bloodType.addEventListener('change', validateForm);
+    unitsNeeded.addEventListener('input', validateForm);
+    ward.addEventListener('input', validateForm);
 
-        /* Navigation */
-        .navbar {
+    // Auto-enable/disable submit button
+    validateForm();
+
+    // Urgency level visual feedback
+    const urgencyOptions = document.querySelectorAll('.urgency-option');
+    urgencyOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            urgencyOptions.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            this.classList.add('selected');
+        });
+    });
+});
+</script>
+{% endblock %}
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);

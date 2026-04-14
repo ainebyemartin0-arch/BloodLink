@@ -1,33 +1,415 @@
-{% extends 'base_donor_modern.html' %}
-{% block title %}Request Submitted{% endblock %}
-{% block content %}
-<div style="min-height:70vh;display:flex;align-items:center;
-            justify-content:center;padding:48px 0;">
-<div class="container" style="max-width:500px;text-align:center;">
-    <div style="font-size:4rem;margin-bottom:16px;">✅</div>
-    <h1 style="font-family:'Playfair Display',serif;
-               color:var(--bl-red);font-size:1.8rem;">
-        Request Submitted!
-    </h1>
-    <p style="color:var(--staff-muted);margin:12px 0 20px;">
-        Your blood request has been received by the hospital team.
-    </p>
+{% extends 'donor_portal/base_donor_material.html' %}
+{% load static %}
+
+{% block title %}Request Submitted - BloodLink{% endblock %}
+
+{% block extra_css %}
+<style>
+.success-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.success-card {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius-large);
+    box-shadow: var(--md-shadow-2);
+    overflow: hidden;
+    text-align: center;
+    animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.success-header {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+    color: white;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.success-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-30px, -30px) rotate(180deg); }
+}
+
+.success-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 3rem;
+    position: relative;
+    z-index: 1;
+}
+
+.success-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.success-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.success-body {
+    padding: 2rem;
+}
+
+.reference-section {
+    background: var(--md-surface-variant);
+    border-radius: var(--md-border-radius-large);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 2px solid var(--md-outline);
+    position: relative;
+    overflow: hidden;
+}
+
+.reference-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--md-primary) 0%, #ef4444 100%);
+}
+
+.reference-label {
+    font-size: 0.875rem;
+    color: var(--md-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.reference-number {
+    font-family: 'Courier New', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--md-primary);
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+}
+
+.request-details {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--md-outline);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--md-on-surface);
+}
+
+.detail-value {
+    color: var(--md-on-surface-variant);
+    font-weight: 500;
+}
+
+.status-badge {
+    background: #fef3c7;
+    color: #d97706;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.info-box {
+    background: #f0f9ff;
+    border-left: 4px solid #0ea5e9;
+    padding: 1.5rem;
+    border-radius: var(--md-border-radius);
+    margin-bottom: 2rem;
+    text-align: left;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.info-icon {
+    color: #0284c7;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.info-content h4 {
+    color: #0c4a6e;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.info-content p {
+    color: #075985;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+}
+
+.btn-secondary {
+    background: var(--md-surface-variant);
+    color: var(--md-on-surface);
+    border: 2px solid var(--md-outline);
+    padding: 1rem 2rem;
+    border-radius: var(--md-border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+    border-color: var(--md-primary);
+    color: var(--md-primary);
+    background: var(--md-surface);
+}
+
+@media (max-width: 768px) {
+    .success-container {
+        margin: 1rem auto;
+        padding: 0 1rem;
+    }
     
-    <div style="background:white;border-radius:12px;padding:24px;
-                border:1px solid var(--staff-border);
-                box-shadow:var(--shadow-sm);margin-bottom:24px;">
-        <div style="font-size:0.75rem;color:var(--staff-muted);
-                    text-transform:uppercase;letter-spacing:1px;">
-            Reference Number
+    .success-header,
+    .success-body {
+        padding: 1.5rem;
+    }
+    
+    .success-title {
+        font-size: 2rem;
+    }
+    
+    .reference-number {
+        font-size: 1.8rem;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .info-box {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-header">
+            <div class="success-icon">
+                <span class="material-icons">check_circle</span>
+            </div>
+            <h1 class="success-title">Request Submitted!</h1>
+            <p class="success-subtitle">Your blood request has been received and is being processed</p>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;
-                    font-size:2rem;font-weight:700;color:var(--bl-red);">
-            BL-{{ public_request.pk|stringformat:"04d" }}
+        
+        <div class="success-body">
+            <div class="reference-section">
+                <div class="reference-label">Reference Number</div>
+                <div class="reference-number">BL-{{ public_request.pk|stringformat:"04d" }}</div>
+                
+                <div class="request-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Blood Type Needed:</span>
+                        <span class="detail-value">{{ public_request.blood_type_needed }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Units Required:</span>
+                        <span class="detail-value">{{ public_request.units_needed }} unit{% if public_request.units_needed != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Patient:</span>
+                        <span class="detail-value">{{ public_request.patient_name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Ward/Department:</span>
+                        <span class="detail-value">{{ public_request.ward }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Current Status:</span>
+                        <span class="status-badge">Pending Staff Review</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-icon">
+                    <span class="material-icons">info</span>
+                </div>
+                <div class="info-content">
+                    <h4>What Happens Next?</h4>
+                    <p>
+                        Our medical team will review your request and immediately alert matching donors in your area. 
+                        You may be contacted on <strong>{{ public_request.requester_phone }}</strong> for updates or additional information. 
+                        Most requests receive responses within 30-60 minutes during business hours.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{% url 'donor:home' %}" class="btn-primary">
+                    <span class="material-icons">home</span>
+                    Back to Home
+                </a>
+                <a href="{% url 'donor:donor_requests' %}" class="btn-secondary">
+                    <span class="material-icons">list</span>
+                    View My Requests
+                </a>
+            </div>
         </div>
-        <div style="margin-top:12px;font-size:0.85rem;color:var(--staff-text);">
-            <strong>Blood Type:</strong> {{ public_request.blood_type_needed }}<br>
-            <strong>Units Needed:</strong> {{ public_request.units_needed }}<br>
-            <strong>Status:</strong> Pending Staff Review
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh status check
+    let refreshCount = 0;
+    const maxRefreshes = 10; // Stop after 10 refreshes (5 minutes)
+    
+    function checkRequestStatus() {
+        if (refreshCount >= maxRefreshes) {
+            return;
+        }
+        
+        fetch(`/donor/api/request-status/{{ public_request.pk }}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'pending') {
+                    // Status changed, refresh the page
+                    window.location.reload();
+                } else {
+                    // Still pending, schedule next check
+                    refreshCount++;
+                    setTimeout(checkRequestStatus, 30000); // Check every 30 seconds
+                }
+            })
+            .catch(error => {
+                console.log('Status check failed:', error);
+                // Continue checking even on error
+                refreshCount++;
+                setTimeout(checkRequestStatus, 30000);
+            });
+    }
+    
+    // Start status checking after 30 seconds
+    setTimeout(checkRequestStatus, 30000);
+    
+    // Copy reference number to clipboard
+    const referenceNumber = document.querySelector('.reference-number');
+    referenceNumber.style.cursor = 'pointer';
+    referenceNumber.title = 'Click to copy';
+    
+    referenceNumber.addEventListener('click', function() {
+        const text = this.textContent;
+        navigator.clipboard.writeText(text).then(function() {
+            // Show copied feedback
+            const originalText = referenceNumber.textContent;
+            referenceNumber.textContent = 'Copied!';
+            setTimeout(() => {
+                referenceNumber.textContent = originalText;
+            }, 2000);
+        });
+    });
+});
+</script>
+{% endblock %}
         </div>
     </div>
     

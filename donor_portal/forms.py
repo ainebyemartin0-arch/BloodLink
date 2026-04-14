@@ -44,6 +44,10 @@ class DonorRegistrationForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your physical address (optional)'})
     )
+    profile_picture = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'})
+    )
     terms = forms.BooleanField(
         required=True,
         error_messages={'required': 'You must accept the terms and conditions to register.'}

@@ -1,33 +1,619 @@
+{% extends 'donor_portal/base_donor_material.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donation History - BloodLink</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
-            min-height: 100vh;
-        }
+{% block title %}Donation History - BloodLink{% endblock %}
 
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+{% block extra_css %}
+<style>
+.donations-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
 
-        /* Advanced Animations */
-        @keyframes float {
+.stats-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius-large);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--md-shadow-1);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--md-shadow-3);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--md-primary);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--md-on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.donations-section {
+    background: var(--md-surface);
+    border-radius: var(--md-border-radius-large);
+    box-shadow: var(--md-shadow-2);
+    overflow: hidden;
+}
+
+.section-header {
+    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+.filters-bar {
+    padding: 1.5rem 2rem;
+    background: var(--md-surface-variant);
+    border-bottom: 1px solid var(--md-outline);
+}
+
+.filters-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: var(--md-on-surface);
+    white-space: nowrap;
+}
+
+.filter-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.donations-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.donations-table th {
+    background: var(--md-surface-variant);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--md-on-surface);
+    border-bottom: 2px solid var(--md-outline);
+}
+
+.donations-table td {
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--md-outline);
+    vertical-align: middle;
+}
+
+.donation-row {
+    transition: background-color 0.3s ease;
+}
+
+.donation-row:hover {
+    background: var(--md-surface-variant);
+}
+
+.donation-date {
+    font-weight: 600;
+    color: var(--md-on-surface);
+}
+
+.donation-details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.blood-type-badge {
+    background: var(--md-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.units-badge {
+    background: var(--md-secondary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.location-badge {
+    background: var(--md-tertiary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.status-completed {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.status-cancelled {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--md-on-surface-variant);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-description {
+    margin-bottom: 2rem;
+}
+
+.pagination-container {
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--md-surface-variant);
+}
+
+.pagination-info {
+    color: var(--md-on-surface-variant);
+    font-size: 0.875rem;
+}
+
+.pagination-links {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pagination-link {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-border-radius);
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.pagination-link:hover {
+    border-color: var(--md-primary);
+    color: var(--md-primary);
+}
+
+.pagination-link.active {
+    background: var(--md-primary);
+    color: white;
+    border-color: var(--md-primary);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.btn-action {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--md-border-radius);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-download {
+    background: var(--md-primary);
+    color: white;
+}
+
+.btn-download:hover {
+    background: #b91c1c;
+}
+
+.btn-print {
+    background: var(--md-secondary);
+    color: white;
+}
+
+.btn-print:hover {
+    background: #059669;
+}
+
+@media (max-width: 768px) {
+    .donations-container {
+        margin: 1rem auto;
+    }
+    
+    .stats-header {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+    
+    .filters-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .donations-table {
+        font-size: 0.875rem;
+    }
+    
+    .donations-table th,
+    .donations-table td {
+        padding: 0.75rem 1rem;
+    }
+    
+    .donation-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .pagination-container {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="donations-container">
+    <!-- Statistics Header -->
+    <div class="stats-header">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">bloodtype</span>
+            </div>
+            <div class="stat-number">{{ total_donations }}</div>
+            <div class="stat-label">Total Donations</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">favorite</span>
+            </div>
+            <div class="stat-number">{{ lives_saved }}</div>
+            <div class="stat-label">Lives Saved</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">local_hospital</span>
+            </div>
+            <div class="stat-number">{{ total_units }}</div>
+            <div class="stat-label">Units Donated</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">calendar_today</span>
+            </div>
+            <div class="stat-number">{{ last_donation|default:"Never" }}</div>
+            <div class="stat-label">Last Donation</div>
+        </div>
+    </div>
+
+    <!-- Donations Section -->
+    <div class="donations-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Donation History</h2>
+                <p class="section-subtitle">Track your life-saving contributions</p>
+            </div>
+        </div>
+        
+        <div class="filters-bar">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label">Year:</label>
+                    <select class="filter-select" id="year-filter">
+                        <option value="">All Years</option>
+                        {% for year in years %}
+                            <option value="{{ year }}" {% if request.GET.year == year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Blood Type:</label>
+                    <select class="filter-select" id="blood-type-filter">
+                        <option value="">All Types</option>
+                        {% for value, label in blood_types %}
+                            <option value="{{ value }}" {% if request.GET.blood_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Status:</label>
+                    <select class="filter-select" id="status-filter">
+                        <option value="">All Status</option>
+                        <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                
+                <button class="btn-action btn-download" onclick="applyFilters()">
+                    <span class="material-icons">filter_list</span>
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+        
+        {% if donations %}
+            <div class="table-responsive">
+                <table class="donations-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Details</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donation in donations %}
+                        <tr class="donation-row">
+                            <td>
+                                <div class="donation-date">{{ donation.donation_date|date:"M d, Y" }}</div>
+                                <small class="text-muted">{{ donation.donation_date|date:"h:i A" }}</small>
+                            </td>
+                            <td>
+                                <div class="donation-details">
+                                    <div>
+                                        <span class="blood-type-badge">{{ donation.blood_type }}</span>
+                                        <span class="units-badge">{{ donation.units }} unit{% if donation.units != 1 %}s{% endif %}</span>
+                                    </div>
+                                    {% if donation.emergency_request %}
+                                        <small class="text-muted">Emergency Request</small>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="location-badge">{{ donation.location|default:"St. Francis Hospital" }}</span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ donation.status|default:'completed' }}">
+                                    {{ donation.get_status_display|default:"Completed" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="#" class="btn-action btn-download" onclick="downloadCertificate({{ donation.id }})">
+                                        <span class="material-icons">download</span>
+                                        Certificate
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if is_paginated %}
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    Showing {{ donations.start_index }}-{{ donations.end_index }} of {{ donations.paginator.count }} donations
+                </div>
+                <div class="pagination-links">
+                    {% if donations.has_previous %}
+                        <a href="?page=1" class="pagination-link">First</a>
+                        <a href="?page={{ donations.previous_page_number }}" class="pagination-link">Previous</a>
+                    {% endif %}
+                    
+                    {% for num in donations.paginator.page_range %}
+                        {% if donations.number == num %}
+                            <span class="pagination-link active">{{ num }}</span>
+                        {% else %}
+                            <a href="?page={{ num }}" class="pagination-link">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if donations.has_next %}
+                        <a href="?page={{ donations.next_page_number }}" class="pagination-link">Next</a>
+                        <a href="?page={{ donations.paginator.num_pages }}" class="pagination-link">Last</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <span class="material-icons">history</span>
+                </div>
+                <h3 class="empty-title">No Donations Yet</h3>
+                <p class="empty-description">You haven't made any blood donations yet. Your first donation could save up to 3 lives!</p>
+                <a href="{% url 'donor:request_blood' %}" class="btn md-btn md-btn-primary">
+                    <span class="material-icons">bloodtype</span>
+                    Schedule Your First Donation
+                </a>
+            </div>
+        {% endif %}
+        
+        <div class="filters-bar">
+            <div class="action-buttons">
+                <button class="btn-action btn-download" onclick="downloadAll()">
+                    <span class="material-icons">download</span>
+                    Download All Records
+                </button>
+                <button class="btn-action btn-print" onclick="window.print()">
+                    <span class="material-icons">print</span>
+                    Print History
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function applyFilters() {
+    const year = document.getElementById('year-filter').value;
+    const bloodType = document.getElementById('blood-type-filter').value;
+    const status = document.getElementById('status-filter').value;
+    
+    const params = new URLSearchParams();
+    if (year) params.append('year', year);
+    if (bloodType) params.append('blood_type', bloodType);
+    if (status) params.append('status', status);
+    
+    const url = new URL(window.location);
+    url.search = params.toString();
+    window.location.href = url.toString();
+}
+
+function downloadCertificate(donationId) {
+    window.open(`/donor/donations/${donationId}/certificate/`, '_blank');
+}
+
+function downloadAll() {
+    const year = document.getElementById('year-filter').value;
+    const bloodType = document.getElementById('blood-type-filter').value;
+    const status = document.getElementById('status-filter').value;
+    
+    const params = new URLSearchParams();
+    if (year) params.append('year', year);
+    if (bloodType) params.append('blood_type', bloodType);
+    if (status) params.append('status', status);
+    params.append('download', 'all');
+    
+    window.open(`/donor/donations/export/?${params.toString()}`, '_blank');
+}
+
+// Auto-submit filters on change
+document.querySelectorAll('.filter-select').forEach(select => {
+    select.addEventListener('change', function() {
+        if (this.value) {
+            applyFilters();
+        }
+    });
+});
+</script>
+
+<style>
+@media print {
+    .filters-bar,
+    .action-buttons,
+    .pagination-container {
+        display: none !important;
+    }
+    
+    .donations-section {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .donations-table {
+        font-size: 12px;
+    }
+    
+    .stat-card {
+        break-inside: avoid;
+    }
+}
+</style>
+{% endblock %}
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(180deg); }
         }
