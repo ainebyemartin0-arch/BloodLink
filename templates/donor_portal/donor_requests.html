@@ -1,0 +1,312 @@
+{% extends 'base_donor_modern.html' %}
+{% load static %}
+
+{% block title %}My Requests - BloodLink{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bi bi-list-check"></i> My Blood Requests
+        </h1>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-filter"></i> Filter
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#all-requests">All Requests</a></li>
+                <li><a class="dropdown-item" href="#pending-requests">Pending ({{ pending_count }})</a></li>
+                <li><a class="dropdown-item" href="#confirmed-requests">Confirmed ({{ confirmed_count }})</a></li>
+                <li><a class="dropdown-item" href="#declined-requests">Declined ({{ declined_count }})</a></li>
+                <li><hr class="dropdown-divider"></a></li>
+                <li><a class="dropdown-item" href="#public-requests">My Public Requests ({{ public_count }})</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ total_requests }}</h3>
+                    <p class="text-muted">Total Requests</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ pending_count }}</h3>
+                    <p class="text-muted">Pending Response</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h3 class="text-success">{{ confirmed_count }}</h3>
+                    <p class="text-muted">Confirmed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h3 class="text-secondary">{{ declined_count }}</h3>
+                    <p class="text-muted">Declined</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS Requests (Sent to Donor) -->
+    <div id="all-requests" class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bell"></i> SMS Requests Sent to You
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if all_requests %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Blood Type</th>
+                                        <th>Urgency</th>
+                                        <th>Status</th>
+                                        <th>Response</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in all_requests %}
+                                    <tr class="{% if request.donor_response == 'no_response' %}table-warning{% endif %}">
+                                        <td>
+                                            <span title="{{ request.sent_at|date:'M d, Y g:i A' }}">
+                                                {{ request.sent_at|date:"M d, Y" }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-blood">{{ request.emergency_request.blood_type_needed }}</span>
+                                        </td>
+                                        <td>
+                                            {% if request.emergency_request.urgency_level == 'critical' %}
+                                                <span class="badge bg-danger">{{ request.emergency_request.get_urgency_level_display }}</span>
+                                            {% elif request.emergency_request.urgency_level == 'urgent' %}
+                                                <span class="badge bg-warning">{{ request.emergency_request.get_urgency_level_display }}</span>
+                                            {% else %}
+                                                <span class="badge bg-info">{{ request.emergency_request.get_urgency_level_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.message_status == 'delivered' %}
+                                                <span class="badge bg-success">Delivered</span>
+                                            {% elif request.message_status == 'sent' %}
+                                                <span class="badge bg-info">Sent</span>
+                                            {% elif request.message_status == 'failed' %}
+                                                <span class="badge bg-danger">Failed</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ request.message_status|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.donor_response == 'confirmed' %}
+                                                <span class="badge bg-success">✅ Confirmed</span>
+                                            {% elif request.donor_response == 'declined' %}
+                                                <span class="badge bg-secondary">❌ Declined</span>
+                                            {% elif request.donor_response == 'no_response' %}
+                                                <span class="badge bg-warning">⏰ No Response</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ request.donor_response|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'donor:respond_to_alert' request.pk %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-reply"></i> Respond
+                                                </a>
+                                                <a href="{% url 'donor:response_confirmation' request.pk %}" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye"></i> Details
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-bell-slash" style="font-size: 3rem; color: var(--bl-gray);"></i>
+                            <h5 class="mt-3">No SMS Requests</h5>
+                            <p class="text-muted">You haven't received any blood donation requests yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Public Requests (Created by Donor) -->
+    {% if public_requests %}
+    <div id="public-requests" class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat-dots"></i> Public Requests You Submitted
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Reference #</th>
+                                    <th>Patient Name</th>
+                                    <th>Blood Type</th>
+                                    <th>Units</th>
+                                    <th>Urgency</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in public_requests %}
+                                <tr>
+                                    <td>
+                                        <strong>BL-{{ req.pk|default:"0000"|slice:"-4" }}</strong>
+                                    </td>
+                                    <td>{{ req.patient_name }}</td>
+                                    <td>
+                                        <span class="badge badge-blood">{{ req.blood_type_needed }}</span>
+                                    </td>
+                                    <td>{{ req.units_needed }}</td>
+                                    <td>
+                                        {% if req.urgency_level == 'critical' %}
+                                            <span class="badge bg-danger">{{ req.get_urgency_level_display }}</span>
+                                        {% elif req.urgency_level == 'urgent' %}
+                                            <span class="badge bg-warning">{{ req.get_urgency_level_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-info">{{ req.get_urgency_level_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if req.status == 'approved' %}
+                                            <span class="badge bg-success">✅ Approved</span>
+                                        {% elif req.status == 'pending' %}
+                                            <span class="badge bg-warning">⏰ Pending</span>
+                                        {% elif req.status == 'rejected' %}
+                                            <span class="badge bg-danger">❌ Rejected</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ req.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ req.submitted_at|date:"M d, Y g:i A" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'donor:request_blood_success' req.pk %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            {% if req.status == 'pending' %}
+                                            <button class="btn btn-sm btn-outline-danger" onclick="confirmCancelRequest({{ req.pk }})">
+                                                <i class="bi bi-x-circle"></i> Cancel
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card" style="background: var(--bl-red-light); border: 1px solid var(--bl-red);">
+                <div class="card-body">
+                    <h6 class="mb-3" style="color: var(--bl-red);">
+                        <i class="bi bi-lightbulb"></i> Quick Actions
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <a href="{% url 'donor:profile_edit' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-pencil"></i> Update Profile
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{% url 'donor:donations' %}" class="btn btn-outline-info w-100">
+                                <i class="bi bi-droplet"></i> Donation History
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{% url 'donor:request_blood' %}" class="btn btn-danger w-100">
+                                <i class="bi bi-plus-circle"></i> Request Blood
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Request Modal -->
+<div class="modal fade" id="cancelRequestModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Blood Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this blood request?</p>
+                <p><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep Request</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes, Cancel Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmCancelRequest(requestId) {
+    document.getElementById('confirmCancelBtn').onclick = function() {
+        fetch(`/donor/cancel-request/${requestId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+    };
+}
+</script>
+{% endblock %}

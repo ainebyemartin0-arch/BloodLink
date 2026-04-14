@@ -385,3 +385,76 @@ def response_confirmation(request, pk):
     }
     
     return render(request, 'donor_portal/response_confirmation.html', context)
+
+
+@donor_login_required
+def donor_requests(request):
+    """Show all requests sent by this donor with management options"""
+    donor = get_logged_in_donor(request)
+    
+    # Get all SMS notifications (requests sent to this donor)
+    all_requests = donor.sms_notifications.select_related('emergency_request').order_by('-sent_at')
+    
+    # Categorize requests
+    pending_requests = all_requests.filter(donor_response='no_response', is_fulfilled=False)
+    confirmed_requests = all_requests.filter(donor_response='confirmed')
+    declined_requests = all_requests.filter(donor_response='declined')
+    
+    # Get public requests created by this donor
+    public_requests = PublicBloodRequest.objects.filter(
+        requester_phone=donor.phone
+    ).order_by('-submitted_at')
+    
+    context = {
+        'donor': donor,
+        'all_requests': all_requests,
+        'pending_requests': pending_requests,
+        'confirmed_requests': confirmed_requests,
+        'declined_requests': declined_requests,
+        'public_requests': public_requests,
+        'total_requests': all_requests.count(),
+        'pending_count': pending_requests.count(),
+        'confirmed_count': confirmed_requests.count(),
+        'declined_count': declined_requests.count(),
+        'public_count': public_requests.count(),
+    }
+    
+    return render(request, 'donor_portal/donor_requests.html', context)
+
+
+@donor_login_required
+def cancel_request(request, pk):
+    """Cancel a public blood request created by this donor"""
+    donor = get_logged_in_donor(request)
+    
+    if request.method == 'POST':
+        try:
+            public_request = PublicBloodRequest.objects.get(
+                pk=pk,
+                requester_phone=donor.phone,
+                status='pending'
+            )
+            
+            public_request.status = 'rejected'
+            public_request.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Blood request cancelled successfully.'
+            })
+            
+        except PublicBloodRequest.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'Request not found or already processed.'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'error': 'Invalid request method.'
+    })
