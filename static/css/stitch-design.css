@@ -810,6 +810,15 @@ body {
     }
 }
 
+/* Layout Order Classes */
+.order-lg-1 {
+    order: 1;
+}
+
+.order-lg-2 {
+    order: 2;
+}
+
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
     :root {

@@ -184,7 +184,15 @@
 <section class="stitch-hero">
     <div class="container">
         <div class="row align-items-center g-5">
-            <div class="col-lg-6">
+            <div class="col-lg-6 order-lg-2">
+                <div class="hero-image-container">
+                    <div class="floating-orb" style="width: 200px; height: 200px; background: var(--stitch-primary); top: -50px; right: -50px;"></div>
+                    <img src="{% static 'images/lab-staff.png' %}" alt="Medical Professional" class="hero-image" 
+                         onerror="this.src='https://via.placeholder.com/600x750/f8f9fa/191c1d?text=Medical+Professional'">
+                </div>
+            </div>
+            
+            <div class="col-lg-6 order-lg-1">
                 <div class="stitch-hero-content">
                     {% if not donor %}
                     <div class="emergency-badge">
@@ -222,12 +230,38 @@
                     </div>
                 </div>
             </div>
-            
+        </div>
+    </div>
+</section>
+
+<!-- Hospital Section -->
+<section class="stitch-surface-container-low py-5">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="stitch-hero-content text-center">
+                    <h2 class="stitch-headline-lg mb-4">
+                        <span class="stitch-text-primary">St. Francis Hospital Nsambya</span>
+                    </h2>
+                    <p class="stitch-body-lg text-secondary mb-4">
+                        Leading healthcare provider with state-of-the-art blood donation management system. Serving the community with excellence and compassion.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'donor:about' %}" class="stitch-btn stitch-btn-primary">
+                            <span class="material-symbols-outlined me-2">info</span>
+                            About Hospital
+                        </a>
+                        <a href="{% url 'donor:register' %}" class="stitch-btn stitch-btn-secondary">
+                            <span class="material-symbols-outlined me-2">person_add</span>
+                            Join as Donor
+                        </a>
+                    </div>
+                </div>
+            </div>
             <div class="col-lg-6">
                 <div class="hero-image-container">
-                    <div class="floating-orb" style="width: 200px; height: 200px; background: var(--stitch-primary); top: -50px; right: -50px;"></div>
-                    <img src="{% static 'images/stitch-hero.png' %}" alt="Blood Donation Hero" class="hero-image" 
-                         onerror="this.src='https://via.placeholder.com/600x750/f8f9fa/191c1d?text=Blood+Donation+Hero'">
+                    <img src="{% static 'images/hospital-nsambya.jpg' %}" alt="St. Francis Hospital" class="hero-image" 
+                         onerror="this.src='https://via.placeholder.com/600x400/f8f9fa/191c1d?text=St.+Francis+Hospital'">
                 </div>
             </div>
         </div>
