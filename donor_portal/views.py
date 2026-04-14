@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.urls import reverse
 from django.http import JsonResponse
-from django.db.models import Q, Count, Avg
+from django.db.models import Q, Count, Avg, F
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from functools import wraps
@@ -143,7 +143,7 @@ def donor_dashboard(request):
     from django.utils import timezone
     donor.sms_notifications.filter(last_viewed_at__isnull=True).update(
         last_viewed_at=timezone.now(),
-        view_count=models.F('view_count') + 1
+        view_count=F('view_count') + 1
     )
     
     context = {
