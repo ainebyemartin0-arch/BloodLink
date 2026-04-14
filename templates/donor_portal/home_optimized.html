@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#4c616c",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed-variant": "#354a53",
+                    "surface-dim": "#d9dadb",
+                    "secondary-container": "#cfe6f2",
+                    "on-tertiary-container": "#e9f7ff",
+                    "tertiary-container": "#00799c",
+                    "on-tertiary-fixed": "#001f2a",
+                    "on-background": "#191c1d",
+                    "surface-bright": "#f8f9fa",
+                    "on-tertiary-fixed-variant": "#004d65",
+                    "on-error": "#ffffff",
+                    "tertiary": "#005f7b",
+                    "tertiary-fixed-dim": "#7bd1f8",
+                    "inverse-surface": "#2e3132",
+                    "surface": "#f8f9fa",
+                    "primary-container": "#d32f2f",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#af101a",
+                    "on-primary-fixed-variant": "#930010",
+                    "error": "#ba1a1a",
+                    "on-surface": "#191c1d",
+                    "primary-fixed-dim": "#ffb3ac",
+                    "surface-container-low": "#f3f4f5",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container": "#edeeef",
+                    "on-surface-variant": "#5b403d",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#b4cad6",
+                    "outline": "#8f6f6c",
+                    "background": "#f8f9fa",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#bee9ff",
+                    "on-secondary-container": "#526772",
+                    "on-primary-fixed": "#410003",
+                    "surface-container-high": "#e7e8e9",
+                    "outline-variant": "#e4beba"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #af101a 0%, #d32f2f 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- Top Navigation Shell -->
+<header class="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl fixed top-0 w-full z-50 shadow-sm">
+<nav class="flex justify-between items-center px-8 h-20 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-black tracking-tighter text-red-700 dark:text-red-500 font-inter tracking-tight">BloodLink</span>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-red-600 transition-colors duration-200 ease-in-out" href="#">Home</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-red-600 transition-colors duration-200 ease-in-out" href="#">Request Blood</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-red-600 transition-colors duration-200 ease-in-out" href="#">Dashboard</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-red-600 transition-colors duration-200 ease-in-out" href="#">Donations</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="p-2 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-zinc-200 dark:border-zinc-800">
+<img alt="User avatar" class="w-10 h-10 rounded-full object-cover" data-alt="Close-up portrait of a professional male doctor in a clean clinical environment, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwXKPEyF8eHi_W2mLLgt1_9P6_6d-gHmXMjGZLFTlAAtnozHeKOH84axBL0wyH6qNY7MH5ClgaBx1myi02y4XecXtdwBZNM2ufgb_i2iLtfQWwSVEtfmsymlDTKmZ5vBmw4O8fepY49M0dxHT15K72ugLDr-CR-Dc8W5KxocSxj3byTgskgR6qecNfHW1Uk8b_JlQAH7VG8lPSdbcD72seD_QJprXSu_Pafc4Q8U12vZXb-5JEpFZJ6xsfjLLL1ikGTnwmrTQtE9M"/>
+<button class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest hover:text-red-500 transition-all duration-300">Logout</button>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[716px] flex items-center overflow-hidden bg-surface-container-low">
+<div class="absolute inset-0 z-0">
+<img alt="Hospital corridor" class="w-full h-full object-cover opacity-15 grayscale" data-alt="Wide shot of a modern, sterile hospital hallway with soft recessed lighting and clean white architectural lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwXKPEyF8eHi_W2mLLgt1_9P6_6d-gHmXMjGZLFTlAAtnozHeKOH84axBL0wyH6qNY7MH5ClgaBx1myi02y4XecXtdwBZNM2ufgb_i2iLtfQWwSVEtfmsymlDTKmZ5vBmw4O8fepY49M0dxHT15K72ugLDr-CR-Dc8W5KxocSxj3byTgskgR6qecNfHW1Uk8b_JlQAH7VG8lPSdbcD72seD_QJprXSu_Pafc4Q8U12vZXb-5JEpFZJ6xsfjLLL1ikGTnwmrTQtE9M"/>
+</div>
+<div class="container mx-auto px-8 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+<div class="space-y-8 max-w-2xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">emergency</span>
+                        Emergency Response Active
+                    </div>
+<h1 class="text-6xl md:text-7xl font-extrabold tracking-tighter text-on-surface leading-[1.1]">
+                        Save Lives at <span class="text-primary italic">St. Francis Hospital.</span><br>
+                        Donate Blood Today.
+                    </h1>
+<p class="text-xl text-secondary leading-relaxed max-w-lg">
+                        Your singular contribution can provide a lifeline for those in urgent need. Join our community of clinical curators today.
+                    </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="px-8 py-4 hero-gradient text-on-primary font-bold rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform flex items-center gap-2">
+                            Become a Donor
+                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+<button class="px-8 py-4 bg-surface-container-lowest text-on-surface font-bold rounded-xl shadow-sm hover:bg-surface-container transition-colors">
+                            Learn More
+                        </button>
+</div>
+</div>
+<div class="hidden lg:block relative">
+<div class="absolute -top-12 -right-12 w-64 h-64 bg-primary-fixed/30 rounded-full blur-3xl"></div>
+<img alt="Medical professional" class="relative z-10 w-full aspect-[4/5] object-cover rounded-2xl shadow-2xl" data-alt="Highly professional close-up of a hand holding a medical blood bag in a bright laboratory, clean and authoritative" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC_UmNLnYRW0RKwrD-mZkr3qdA0_KNpj-Mry8GLwQqw8hl9C5sXwOnCB0oPlyxrOwpK_Xm2M9Sd8w0f3EuMJDdwbmJvA5BFkdT9sJdpcMLJyVf2urHIFNX8S8gMbb8qzek6OrU5HAAAxY-Eb7mOaqJ6R0aCzmQQPYS5gM0PdWnu9nCExJc_UMFrw8xvlfzvUeRnvorEgAuMe6RQHYxnnRtyMwnFiJg7fUEzIx-Ler-MVY09SCQs7Hxedl7JxzLdhp_68nHtsFYzvc"/>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Impact Stats (Bento Grid) -->
+<section class="py-24 px-8 max-w-screen-2xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="group bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-outline-variant/20">
+<div class="w-14 h-14 rounded-lg bg-primary-fixed flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">person_pin_circle</span>
+</div>
+<div class="space-y-1">
+<div class="text-4xl font-black tracking-tighter text-on-surface">1</div>
+<div class="text-sm font-bold uppercase tracking-widest text-secondary">Active Donor</div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed">Verified and ready for immediate contribution in the St. Francis zone.</p>
+</div>
+<!-- Card 2 -->
+<div class="group bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-outline-variant/20">
+<div class="w-14 h-14 rounded-lg bg-primary-fixed flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+</div>
+<div class="space-y-1">
+<div class="text-4xl font-black tracking-tighter text-on-surface">15,234</div>
+<div class="text-sm font-bold uppercase tracking-widest text-secondary">Lives Saved</div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed">A testament to the collective impact of our growing donor network.</p>
+</div>
+<!-- Card 3 -->
+<div class="group bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-outline-variant/20">
+<div class="w-14 h-14 rounded-lg bg-primary-fixed flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">emergency_home</span>
+</div>
+<div class="space-y-1">
+<div class="text-4xl font-black tracking-tighter text-on-surface">24/7</div>
+<div class="text-sm font-bold uppercase tracking-widest text-secondary">Emergency Support</div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed">Round-the-clock coordination for critical blood supply chains.</p>
+</div>
+<!-- Card 4 -->
+<div class="group bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-transparent hover:border-outline-variant/20">
+<div class="w-14 h-14 rounded-lg bg-primary-fixed flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">bloodtype</span>
+</div>
+<div class="space-y-1">
+<div class="text-4xl font-black tracking-tighter text-on-surface">1</div>
+<div class="text-sm font-bold uppercase tracking-widest text-secondary">Available Now</div>
+</div>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed">Real-time availability of O-Negative universal supply units.</p>
+</div>
+</div>
+</section>
+
+<!-- How It Works -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8">
+<div class="text-center mb-20 space-y-4">
+<h2 class="text-4xl font-extrabold tracking-tighter text-on-surface mb-3">How BloodLink Works</h2>
+<p class="text-xl text-secondary">Editorial precision meets life-saving urgency</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-5xl mx-auto px-8">
+<!-- Step 1 -->
+<div class="relative text-center space-y-6 group-hover:scale-110 transition-transform">
+<div class="mx-auto w-24 h-24 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">how_to_reg</span>
+</div>
+<h3 class="text-xl font-bold">1. Register as Donor</h3>
+<p class="text-secondary leading-relaxed px-4">Sign up in minutes, provide your blood type and availability. Join our life-saving community with editorial precision.</p>
+<a href="{% url 'donor:register' %}" class="inline-flex items-center justify-center rounded-full bg-primary text-white px-8 py-3 font-semibold hover:bg-primary/90 transition-colors">
+    Register Now
+    <span class="material-symbols-outlined ml-2">arrow_forward</span>
+</a>
+<div class="hidden md:block absolute top-12 left-[60%] w-[80%] border-t-2 border-dashed border-outline-variant/30"></div>
+</div>
+<!-- Step 2 -->
+<div class="relative text-center space-y-6 group-hover:scale-110 transition-transform">
+<div class="mx-auto w-24 h-24 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+</div>
+<h3 class="text-xl font-bold">2. Receive Alerts</h3>
+<p class="text-secondary leading-relaxed px-4">Get instant notifications when your blood type is needed. SMS and push notifications keep you informed with clinical urgency.</p>
+<a href="{% url 'donor:about' %}" class="inline-flex items-center justify-center rounded-full bg-surface-container-low text-on-surface px-8 py-3 font-semibold hover:bg-surface-container transition-colors">
+    Learn More
+    <span class="material-symbols-outlined ml-2">info</span>
+</a>
+<div class="hidden md:block absolute top-12 left-[60%] w-[80%] border-t-2 border-dashed border-outline-variant/30"></div>
+</div>
+<!-- Step 3 -->
+<div class="relative text-center space-y-6 group-hover:scale-110 transition-transform">
+<div class="mx-auto w-24 h-24 rounded-full bg-surface-container-lowest shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<h3 class="text-xl font-bold">3. Save Lives</h3>
+<p class="text-secondary leading-relaxed px-4">Respond to emergency requests immediately. Your donation can make the difference between life and death with editorial impact.</p>
+<a href="{% url 'donor:request_blood' %}" class="inline-flex items-center justify-center rounded-full bg-primary text-white px-8 py-3 font-semibold hover:bg-primary/90 transition-colors">
+    Request Blood
+    <span class="material-symbols-outlined ml-2">emergency</span>
+</a>
+<div class="hidden md:block absolute top-12 left-[60%] w-[80%] border-t-2 border-dashed border-outline-variant/30"></div>
+</div>
+</div>
+</section>
+</main>
+
+<!-- Footer Shell -->
+<footer class="bg-zinc-50 dark:bg-zinc-900 w-full py-12 px-8 border-t border-zinc-200 dark:border-zinc-800">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
+<div class="flex flex-col gap-2">
+<span class="text-lg font-bold text-zinc-900 dark:text-zinc-100 font-inter tracking-tight">BloodLink</span>
+<p class="text-zinc-500 dark:text-zinc-400 text-sm">© 2024 BloodLink. The Clinical Curator Editorial.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-red-500 underline-offset-4 hover:underline transition-all duration-300" href="#">Privacy Policy</a>
+<a class="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-red-500 underline-offset-4 hover:underline transition-all duration-300" href="#">Terms of Service</a>
+<a class="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-red-500 underline-offset-4 hover:underline transition-all duration-300" href="#">Contact Support</a>
+<a class="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-red-500 underline-offset-4 hover:underline transition-all duration-300" href="#">Global Impact</a>
+</div>
+</div>
+</footer>
+</body>
+</html>
