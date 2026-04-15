@@ -623,13 +623,17 @@
                     {% csrf_token %}
                     
                     <div class="form-group">
-                        <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
-                        <input type="text" 
+                        <label class="form-label" for="{{ form.email.id_for_label }}">Email Address</label>
+                        <input type="email" 
                                class="form-control" 
-                               id="{{ form.username.id_for_label }}" 
-                               name="{{ form.username.name }}" 
-                               placeholder="Enter your username"
+                               id="{{ form.email.id_for_label }}" 
+                               name="{{ form.email.name }}" 
+                               placeholder="Enter your email address"
+                               value="{{ form.email.value|default:'' }}"
                                required>
+                        {% if form.email.errors %}
+                            <div class="error-message">{{ form.email.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     
                     <div class="form-group">
@@ -640,6 +644,9 @@
                                name="{{ form.password.name }}" 
                                placeholder="Enter your password"
                                required>
+                        {% if form.password.errors %}
+                            <div class="error-message">{{ form.password.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     
                     <div class="remember-me">
@@ -737,20 +744,12 @@
 
         // Form validation
         document.querySelector('form').addEventListener('submit', function(e) {
-            const username = document.querySelector('input[name="username"]').value.trim();
+            const email = document.querySelector('input[name="email"]').value.trim();
             const password = document.querySelector('input[name="password"]').value.trim();
 
-            if (!username || !password) {
+            if (!email || !password) {
                 e.preventDefault();
-                
-                // Remove existing alerts
-                const existingAlert = document.querySelector('.error-message, .success-message');
-                if (existingAlert) {
-                    existingAlert.remove();
-                }
-                
-                // Show error message
-                const alertDiv = document.createElement('div');
+                showError('Please enter both email and password');
                 alertDiv.className = 'error-message';
                 alertDiv.innerHTML = '<span class="material-symbols-outlined">error</span> Please fill in all fields.';
                 

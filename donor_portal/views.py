@@ -122,12 +122,6 @@ def donor_register(request):
     if request.method == 'POST':
         form = DonorRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            # Debug logging
-            print("Registration form is valid")
-            print(f"Email: {form.cleaned_data['email']}")
-            print(f"Password1: {'*' * len(form.cleaned_data['password1'])} (length: {len(form.cleaned_data['password1'])})")
-            print(f"Password2: {'*' * len(form.cleaned_data['password2'])} (length: {len(form.cleaned_data['password2'])})")
-            
             # Create donor
             donor = Donor(
                 full_name=form.cleaned_data['full_name'],
@@ -143,19 +137,8 @@ def donor_register(request):
                 is_active=True,
                 date_registered=timezone.now()
             )
-            
-            print("Donor object created, setting password...")
             donor.set_password(form.cleaned_data['password1'])
-            print(f"Password hash after setting: {bool(donor.password_hash)}")
-            
             donor.save()
-            print(f"Donor saved, password hash exists: {bool(donor.password_hash)}")
-            
-            # Verify password can be checked
-            if donor.check_password(form.cleaned_data['password1']):
-                print("Password verification: SUCCESS")
-            else:
-                print("Password verification: FAILED")
             
             # Log in the donor
             request.session['donor_id'] = donor.pk
@@ -176,25 +159,15 @@ def donor_login(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             
-            # Debug logging
-            print(f"Login attempt for email: {email}")
-            print(f"Password provided: {'*' * len(password)} (length: {len(password)})")
-            
             try:
                 donor = Donor.objects.get(email=email, is_active=True)
-                print(f"Donor found: {donor.full_name}")
-                print(f"Password hash exists: {bool(donor.password_hash)}")
-                
                 if donor.check_password(password):
-                    print("Password check: SUCCESS")
                     request.session['donor_id'] = donor.pk
                     messages.success(request, f"Welcome back, {donor.full_name}!")
                     return redirect('donor:dashboard')
                 else:
-                    print("Password check: FAILED")
                     messages.error(request, "Invalid email or password.")
             except Donor.DoesNotExist:
-                print("Donor not found in database")
                 messages.error(request, "Invalid email or password.")
     else:
         form = DonorLoginForm()
