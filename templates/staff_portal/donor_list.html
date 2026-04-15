@@ -2,6 +2,81 @@
 
 {% block title %}Donor Registry - BloodLink{% endblock %}
 
+{% block extra_css %}
+<style>
+.badge-blood {
+    background: #dc3545 !important;
+    color: white !important;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+    display: inline-block;
+    min-width: 50px;
+    text-align: center;
+}
+
+/* Enhanced blood type colors */
+.badge-blood:contains("A+") {
+    background: #dc3545 !important;
+}
+.badge-blood:contains("A-") {
+    background: #6c757d !important;
+}
+.badge-blood:contains("B+") {
+    background: #fd7e14 !important;
+}
+.badge-blood:contains("B-") {
+    background: #6f42c1 !important;
+}
+.badge-blood:contains("AB+") {
+    background: #20c997 !important;
+}
+.badge-blood:contains("AB-") {
+    background: #343a40 !important;
+}
+.badge-blood:contains("O+") {
+    background: #dc3545 !important;
+}
+.badge-blood:contains("O-") {
+    background: #000000 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Color code blood type badges
+    const bloodTypeColors = {
+        'A+': '#dc3545',  // Red
+        'A-': '#6c757d',  // Gray
+        'B+': '#fd7e14',  // Orange
+        'B-': '#6f42c1',  // Purple
+        'AB+': '#20c997', // Teal
+        'AB-': '#343a40', // Dark gray
+        'O+': '#dc3545',  // Red (same as A+)
+        'O-': '#000000'   // Black
+    };
+    
+    const badges = document.querySelectorAll('.badge-blood');
+    badges.forEach(badge => {
+        const bloodType = badge.textContent.trim();
+        if (bloodTypeColors[bloodType]) {
+            badge.style.backgroundColor = bloodTypeColors[bloodType];
+            badge.style.color = 'white';
+            badge.style.fontWeight = '600';
+            badge.style.padding = '0.5rem 0.75rem';
+            badge.style.borderRadius = '0.375rem';
+            badge.style.display = 'inline-block';
+            badge.style.minWidth = '50px';
+            badge.style.textAlign = 'center';
+        }
+    });
+});
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Donor Registry</h1>
