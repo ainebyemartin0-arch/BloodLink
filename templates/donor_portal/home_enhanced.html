@@ -1,503 +1,1777 @@
-{% extends 'donor_portal/base_donor_material.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloodLink - Save Lives at St. Francis Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS VARIABLES FOR THEMING ===== */
+        :root {
+            --primary-color: #dc2626;
+            --primary-hover: #b91c1c;
+            --primary-light: #fef2f2;
+            --primary-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            
+            --success-color: #16a34a;
+            --success-light: #f0fdf4;
+            --success-gradient: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            
+            --warning-color: #d97706;
+            --warning-light: #fffbeb;
+            --warning-gradient: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            
+            --error-color: #dc2626;
+            --error-light: #fef2f2;
+            --error-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            
+            --info-color: #0ea5e9;
+            --info-light: #f0f9ff;
+            --info-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            
+            --neutral-50: #f8f9fa;
+            --neutral-100: #e5e7eb;
+            --neutral-200: #d1d5db;
+            --neutral-300: #9ca3af;
+            --neutral-400: #6b7280;
+            --neutral-500: #4b5563;
+            --neutral-600: #374151;
+            --neutral-700: #1f2937;
+            --neutral-800: #1a1a1a;
+            --neutral-900: #111827;
+            
+            --text-primary: var(--neutral-800);
+            --text-secondary: var(--neutral-500);
+            --text-muted: var(--neutral-400);
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: var(--neutral-50);
+            --bg-tertiary: var(--neutral-100);
+            
+            --border-radius-sm: 0.375rem;
+            --border-radius: 0.5rem;
+            --border-radius-md: 0.75rem;
+            --border-radius-lg: 1rem;
+            --border-radius-xl: 1.5rem;
+            
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --font-family: 'Inter', sans-serif;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+            --font-size-5xl: 3rem;
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            --spacing-3xl: 4rem;
+        }
 
-{% block title %}BloodLink - Save Lives at St. Francis Hospital{% endblock %}
+        /* ===== DARK MODE VARIABLES ===== */
+        [data-theme="dark"] {
+            --text-primary: var(--neutral-100);
+            --text-secondary: var(--neutral-300);
+            --text-muted: var(--neutral-400);
+            
+            --bg-primary: var(--neutral-900);
+            --bg-secondary: var(--neutral-800);
+            --bg-tertiary: var(--neutral-700);
+            
+            --neutral-50: var(--neutral-900);
+            --neutral-100: var(--neutral-800);
+            --neutral-200: var(--neutral-700);
+            --neutral-300: var(--neutral-600);
+            --neutral-400: var(--neutral-500);
+            --neutral-500: var(--neutral-400);
+            --neutral-600: var(--neutral-300);
+            --neutral-700: var(--neutral-200);
+            --neutral-800: var(--neutral-100);
+            --neutral-900: var(--neutral-50);
+        }
 
-{% block extra_css %}
-<style>
-.hero-section {
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
-    color: white;
-    padding: 4rem 0;
-    position: relative;
-    overflow: hidden;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('{% static "images/blood-cells-hero.jpg" %}') center/cover;
-    opacity: 0.1;
-}
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            transition: background-color var(--transition-base), color var(--transition-base);
+        }
 
-.hero-content {
-    position: relative;
-    z-index: 1;
-}
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
 
-.hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 1.5rem;
-    animation: fadeInUp 0.8s ease-out;
-}
+        /* ===== TOAST NOTIFICATION SYSTEM ===== */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            pointer-events: none;
+        }
 
-.hero-subtitle {
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-    opacity: 0.9;
-    animation: fadeInUp 0.8s ease-out 0.2s both;
-}
+        .toast {
+            background: var(--bg-primary);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing) var(--spacing-lg);
+            box-shadow: var(--shadow-lg);
+            min-width: 300px;
+            max-width: 500px;
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            pointer-events: auto;
+            animation: slideInRight var(--transition-base) ease-out;
+            transition: all var(--transition-base);
+        }
 
-.hero-buttons {
-    animation: fadeInUp 0.8s ease-out 0.4s both;
-}
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
 
-.stats-section {
-    padding: 4rem 0;
-    background: #f8fafc;
-}
+        .toast.removing {
+            animation: slideOutRight var(--transition-base) ease-out forwards;
+        }
 
-.stat-card {
-    text-align: center;
-    padding: 2rem;
-    background: white;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
 
-.stat-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
+        .toast-success .toast-icon {
+            background: var(--success-color);
+            color: white;
+        }
 
-.stat-number {
-    font-size: 3rem;
-    font-weight: 800;
-    color: #dc2626;
-    margin-bottom: 0.5rem;
-}
+        .toast-error .toast-icon {
+            background: var(--error-color);
+            color: white;
+        }
 
-.stat-label {
-    font-size: 1.125rem;
-    color: #6b7280;
-    font-weight: 500;
-}
+        .toast-warning .toast-icon {
+            background: var(--warning-color);
+            color: white;
+        }
 
-.features-section {
-    padding: 4rem 0;
-}
+        .toast-info .toast-icon {
+            background: var(--info-color);
+            color: white;
+        }
 
-.feature-card {
-    text-align: center;
-    padding: 2rem;
-    background: white;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    height: 100%;
-}
+        .toast-content {
+            flex: 1;
+        }
 
-.feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
+        .toast-title {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
 
-.feature-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 2rem;
-    color: white;
-}
+        .toast-message {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
 
-.feature-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #1a1a1a;
-}
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0;
+            font-size: 18px;
+            line-height: 1;
+            transition: color var(--transition-fast);
+        }
 
-.feature-description {
-    color: #6b7280;
-    line-height: 1.6;
-}
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
 
-.cta-section {
-    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-    color: white;
-    padding: 4rem 0;
-    text-align: center;
-}
+        /* ===== DARK MODE TOGGLE ===== */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            background: var(--bg-primary);
+            border: 2px solid var(--neutral-200);
+            border-radius: 50px;
+            padding: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
 
-.cta-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-}
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
 
-.cta-subtitle {
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-    opacity: 0.9;
-}
+        .theme-toggle-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            transition: all var(--transition-base);
+        }
 
-.blood-types {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-    flex-wrap: wrap;
-}
+        /* ===== LOADING SKELETONS ===== */
+        .skeleton {
+            background: linear-gradient(90deg, 
+                var(--neutral-200) 25%, 
+                var(--neutral-100) 50%, 
+                var(--neutral-200) 75%
+            );
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: var(--border-radius);
+        }
 
-.blood-type {
-    width: 60px;
-    height: 60px;
-    background: rgba(255,255,255,0.1);
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.125rem;
-    transition: all 0.3s ease;
-}
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
 
-.blood-type:hover {
-    background: rgba(255,255,255,0.2);
-    transform: scale(1.1);
-}
+        .skeleton-text {
+            height: 1rem;
+            margin-bottom: var(--spacing-sm);
+        }
 
-.testimonial-section {
-    padding: 4rem 0;
-    background: #f8fafc;
-}
+        .skeleton-title {
+            height: 1.5rem;
+            width: 60%;
+            margin-bottom: var(--spacing);
+        }
 
-.testimonial-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    text-align: center;
-    height: 100%;
-}
+        .skeleton-button {
+            height: 2.5rem;
+            width: 120px;
+            border-radius: var(--border-radius-md);
+        }
 
-.testimonial-text {
-    font-style: italic;
-    color: #4b5563;
-    margin-bottom: 1.5rem;
-    font-size: 1.125rem;
-    line-height: 1.6;
-}
+        /* ===== NAVIGATION BAR ===== */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all var(--transition-base);
+        }
 
-.testimonial-author {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-}
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing) var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.author-avatar {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-}
+        .logo {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: transform var(--transition-fast);
+        }
 
-.author-info {
-    text-align: left;
-}
+        .logo:hover {
+            transform: scale(1.05);
+        }
 
-.author-name {
-    font-weight: 600;
-    color: #1a1a1a;
-}
+        .logo .material-symbols-outlined {
+            font-size: var(--font-size-2xl);
+        }
 
-.author-role {
-    color: #6b7280;
-    font-size: 0.875rem;
-}
+        .nav-links {
+            display: flex;
+            gap: var(--spacing-xl);
+            align-items: center;
+        }
 
-.emergency-banner {
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-    color: white;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 2rem;
-    text-align: center;
-    animation: pulse 2s infinite;
-}
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: var(--spacing-sm) var(--spacing);
+            border-radius: var(--border-radius);
+            transition: all var(--transition-base);
+            position: relative;
+        }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-}
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background: var(--primary-light);
+        }
 
-.emergency-banner h4 {
-    margin-bottom: 0.5rem;
-}
+        .nav-links a.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            background: var(--primary-light);
+        }
 
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.5rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.125rem;
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-    }
-    
-    .cta-title {
-        font-size: 2rem;
-    }
-}
-</style>
-{% endblock %}
+        .nav-link-highlight {
+            background: var(--primary-gradient) !important;
+            color: white !important;
+            font-weight: 600 !important;
+            box-shadow: var(--shadow-md);
+        }
 
-{% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container">
-        <div class="hero-content">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="hero-title">Save Lives Today</h1>
-                    <p class="hero-subtitle">Join BloodLink at St. Francis Hospital and become a hero in your community. Your blood donation can save up to 3 lives.</p>
-                    <div class="hero-buttons">
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'donor:dashboard' %}" class="btn md-btn md-btn-primary btn-lg me-3">
-                                <span class="material-icons">dashboard</span>
-                                Go to Dashboard
-                            </a>
-                            <a href="{% url 'donor:request_blood' %}" class="btn md-btn md-btn-secondary btn-lg">
-                                <span class="material-icons">bloodtype</span>
-                                Request Blood
-                            </a>
-                        {% else %}
-                            <a href="{% url 'donor:register' %}" class="btn md-btn md-btn-primary btn-lg me-3">
-                                <span class="material-icons">person_add</span>
-                                Become a Donor
-                            </a>
-                            <a href="{% url 'donor:login' %}" class="btn md-btn md-btn-secondary btn-lg">
-                                <span class="material-icons">login</span>
-                                Sign In
-                            </a>
-                        {% endif %}
-                    </div>
+        .nav-link-highlight:hover {
+            background: linear-gradient(135deg, var(--primary-hover), var(--primary-color)) !important;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-link-logout {
+            background: var(--error-light) !important;
+            color: var(--error-color) !important;
+            font-weight: 600 !important;
+        }
+
+        .nav-link-logout:hover {
+            background: var(--error-color) !important;
+            color: white !important;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn {
+            padding: var(--spacing-lg) var(--spacing-xl);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            font-size: var(--font-size-base);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left var(--transition-slow);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--neutral-200);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('{% static "images/hospital-nsambya.jpg" %}') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .hero-content h1 span {
+            color: #dc2626;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Advanced Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        @keyframes bloodFlow {
+            0% { transform: translateX(-100%) rotate(0deg); }
+            100% { transform: translateX(100vw) rotate(360deg); }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            45% { transform: scale(1); }
+            60% { transform: scale(1.05); }
+            80% { transform: scale(1); }
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(220, 38, 38, 0.8); }
+        }
+
+        /* Floating Orbs Enhanced */
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 200px;
+            height: 200px;
+            top: -50px;
+            right: -50px;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+        }
+
+        .orb-2 {
+            width: 150px;
+            height: 150px;
+            bottom: -50px;
+            left: -50px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            animation-delay: 3s;
+        }
+
+        .orb-3 {
+            width: 100px;
+            height: 100px;
+            top: 50%;
+            left: 10%;
+            background: linear-gradient(135deg, #dc2626 0%, #f59e0b 100%);
+            animation-delay: 1.5s;
+        }
+
+        /* Blood Cells Animation */
+        .blood-cells {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .blood-cell {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #dc2626 0%, #ef4444 100%);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: bloodFlow 15s linear infinite;
+        }
+
+        .blood-cell:nth-child(1) { top: 20%; animation-delay: 0s; }
+        .blood-cell:nth-child(2) { top: 40%; animation-delay: 2s; }
+        .blood-cell:nth-child(3) { top: 60%; animation-delay: 4s; }
+        .blood-cell:nth-child(4) { top: 80%; animation-delay: 6s; }
+        .blood-cell:nth-child(5) { top: 30%; animation-delay: 8s; }
+
+        /* Enhanced Button Effects */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(220, 38, 38, 0.4);
+        }
+
+        /* Enhanced Card Effects */
+        .stat-card, .feature-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stat-card::before, .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #dc2626, #ef4444, #dc2626);
+            border-radius: inherit;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .stat-card:hover::before, .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover, .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(220, 38, 38, 0.2);
+        }
+
+        /* Loading Animation */
+        .shimmer {
+            background: linear-gradient(90deg, #f8f9fa 0%, #e5e7eb 50%, #f8f9fa 100%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        /* Heartbeat Animation for Emergency Badge */
+        .emergency-badge {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        /* Page Load Animations */
+        .animate-on-load {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .animate-slide-up {
+            opacity: 0;
+            animation: slideInUp 0.8s ease-out forwards;
+        }
+
+        .animate-slide-left {
+            opacity: 0;
+            animation: slideInLeft 0.8s ease-out forwards;
+        }
+
+        .animate-slide-right {
+            opacity: 0;
+            animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        /* Staggered Animations */
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+
+        /* Parallax Effect */
+        .parallax {
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        /* Magnetic Effect */
+        .magnetic {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #db5858ff;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-description {
+            margin-top: 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            background: #f8f9fa;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .features-header p {
+            font-size: 1.25rem;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-number {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            width: 30px;
+            height: 30px;
+            background: #dc2626;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 2rem 1rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #dc2626;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #dc2626;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+
+        /* Emergency Badge */
+        .emergency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #dc2626;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .mobile-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            /* Mobile Menu Button */
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            /* Navigation Links - Mobile Dropdown */
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 1rem;
+                min-width: 200px;
+                z-index: 1000;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            /* Mobile Navigation Links */
+            .nav-links a {
+                padding: 0.75rem 1rem;
+                border-radius: 0.25rem;
+                transition: all 0.3s ease;
+                color: #1a1a1a;
+                text-decoration: none;
+                display: block;
+                text-align: center;
+            }
+
+            .nav-links a:hover {
+                background: rgba(220, 38, 38, 0.1);
+            }
+
+            /* Hide User Menu on Mobile (moved to nav-links) */
+            .user-menu {
+                display: none;
+            }
+
+            /* Hero Section Mobile */
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Stats & Features Mobile */
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== DESKTOP OPTIMIZATIONS ===== */
+        @media (min-width: 769px) {
+            /* Hide Mobile Menu Button on Desktop */
+            .mobile-menu-btn {
+                display: none !important;
+            }
+
+            /* Ensure Desktop Navigation is Visible */
+            .nav-links {
+                display: flex !important;
+                position: static !important;
+                background: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                min-width: auto !important;
+                z-index: auto !important;
+                flex-direction: row !important;
+            }
+
+            /* Desktop User Menu */
+            .user-menu {
+                display: flex !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'donor:home' %}" class="logo">
+                <span class="material-symbols-outlined">bloodtype</span>
+                BloodLink
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            
+            <div class="nav-links" id="navLinks">
+                <!-- Main Navigation Links -->
+                <a href="{% url 'donor:home' %}" class="active">Home</a>
+                <a href="{% url 'donor:about' %}">About</a>
+                <a href="{% url 'donor:request_blood' %}">Request Blood</a>
+                
+                {% if donor %}
+                    <!-- Authenticated User Links -->
+                    <a href="{% url 'donor:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'donor:donations' %}">Donations</a>
+                    <a href="{% url 'donor:profile' %}">Profile</a>
+                    <a href="{% url 'donor:logout' %}" class="nav-link-logout">Logout</a>
+                {% else %}
+                    <!-- Guest User Links -->
+                    <a href="{% url 'donor:login' %}" class="nav-link-highlight">Login</a>
+                    <a href="{% url 'donor:register' %}" class="nav-link-highlight">Register</a>
+                {% endif %}
+            </div>
+            
+            <!-- User Menu (Desktop Only) -->
+            <div class="user-menu">
+                {% if donor %}
+                    <img src="{% static 'images/donor-smiling.png' %}" alt="User" class="user-avatar">
+                    <span>{{ donor.first_name }} {{ donor.last_name }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="blood-cells">
+            <div class="blood-cell"></div>
+            <div class="blood-cell"></div>
+            <div class="blood-cell"></div>
+            <div class="blood-cell"></div>
+            <div class="blood-cell"></div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-content animate-slide-left">
+                {% if not donor %}
+                <div class="emergency-badge animate-on-load stagger-1">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emergency</span>
+                    Emergency Response Active
                 </div>
-                <div class="col-lg-6 text-center">
-                    <div class="blood-types">
-                        <div class="blood-type">A+</div>
-                        <div class="blood-type">A-</div>
-                        <div class="blood-type">B+</div>
-                        <div class="blood-type">B-</div>
-                        <div class="blood-type">O+</div>
-                        <div class="blood-type">O-</div>
-                        <div class="blood-type">AB+</div>
-                        <div class="blood-type">AB-</div>
+                {% endif %}
+                
+                <h1 class="animate-slide-up stagger-2">Save Lives at <span>St. Francis Hospital</span></h1>
+                <p class="animate-slide-up stagger-3">Your blood donation can provide a lifeline for those in urgent need. Join our community of life-saving donors today.</p>
+                
+                <div class="hero-buttons animate-slide-up stagger-4">
+                    {% if donor %}
+                        <a href="{% url 'donor:dashboard' %}" class="btn btn-primary magnetic">
+                            <span class="material-symbols-outlined">dashboard</span>
+                            Dashboard
+                        </a>
+                        <a href="{% url 'donor:donor_requests' %}" class="btn btn-secondary magnetic">
+                            <span class="material-symbols-outlined">list_alt</span>
+                            My Requests
+                        </a>
+                    {% else %}
+                        <a href="{% url 'donor:register' %}" class="btn btn-primary magnetic">
+                            <span class="material-symbols-outlined">person_add</span>
+                            Become a Donor
+                        </a>
+                        <a href="{% url 'donor:about' %}" class="btn btn-secondary magnetic">
+                            <span class="material-symbols-outlined">info</span>
+                            Learn More
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="hero-image animate-slide-right">
+                <div class="floating-orb orb-1"></div>
+                <div class="floating-orb orb-2"></div>
+                <div class="floating-orb orb-3"></div>
+                <img src="{% static 'images/lab-staff.png' %}" alt="Medical Professional" 
+                     onerror="this.src='https://via.placeholder.com/500x600/f8f9fa/1a1a1a?text=Medical+Professional'">
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-card animate-slide-up stagger-1">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_pin_circle</span>
+                </div>
+                <div class="stat-number">{{ total_donors }}</div>
+                <div class="stat-label">Active Donors</div>
+                <div class="stat-description">Verified and ready for immediate donation</div>
+            </div>
+            
+            <div class="stat-card animate-slide-up stagger-2">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+                </div>
+                <div class="stat-number">15,234</div>
+                <div class="stat-label">Lives Saved</div>
+                <div class="stat-description">A testament to our growing donor network</div>
+            </div>
+            
+            <div class="stat-card animate-slide-up stagger-3">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emergency_home</span>
+                </div>
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Emergency Support</div>
+                <div class="stat-description">Round-the-clock blood supply coordination</div>
+            </div>
+            
+            <div class="stat-card animate-slide-up stagger-4">
+                <div class="stat-icon">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bloodtype</span>
+                </div>
+                <div class="stat-number">{{ available_donors }}</div>
+                <div class="stat-label">Available Now</div>
+                <div class="stat-description">Ready donors for immediate response</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-container">
+            <div class="features-header animate-slide-up">
+                <h2>How BloodLink Works</h2>
+                <p>Three simple steps to become a life-saving donor</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card animate-slide-up stagger-1">
+                    <div class="feature-number">1</div>
+                    <div class="feature-icon">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">how_to_reg</span>
                     </div>
+                    <h3>Register as Donor</h3>
+                    <p>Sign up in minutes, provide your blood type and availability. Join our life-saving community with professional precision.</p>
+                    <a href="{% url 'donor:register' %}" class="btn btn-primary magnetic">
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                        Register Now
+                    </a>
+                </div>
+                
+                <div class="feature-card animate-slide-up stagger-2">
+                    <div class="feature-number">2</div>
+                    <div class="feature-icon">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+                    </div>
+                    <h3>Receive Alerts</h3>
+                    <p>Get instant notifications when your blood type is needed. SMS and push notifications keep you informed with clinical urgency.</p>
+                    <a href="{% url 'donor:about' %}" class="btn btn-secondary magnetic">
+                        <span class="material-symbols-outlined">info</span>
+                        Learn More
+                    </a>
+                </div>
+                
+                <div class="feature-card animate-slide-up stagger-3">
+                    <div class="feature-number">3</div>
+                    <div class="feature-icon">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                    </div>
+                    <h3>Save Lives</h3>
+                    <p>Respond to emergency requests immediately. Your donation can make the difference between life and death with impactful results.</p>
+                    <a href="{% url 'donor:request_blood' %}" class="btn btn-primary magnetic">
+                        <span class="material-symbols-outlined">emergency</span>
+                        Request Blood
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Stats Section -->
-<section class="stats-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3 mb-4">
-                <div class="stat-card">
-                    <div class="stat-number">10,000+</div>
-                    <div class="stat-label">Active Donors</div>
-                </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>BloodLink</h4>
+                <p>Connecting donors with those in need at St. Francis Hospital. Every donation counts.</p>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="stat-card">
-                    <div class="stat-number">50,000+</div>
-                    <div class="stat-label">Lives Saved</div>
-                </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'donor:home' %}">Home</a></li>
+                    <li><a href="{% url 'donor:about' %}">About Us</a></li>
+                    <li><a href="{% url 'donor:register' %}">Register</a></li>
+                    <li><a href="{% url 'donor:request_blood' %}">Request Blood</a></li>
+                </ul>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="stat-card">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Emergency Service</div>
-                </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="{% url 'donor:contact' %}">Contact Us</a></li>
+                    <li><a href="{% url 'donor:faq' %}">FAQ</a></li>
+                    <li><a href="{% url 'donor:privacy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'donor:terms' %}">Terms of Service</a></li>
+                </ul>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="stat-card">
-                    <div class="stat-number">15</div>
-                    <div class="stat-label">Minutes Average</div>
-                </div>
+            
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>St. Francis Hospital<br>
+                Nsambya, Kampala<br>
+                Uganda</p>
+                <p>Emergency: +256 123 456 789</p>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section class="features-section">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-4 fw-bold mb-3">Why Choose BloodLink?</h2>
-            <p class="lead text-muted">We make blood donation simple, safe, and rewarding</p>
         </div>
         
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <span class="material-icons">notifications_active</span>
-                    </div>
-                    <h3 class="feature-title">Emergency Alerts</h3>
-                    <p class="feature-description">Get instant notifications when your blood type is urgently needed. Save lives when it matters most.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <span class="material-icons">redeem</span>
-                    </div>
-                    <h3 class="feature-title">Rewards Program</h3>
-                    <p class="feature-description">Earn points for each donation and redeem exciting rewards. Your generosity deserves recognition.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <span class="material-icons">health_and_safety</span>
-                    </div>
-                    <h3 class="feature-title">Health Monitoring</h3>
-                    <p class="feature-description">Track your donation history and health impact over time. Stay informed about your contribution.</p>
-                </div>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 BloodLink. All rights reserved. The Clinical Curator Editorial.</p>
         </div>
-        
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <span class="material-icons">schedule</span>
-                    </div>
-                    <h3 class="feature-title">Flexible Scheduling</h3>
-                    <p class="feature-description">Choose donation times that work for you. Our system adapts to your schedule and availability.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <span class="material-icons">security</span>
-                    </div>
-                    <h3 class="feature-title">Safe & Sterile</h3>
-                    <p class="feature-description">All donations follow strict medical protocols. Your safety is our top priority.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <span class="material-icons">support_agent</span>
-                    </div>
-                    <h3 class="feature-title">24/7 Support</h3>
-                    <p class="feature-description">Our team is always here to help. Get assistance whenever you need it.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </footer>
 
-<!-- Testimonials Section -->
-<section class="testimonial-section">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-4 fw-bold mb-3">Hero Stories</h2>
-            <p class="lead text-muted">Real stories from our amazing donors</p>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">"BloodLink made it so easy for me to donate. The emergency alerts helped me save a life during a critical time. I feel proud to be part of this community."</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">JD</div>
-                        <div class="author-info">
-                            <div class="author-name">John Doe</div>
-                            <div class="author-role">O+ Donor, 2 years</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">"The rewards program is fantastic! I've earned enough points for a free health check-up. It's great to be recognized for helping others."</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">SM</div>
-                        <div class="author-info">
-                            <div class="author-name">Sarah Miller</div>
-                            <div class="author-role">A- Donor, 1 year</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">"As a first-time donor, I was nervous. The BloodLink team made me feel comfortable and explained everything. It was a wonderful experience!"</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">MJ</div>
-                        <div class="author-info">
-                            <div class="author-name">Michael Johnson</div>
-                            <div class="author-role">B+ Donor, 6 months</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    <script>
+        // Magnetic Effect for Buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const magneticElements = document.querySelectorAll('.magnetic');
+            
+            magneticElements.forEach(element => {
+                element.addEventListener('mousemove', function(e) {
+                    const rect = element.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    
+                    const distance = Math.sqrt(x * x + y * y);
+                    const maxDistance = 100;
+                    const strength = Math.max(0, 1 - distance / maxDistance);
+                    
+                    const moveX = x * strength * 0.3;
+                    const moveY = y * strength * 0.3;
+                    
+                    element.style.transform = `translate(${moveX}px, ${moveY}px) scale(${1 + strength * 0.05})`;
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    element.style.transform = 'translate(0, 0) scale(1)';
+                });
+            });
 
-<!-- CTA Section -->
-<section class="cta-section">
-    <div class="container">
-        <h2 class="cta-title">Ready to Save Lives?</h2>
-        <p class="cta-subtitle">Join thousands of heroes in our community. Your donation can make the difference between life and death.</p>
-        
-        {% if user.is_authenticated %}
-            <a href="{% url 'donor:dashboard' %}" class="btn md-btn md-btn-primary btn-lg me-3">
-                <span class="material-icons">dashboard</span>
-                Go to Dashboard
-            </a>
-            <a href="{% url 'donor:request_blood' %}" class="btn md-btn md-btn-secondary btn-lg">
-                <span class="material-icons">bloodtype</span>
-                Request Blood
-            </a>
-        {% else %}
-            <a href="{% url 'donor:register' %}" class="btn md-btn md-btn-primary btn-lg me-3">
-                <span class="material-icons">person_add</span>
-                Become a Donor
-            </a>
-            <a href="{% url 'donor:login' %}" class="btn md-btn md-btn-secondary btn-lg">
-                <span class="material-icons">login</span>
-                Sign In
-            </a>
-        {% endif %}
+            // Parallax Effect on Scroll
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.parallax');
+                
+                parallaxElements.forEach(element => {
+                    const speed = element.dataset.speed || 0.5;
+                    const yPos = -(scrolled * speed);
+                    element.style.transform = `translateY(${yPos}px)`;
+                });
+            });
+
+            // Intersection Observer for Animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all animated elements
+            document.querySelectorAll('.animate-on-load, .animate-slide-up, .animate-slide-left, .animate-slide-right').forEach(el => {
+                el.style.animationPlayState = 'paused';
+                observer.observe(el);
+            });
+
+            // Counter Animation for Stats
+            function animateCounter(element, target, duration = 2000) {
+                const start = 0;
+                const increment = target / (duration / 16);
+                let current = start;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    element.textContent = Math.floor(current).toLocaleString();
+                }, 16);
+            }
+
+            // Animate stat numbers when they come into view
+            const statNumbers = document.querySelectorAll('.stat-number');
+            const numberObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const text = entry.target.textContent;
+                        const number = parseInt(text.replace(/[^0-9]/g, ''));
+                        
+                        if (!isNaN(number)) {
+                            animateCounter(entry.target, number);
+                        }
+                        
+                        numberObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            statNumbers.forEach(el => numberObserver.observe(el));
+
+            // Smooth Scroll for Navigation Links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Dynamic Blood Cell Generation
+            function createBloodCell() {
+                const bloodCell = document.createElement('div');
+                bloodCell.className = 'blood-cell';
+                bloodCell.style.top = Math.random() * 100 + '%';
+                bloodCell.style.animationDelay = Math.random() * 15 + 's';
+                bloodCell.style.animationDuration = (15 + Math.random() * 10) + 's';
+                
+                const bloodCellsContainer = document.querySelector('.blood-cells');
+                if (bloodCellsContainer) {
+                    bloodCellsContainer.appendChild(bloodCell);
+                    
+                    // Remove blood cell after animation completes
+                    setTimeout(() => {
+                        bloodCell.remove();
+                    }, 25000);
+                }
+            }
+
+            // Create blood cells periodically
+            setInterval(createBloodCell, 3000);
+
+            // Enhanced Button Click Effects
+            document.querySelectorAll('.btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Page Loading Animation
+            window.addEventListener('load', function() {
+                document.body.classList.add('loaded');
+                
+                // Trigger initial animations
+                setTimeout(() => {
+                    document.querySelectorAll('.animate-on-load').forEach(el => {
+                        el.style.animationPlayState = 'running';
+                    });
+                }, 100);
+            });
+
+            // Dynamic Theme Detection
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.body.classList.add('dark-theme');
+            }
+
+            // Performance Optimization - Debounce scroll events
+            let scrollTimeout;
+            window.addEventListener('scroll', function() {
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+                scrollTimeout = setTimeout(function() {
+                    // Scroll-based animations here
+                }, 100);
+            });
+
+            // Add loading states for better UX
+            document.querySelectorAll('.btn').forEach(button => {
+                const originalText = button.innerHTML;
+                
+                button.addEventListener('click', function() {
+                    if (!this.classList.contains('loading')) {
+                        this.classList.add('loading');
+                        this.innerHTML = '<span class="material-symbols-outlined animate-spin">hourglass_empty</span> Loading...';
+                        
+                        // Reset after 2 seconds (adjust as needed)
+                        setTimeout(() => {
+                            this.classList.remove('loading');
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    }
+                });
+            });
+        });
+
+        // Add CSS for ripple effect
+        const style = document.createElement('style');
+        style.textContent = `
+            .ripple {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.5);
+                transform: scale(0);
+                animation: ripple-animation 0.6s ease-out;
+                pointer-events: none;
+            }
+            
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+            
+            .animate-spin {
+                animation: spin 1s linear infinite;
+            }
+            
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            
+            body.loaded .animate-on-load {
+                animation-play-state: running;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+<script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('navLinks');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (!navLinks.contains(event.target) && !menuBtn.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Initialize animations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation classes to elements
+            const animatedElements = document.querySelectorAll('.animate-on-load');
+            animatedElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                }, index * 100);
+            });
+        });
+    </script>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Theme Toggle -->
+<div class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+    <div class="theme-toggle-icon">
+        <span class="material-symbols-outlined" id="themeIcon">light_mode</span>
     </div>
-</section>
-{% endblock %}
+</div>
+
+<script>
+    // ===== TOAST NOTIFICATION SYSTEM =====
+    class ToastNotification {
+        constructor() {
+            this.container = document.getElementById('toastContainer');
+            this.toasts = new Map();
+            this.counter = 0;
+        }
+
+        show(message, type = 'info', title = null, duration = 5000) {
+            const id = `toast-${++this.counter}`;
+            const toast = this.createToast(id, message, type, title);
+            
+            this.container.appendChild(toast);
+            this.toasts.set(id, toast);
+
+            // Auto remove after duration
+            if (duration > 0) {
+                setTimeout(() => this.remove(id), duration);
+            }
+
+            return id;
+        }
+
+        createToast(id, message, type, title) {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.id = id;
+
+            const iconMap = {
+                success: 'check_circle',
+                error: 'error',
+                warning: 'warning',
+                info: 'info'
+            };
+
+            const icon = document.createElement('div');
+            icon.className = 'toast-icon';
+            icon.innerHTML = `<span class="material-symbols-outlined">${iconMap[type]}</span>`;
+
+            const content = document.createElement('div');
+            content.className = 'toast-content';
+            
+            if (title) {
+                const titleEl = document.createElement('div');
+                titleEl.className = 'toast-title';
+                titleEl.textContent = title;
+                content.appendChild(titleEl);
+            }
+
+            const messageEl = document.createElement('div');
+            messageEl.className = 'toast-message';
+            messageEl.textContent = message;
+            content.appendChild(messageEl);
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'toast-close';
+            closeBtn.innerHTML = '×';
+            closeBtn.onclick = () => this.remove(id);
+
+            toast.appendChild(icon);
+            toast.appendChild(content);
+            toast.appendChild(closeBtn);
+
+            return toast;
+        }
+
+        remove(id) {
+            const toast = this.toasts.get(id);
+            if (toast) {
+                toast.classList.add('removing');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                    this.toasts.delete(id);
+                }, 250);
+            }
+        }
+
+        success(message, title = 'Success', duration = 5000) {
+            return this.show(message, 'success', title, duration);
+        }
+
+        error(message, title = 'Error', duration = 7000) {
+            return this.show(message, 'error', title, duration);
+        }
+
+        warning(message, title = 'Warning', duration = 6000) {
+            return this.show(message, 'warning', title, duration);
+        }
+
+        info(message, title = 'Info', duration = 5000) {
+            return this.show(message, 'info', title, duration);
+        }
+
+        clear() {
+            this.toasts.forEach((toast, id) => this.remove(id));
+        }
+    }
+
+    // ===== THEME TOGGLE =====
+    class ThemeManager {
+        constructor() {
+            this.toggle = document.getElementById('themeToggle');
+            this.icon = document.getElementById('themeIcon');
+            this.currentTheme = localStorage.getItem('theme') || 'light';
+            this.init();
+        }
+
+        init() {
+            this.setTheme(this.currentTheme);
+            this.toggle.addEventListener('click', () => this.toggleTheme());
+        }
+
+        setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            this.icon.textContent = theme === 'dark' ? 'dark_mode' : 'light_mode';
+            localStorage.setItem('theme', theme);
+            this.currentTheme = theme;
+        }
+
+        toggleTheme() {
+            const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+            this.setTheme(newTheme);
+            showToast.info(`Switched to ${newTheme} mode`);
+        }
+    }
+
+    // ===== INITIALIZATION =====
+    let showToast, themeManager;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize components
+        showToast = new ToastNotification();
+        themeManager = new ThemeManager();
+
+        // Show welcome toast
+        setTimeout(() => {
+            showToast.info('Welcome to BloodLink - Save Lives at St. Francis Hospital', 'System Ready');
+        }, 1000);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,943 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - BloodLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="{% static 'css/bloodlink-enhanced.css' %}" rel="stylesheet">
+    <style>
+        /* ===== CSS VARIABLES FOR THEMING ===== */
+        :root {
+            --primary-color: #dc2626;
+            --primary-hover: #b91c1c;
+            --primary-light: #fef2f2;
+            --primary-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            
+            --success-color: #16a34a;
+            --success-light: #f0fdf4;
+            --success-gradient: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            
+            --warning-color: #d97706;
+            --warning-light: #fffbeb;
+            --warning-gradient: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            
+            --error-color: #dc2626;
+            --error-light: #fef2f2;
+            --error-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            
+            --info-color: #0ea5e9;
+            --info-light: #f0f9ff;
+            --info-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            
+            --neutral-50: #f8f9fa;
+            --neutral-100: #e5e7eb;
+            --neutral-200: #d1d5db;
+            --neutral-300: #9ca3af;
+            --neutral-400: #6b7280;
+            --neutral-500: #4b5563;
+            --neutral-600: #374151;
+            --neutral-700: #1f2937;
+            --neutral-800: #1a1a1a;
+            --neutral-900: #111827;
+            
+            --text-primary: var(--neutral-800);
+            --text-secondary: var(--neutral-500);
+            --text-muted: var(--neutral-400);
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: var(--neutral-50);
+            --bg-tertiary: var(--neutral-100);
+            
+            --border-radius-sm: 0.375rem;
+            --border-radius: 0.5rem;
+            --border-radius-md: 0.75rem;
+            --border-radius-lg: 1rem;
+            --border-radius-xl: 1.5rem;
+            
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --font-family: 'Inter', sans-serif;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+            --font-size-5xl: 3rem;
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            --spacing-3xl: 4rem;
+        }
+
+        /* ===== DARK MODE VARIABLES ===== */
+        [data-theme="dark"] {
+            --text-primary: var(--neutral-100);
+            --text-secondary: var(--neutral-300);
+            --text-muted: var(--neutral-400);
+            
+            --bg-primary: var(--neutral-900);
+            --bg-secondary: var(--neutral-800);
+            --bg-tertiary: var(--neutral-700);
+            
+            --neutral-50: var(--neutral-900);
+            --neutral-100: var(--neutral-800);
+            --neutral-200: var(--neutral-700);
+            --neutral-300: var(--neutral-600);
+            --neutral-400: var(--neutral-500);
+            --neutral-500: var(--neutral-400);
+            --neutral-600: var(--neutral-300);
+            --neutral-700: var(--neutral-200);
+            --neutral-800: var(--neutral-100);
+            --neutral-900: var(--neutral-50);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            transition: background-color var(--transition-base), color var(--transition-base);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* ===== NAVIGATION BAR ===== */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all var(--transition-base);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing) var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: transform var(--transition-fast);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo .material-symbols-outlined {
+            font-size: var(--font-size-2xl);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--spacing-xl);
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: var(--spacing-sm) var(--spacing);
+            border-radius: var(--border-radius);
+            transition: all var(--transition-base);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            background: var(--primary-light);
+        }
+
+        .nav-links a.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            background: var(--primary-light);
+        }
+
+        .nav-link-highlight {
+            background: var(--primary-gradient) !important;
+            color: white !important;
+            font-weight: 600 !important;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-link-highlight:hover {
+            background: linear-gradient(135deg, var(--primary-hover), var(--primary-color)) !important;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-top: 100px;
+            min-height: calc(100vh - 100px);
+            padding: var(--spacing-2xl);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .page-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing);
+        }
+
+        .page-subtitle {
+            font-size: var(--font-size-lg);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .terms-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .terms-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: var(--spacing-2xl);
+            text-align: center;
+        }
+
+        .terms-header h1 {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .terms-content {
+            padding: var(--spacing-2xl);
+        }
+
+        .terms-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .terms-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: var(--font-size-lg);
+            color: var(--primary-color);
+            margin-bottom: var(--spacing);
+            font-weight: 600;
+        }
+
+        .section-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .section-content ul {
+            list-style: none;
+            padding-left: var(--spacing);
+        }
+
+        .section-content li {
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            padding-left: var(--spacing-lg);
+        }
+
+        .section-content li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--neutral-900);
+            color: var(--neutral-100);
+            padding: var(--spacing-3xl) 0;
+            margin-top: var(--spacing-3xl);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-xl);
+        }
+
+        .footer-section h4 {
+            font-size: var(--font-size-lg);
+            color: white;
+            margin-bottom: var(--spacing);
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section li {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .footer-section a {
+            color: var(--neutral-300);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        /* ===== DARK MODE TOGGLE ===== */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3rem;
+            height: 3rem;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transition: all var(--transition-base);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .theme-toggle-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle-icon .material-symbols-outlined {
+            color: white;
+            font-size: 20px;
+        }
+
+        /* ===== TOAST NOTIFICATION SYSTEM ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing);
+            min-width: 300px;
+            max-width: 400px;
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing);
+            animation: slideIn 0.3s ease-out;
+            transition: all var(--transition-base);
+        }
+
+        .toast.removing {
+            animation: slideOut 0.3s ease-out;
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--error-color);
+        }
+
+        .toast-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--info-color);
+        }
+
+        .toast-icon {
+            color: var(--primary-color);
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .toast-message {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: var(--font-size-lg);
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all var(--transition-fast);
+        }
+
+        .toast-close:hover {
+            background: var(--neutral-100);
+            color: var(--text-primary);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 80px;
+                right: var(--spacing);
+                background: var(--bg-primary);
+                border-radius: var(--border-radius-md);
+                box-shadow: var(--shadow-lg);
+                padding: var(--spacing);
+                z-index: 1001;
+            }
+
+            .nav-links.active {
+                display: block;
+            }
+
+            .terms-container {
+                margin: var(--spacing);
+                border-radius: var(--border-radius);
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'donor:home' %}" class="logo">
+                <span class="material-symbols-outlined">bloodtype</span>
+                BloodLink
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            
+            <div class="nav-links">
+                <a href="{% url 'donor:home' %}">Home</a>
+                <a href="{% url 'donor:about' %}">About</a>
+                <a href="{% url 'donor:request_blood' %}">Request Blood</a>
+                {% if donor %}
+                    <a href="{% url 'donor:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'donor:donations' %}">Donations</a>
+                    <a href="{% url 'donor:profile' %}">Profile</a>
+                    <a href="{% url 'donor:logout' %}" class="nav-link-logout">Logout</a>
+                {% else %}
+                    <a href="{% url 'donor:login' %}" class="nav-link-highlight">Login</a>
+                    <a href="{% url 'donor:register' %}" class="nav-link-highlight">Register</a>
+                {% endif %}
+            </div>
+            
+            <div class="user-menu">
+                {% if donor %}
+                    <img src="{% static 'images/donor-smiling.png' %}" alt="User" class="user-avatar">
+                    <span>{{ donor.full_name }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Terms of Service</h1>
+            <p class="page-subtitle">Please read these terms carefully</p>
+        </div>
+
+        <div class="terms-container">
+            <div class="terms-header">
+                <h1>Terms of Service</h1>
+                <p>Last updated: {{ "now"|date:"F j, Y" }}</p>
+            </div>
+
+            <div class="terms-content">
+                <div class="terms-section">
+                    <h2 class="section-title">1. Acceptance of Terms</h2>
+                    <div class="section-content">
+                        <p>By accessing and using BloodLink, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service. If you do not agree to these terms, you must not use our services.</p>
+                        <p>Your continued use of BloodLink constitutes acceptance of any modified terms.</p>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">2. Eligibility Requirements</h2>
+                    <div class="section-content">
+                        <p>To register and use BloodLink as a blood donor, you must:</p>
+                        <ul>
+                            <li>Be at least 18 years of age</li>
+                            <li>Be in good general health</li>
+                            <li>Provide accurate and truthful information</li>
+                            <li>Not have any disqualifying medical conditions</li>
+                            <li>Meet minimum weight requirements (50kg/110lbs)</li>
+                            <li>Have valid identification</li>
+                        </ul>
+                        <p>BloodLink reserves the right to verify eligibility and decline registration for any reason.</p>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">3. Donor Responsibilities</h2>
+                    <div class="section-content">
+                        <p>As a registered donor, you agree to:</p>
+                        <ul>
+                            <li>Provide accurate and complete information about your health and medical history</li>
+                            <li>Update your information promptly if any changes occur</li>
+                            <li>Respond to emergency blood requests when your blood type is needed</li>
+                            <li>Follow all donation eligibility guidelines provided by healthcare professionals</li>
+                            <li>Maintain confidentiality of your donation activities</li>
+                            <li>Report any adverse reactions from blood donation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">4. Donation Process</h2>
+                    <div class="section-content">
+                        <p>Blood donation is a voluntary process that involves:</p>
+                        <ul>
+                            <li>Health screening and verification before each donation</li>
+                            <li>Collection of approximately 450ml of whole blood</li>
+                            <li>Post-donation monitoring and care</li>
+                            <li>Testing of donated blood for safety and compatibility</li>
+                            <li>Storage and distribution according to medical standards</li>
+                        </ul>
+                        <p>You may decline to donate at any time without penalty.</p>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">5. Emergency Response System</h2>
+                    <div class="section-content">
+                        <p>When you receive an emergency blood request notification:</p>
+                        <ul>
+                            <li>You will receive SMS notifications when your blood type is urgently needed</li>
+                            <li>Response time is critical - please respond promptly</li>
+                            <li>Your contact information may be shared with the requesting healthcare facility</li>
+                            <li>You can accept or decline requests based on your availability and health status</li>
+                            <li>All communications will be logged for quality assurance</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">6. Privacy and Data Protection</h2>
+                    <div class="section-content">
+                        <p>Your privacy is protected under our Privacy Policy. By using BloodLink, you consent to:</p>
+                        <ul>
+                            <li>Collection and processing of your personal and medical information</li>
+                            <li>Storage of your donation history and communication records</li>
+                            <li>Sharing of relevant information with healthcare providers during emergencies</li>
+                            <li>Use of anonymized data for research and service improvement</li>
+                            <li>Communication via SMS, email, or phone for donation requests</li>
+                        </ul>
+                        <p>We implement industry-standard security measures to protect your data.</p>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">7. Prohibited Activities</h2>
+                    <div class="section-content">
+                        <p>You agree not to:</p>
+                        <ul>
+                            <li>Provide false or misleading information</li>
+                            <li>Use BloodLink for any illegal or unauthorized purposes</li>
+                            <li>Attempt to sell blood or receive payment for donations</li>
+                            <li>Share your login credentials with others</li>
+                            <li>Interfere with other donors or healthcare providers</li>
+                            <li>Violate any applicable laws or regulations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">8. Limitation of Liability</h2>
+                    <div class="section-content">
+                        <p>BloodLink provides a platform connecting donors with patients in need. We are not a healthcare provider and do not provide medical advice.</p>
+                        <p>To the fullest extent permitted by law, BloodLink shall not be liable for:</p>
+                        <ul>
+                            <li>Any direct or indirect damages resulting from blood donation</li>
+                            <li>Complications arising from the donation process</li>
+                            <li>Errors or omissions in donor-patient matching</li>
+                            <li>System downtime or technical failures</li>
+                            <li>Third-party actions or communications</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">9. Service Availability</h2>
+                    <div class="section-content">
+                        <p>BloodLink strives to maintain 99.9% uptime but does not guarantee continuous availability. Services may be temporarily unavailable for:</p>
+                        <ul>
+                            <li>Scheduled maintenance</li>
+                            <li>System updates</li>
+                            <li>Emergency situations</li>
+                            <li>Technical issues beyond our control</li>
+                        </ul>
+                        <p>We will notify users of significant service disruptions when possible.</p>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">10. Termination of Service</h2>
+                    <div class="section-content">
+                        <p>You may terminate your account at any time by:</p>
+                        <ul>
+                            <li>Logging into your account and selecting "Delete Account"</li>
+                            <li>Contacting our support team with a termination request</li>
+                        </ul>
+                        <p>Upon termination, your personal information will be handled according to our Privacy Policy.</p>
+                        <p>BloodLink may suspend or terminate accounts for violations of these terms.</p>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">11. Modifications to Terms</h2>
+                    <div class="section-content">
+                        <p>BloodLink reserves the right to modify these terms at any time. Changes will be effective immediately upon posting.</p>
+                        <p>Your continued use of the service constitutes acceptance of modified terms.</p>
+                        <p>We will notify users of significant changes via email or in-app notifications.</p>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">12. Contact Information</h2>
+                    <div class="section-content">
+                        <p>For questions about these Terms of Service, please contact us:</p>
+                        <ul>
+                            <li><strong>Email:</strong> support@bloodlink.org</li>
+                            <li><strong>Phone:</strong> +256 414 660 000</li>
+                            <li><strong>Address:</strong> St. Francis Hospital Nsambya, Kampala, Uganda</li>
+                            <li><strong>Website:</strong> www.bloodlink.org</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="terms-section">
+                    <h2 class="section-title">13. Governing Law</h2>
+                    <div class="section-content">
+                        <p>These Terms of Service are governed by and construed in accordance with the laws of Uganda. Any disputes will be resolved through binding arbitration in Kampala, Uganda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>BloodLink</h4>
+                <ul>
+                    <li><a href="{% url 'donor:home' %}">Home</a></li>
+                    <li><a href="{% url 'donor:about' %}">About Us</a></li>
+                    <li><a href="{% url 'donor:register' %}">Register</a></li>
+                    <li><a href="{% url 'donor:request_blood' %}">Request Blood</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="{% url 'donor:contact' %}">Contact Us</a></li>
+                    <li><a href="{% url 'donor:faq' %}">FAQ</a></li>
+                    <li><a href="{% url 'donor:privacy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'donor:terms' %}">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>St. Francis Hospital<br>Nsambya, Kampala<br>Uganda</p>
+                <p>Emergency: +256 123 456 789</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+        <div class="theme-toggle-icon">
+            <span class="material-symbols-outlined" id="themeIcon">light_mode</span>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ===== MOBILE MENU TOGGLE =====
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('show');
+        }
+
+        // ===== TOAST NOTIFICATION SYSTEM =====
+        class ToastNotification {
+            constructor() {
+                this.container = document.getElementById('toastContainer');
+                this.toasts = new Map();
+                this.counter = 0;
+            }
+
+            show(message, type = 'info', title = null, duration = 5000) {
+                const id = `toast-${++this.counter}`;
+                const toast = this.createToast(id, message, type, title);
+                
+                this.container.appendChild(toast);
+                this.toasts.set(id, toast);
+
+                // Auto remove after duration
+                if (duration > 0) {
+                    setTimeout(() => this.remove(id), duration);
+                }
+
+                return id;
+            }
+
+            createToast(id, message, type, title) {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.id = id;
+
+                const iconMap = {
+                    success: 'check_circle',
+                    error: 'error',
+                    warning: 'warning',
+                    info: 'info'
+                };
+
+                const icon = document.createElement('div');
+                icon.className = 'toast-icon';
+                icon.innerHTML = `<span class="material-symbols-outlined">${iconMap[type]}</span>`;
+
+                const content = document.createElement('div');
+                content.className = 'toast-content';
+                
+                if (title) {
+                    const titleEl = document.createElement('div');
+                    titleEl.className = 'toast-title';
+                    titleEl.textContent = title;
+                    content.appendChild(titleEl);
+                }
+
+                const messageEl = document.createElement('div');
+                messageEl.className = 'toast-message';
+                messageEl.textContent = message;
+                content.appendChild(messageEl);
+
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'toast-close';
+                closeBtn.innerHTML = '×';
+                closeBtn.onclick = () => this.remove(id);
+
+                toast.appendChild(icon);
+                toast.appendChild(content);
+                toast.appendChild(closeBtn);
+
+                return toast;
+            }
+
+            remove(id) {
+                const toast = this.toasts.get(id);
+                if (toast) {
+                    toast.classList.add('removing');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                        this.toasts.delete(id);
+                    }, 250);
+                }
+            }
+
+            success(message, title = 'Success', duration = 5000) {
+                return this.show(message, 'success', title, duration);
+            }
+
+            error(message, title = 'Error', duration = 7000) {
+                return this.show(message, 'error', title, duration);
+            }
+
+            warning(message, title = 'Warning', duration = 6000) {
+                return this.show(message, 'warning', title, duration);
+            }
+
+            info(message, title = 'Info', duration = 5000) {
+                return this.show(message, 'info', title, duration);
+            }
+
+            clear() {
+                this.toasts.forEach((toast, id) => this.remove(id));
+            }
+        }
+
+        // ===== THEME TOGGLE =====
+        class ThemeManager {
+            constructor() {
+                this.toggle = document.getElementById('themeToggle');
+                this.icon = document.getElementById('themeIcon');
+                this.currentTheme = localStorage.getItem('theme') || 'light';
+                this.init();
+            }
+
+            init() {
+                this.setTheme(this.currentTheme);
+                this.toggle.addEventListener('click', () => this.toggleTheme());
+            }
+
+            setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                this.icon.textContent = theme === 'dark' ? 'dark_mode' : 'light_mode';
+                localStorage.setItem('theme', theme);
+                this.currentTheme = theme;
+            }
+
+            toggleTheme() {
+                const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+                this.setTheme(newTheme);
+            }
+        }
+
+        // ===== INITIALIZATION =====
+        let showToast, themeManager;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize components
+            showToast = new ToastNotification();
+            themeManager = new ThemeManager();
+
+            // Show welcome toast
+            setTimeout(() => {
+                showToast.info('Welcome to BloodLink Terms of Service', 'Legal Information');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

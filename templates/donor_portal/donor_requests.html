@@ -1414,17 +1414,35 @@ refreshUrgentRequests();
                 BloodLink
             </a>
             
-            <div class="nav-links">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            
+            <div class="nav-links" id="navLinks">
+                <!-- Main Navigation Links -->
                 <a href="{% url 'donor:home' %}">Home</a>
-                <a href="{% url 'donor:dashboard' %}">Dashboard</a>
+                <a href="{% url 'donor:about' %}">About</a>
                 <a href="{% url 'donor:request_blood' %}">Request Blood</a>
-                <a href="{% url 'donor:donations' %}">Donations</a>
+                
+                {% if donor %}
+                    <!-- Authenticated User Links -->
+                    <a href="{% url 'donor:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'donor:donations' %}" class="active">Donations</a>
+                    <a href="{% url 'donor:profile' %}">Profile</a>
+                    <a href="{% url 'donor:logout' %}" class="nav-link-logout">Logout</a>
+                {% else %}
+                    <!-- Guest User Links -->
+                    <a href="{% url 'donor:login' %}" class="nav-link-highlight">Login</a>
+                    <a href="{% url 'donor:register' %}" class="nav-link-highlight">Register</a>
+                {% endif %}
             </div>
             
+            <!-- User Menu (Desktop Only) -->
             <div class="user-menu">
-                <img src="{% static 'images/donor-smiling.png' %}" alt="User" class="user-avatar">
-                <span>{{ donor.first_name }} {{ donor.last_name }}</span>
-                <a href="{% url 'donor:logout' %}" class="btn btn-secondary">Logout</a>
+                {% if donor %}
+                    <img src="{% static 'images/donor-smiling.png' %}" alt="User" class="user-avatar">
+                    <span>{{ donor.first_name }} {{ donor.last_name }}</span>
+                {% endif %}
             </div>
         </div>
     </nav>

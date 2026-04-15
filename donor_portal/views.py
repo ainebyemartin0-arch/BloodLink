@@ -46,6 +46,47 @@ def donor_home(request):
     }
     return render(request, 'donor_portal/home_enhanced.html', context)
 
+
+def contact(request):
+    """Contact page for donor portal"""
+    return render(request, 'donor_portal/contact.html')
+
+def faq(request):
+    """FAQ page for donor portal"""
+    return render(request, 'donor_portal/faq.html')
+
+def privacy(request):
+    """Privacy policy page for donor portal"""
+    return render(request, 'donor_portal/privacy.html')
+
+def terms(request):
+    """Terms of service page for donor portal"""
+    return render(request, 'donor_portal/terms.html')
+
+def contact_submit(request):
+    """Handle contact form submissions"""
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        # Basic validation
+        if not name or not email or not subject or not message:
+            messages.error(request, 'Please fill in all required fields.')
+            return redirect('donor:contact')
+        
+        if '@' not in email or '.' not in email:
+            messages.error(request, 'Please enter a valid email address.')
+            return redirect('donor:contact')
+        
+        # In a real implementation, you would send an email here
+        # For now, we'll just show a success message
+        messages.success(request, f'Thank you {name}! Your message has been received. We will get back to you at {email} soon.')
+        return redirect('donor:contact')
+    
+    return redirect('donor:contact')
+
 def test_page(request):
     """Simple test page to debug issues"""
     total_donors = Donor.objects.filter(is_active=True).count()
@@ -53,7 +94,22 @@ def test_page(request):
     context = {
         'total_donors': total_donors,
     }
-    return render(request, 'test_minimal.html', context)
+    return render(request, 'donor_portal/test_page.html', context)
+
+def password_reset(request):
+    """Password reset page for donor portal"""
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            donor = Donor.objects.get(email=email)
+            # In a real implementation, you would send a password reset email
+            # For now, we'll just show a success message
+            messages.success(request, 'Password reset instructions have been sent to your email.')
+            return redirect('donor:login')
+        except Donor.DoesNotExist:
+            messages.error(request, 'No donor found with this email address.')
+    
+    return render(request, 'donor_portal/password_reset.html')
 
 def about_bloodlink(request):
     """About BloodLink page with detailed information"""
@@ -66,8 +122,14 @@ def donor_register(request):
     if request.method == 'POST':
         form = DonorRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
+            # Debug logging
+            print("Registration form is valid")
+            print(f"Email: {form.cleaned_data['email']}")
+            print(f"Password1: {'*' * len(form.cleaned_data['password1'])} (length: {len(form.cleaned_data['password1'])})")
+            print(f"Password2: {'*' * len(form.cleaned_data['password2'])} (length: {len(form.cleaned_data['password2'])})")
+            
             # Create donor
-            donor = Donor.objects.create(
+            donor = Donor(
                 full_name=form.cleaned_data['full_name'],
                 email=form.cleaned_data['email'],
                 phone_number=form.cleaned_data['phone_number'],
@@ -81,8 +143,19 @@ def donor_register(request):
                 is_active=True,
                 date_registered=timezone.now()
             )
+            
+            print("Donor object created, setting password...")
             donor.set_password(form.cleaned_data['password1'])
+            print(f"Password hash after setting: {bool(donor.password_hash)}")
+            
             donor.save()
+            print(f"Donor saved, password hash exists: {bool(donor.password_hash)}")
+            
+            # Verify password can be checked
+            if donor.check_password(form.cleaned_data['password1']):
+                print("Password verification: SUCCESS")
+            else:
+                print("Password verification: FAILED")
             
             # Log in the donor
             request.session['donor_id'] = donor.pk
@@ -103,15 +176,25 @@ def donor_login(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             
+            # Debug logging
+            print(f"Login attempt for email: {email}")
+            print(f"Password provided: {'*' * len(password)} (length: {len(password)})")
+            
             try:
                 donor = Donor.objects.get(email=email, is_active=True)
+                print(f"Donor found: {donor.full_name}")
+                print(f"Password hash exists: {bool(donor.password_hash)}")
+                
                 if donor.check_password(password):
+                    print("Password check: SUCCESS")
                     request.session['donor_id'] = donor.pk
                     messages.success(request, f"Welcome back, {donor.full_name}!")
                     return redirect('donor:dashboard')
                 else:
+                    print("Password check: FAILED")
                     messages.error(request, "Invalid email or password.")
             except Donor.DoesNotExist:
+                print("Donor not found in database")
                 messages.error(request, "Invalid email or password.")
     else:
         form = DonorLoginForm()
@@ -141,12 +224,12 @@ def donor_dashboard(request):
     urgent_requests = PublicBloodRequest.objects.filter(
         blood_type_needed=donor.blood_type,
         status='pending'
-    ).order_by('-created_at')[:3]
+    ).order_by('-submitted_at')[:3]
     
     # Calculate stats
     total_donations = donor.donation_records.count()
     lives_saved = total_donations * 3  # Each donation saves up to 3 lives
-    points = donor.points or 0
+    points = total_donations * 10  # Calculate points based on donation count (10 points per donation)
     
     # Calculate days until next donation (56 days between donations)
     from django.utils import timezone

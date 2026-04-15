@@ -1,648 +1,353 @@
-{% extends 'donor_portal/base_donor_material.html' %}
 {% load static %}
-
-{% block title %}Register as Donor - BloodLink{% endblock %}
-
-{% block extra_css %}
-<style>
-.register-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-.register-card {
-    background: var(--md-surface);
-    border-radius: var(--md-border-radius-large);
-    box-shadow: var(--md-shadow-2);
-    overflow: hidden;
-}
-
-.register-header {
-    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
-    color: white;
-    padding: 2rem;
-    text-align: center;
-}
-
-.register-header h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.register-header p {
-    opacity: 0.9;
-    margin-bottom: 0;
-}
-
-.register-body {
-    padding: 2rem;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-label {
-    font-weight: 600;
-    color: var(--md-on-surface);
-    margin-bottom: 0.5rem;
-    display: block;
-}
-
-.form-control {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--md-outline);
-    border-radius: var(--md-border-radius);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: var(--md-surface-variant);
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: var(--md-primary);
-    background: var(--md-surface);
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
-
-.form-select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--md-outline);
-    border-radius: var(--md-border-radius);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: var(--md-surface-variant);
-}
-
-.form-select:focus {
-    outline: none;
-    border-color: var(--md-primary);
-    background: var(--md-surface);
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
-
-.profile-picture-section {
-    text-align: center;
-    margin: 2rem 0;
-}
-
-.profile-picture-upload {
-    display: inline-block;
-    position: relative;
-}
-
-.profile-picture-preview {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 4px solid var(--md-outline);
-    background: var(--md-surface-variant);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.profile-picture-preview:hover {
-    border-color: var(--md-primary);
-    transform: scale(1.05);
-}
-
-.profile-picture-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.profile-picture-placeholder {
-    font-size: 3rem;
-    color: var(--md-on-surface-variant);
-}
-
-.profile-picture-input {
-    display: none;
-}
-
-.profile-picture-label {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background: var(--md-surface-variant);
-    border: 2px solid var(--md-outline);
-    border-radius: var(--md-border-radius);
-    color: var(--md-on-surface);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.profile-picture-label:hover {
-    background: var(--md-primary);
-    color: white;
-    border-color: var(--md-primary);
-}
-
-.profile-picture-help {
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--md-on-surface-variant);
-}
-
-.terms-section {
-    background: var(--md-surface-variant);
-    border-radius: var(--md-border-radius);
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-}
-
-.terms-checkbox {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-}
-
-.terms-checkbox input[type="checkbox"] {
-    width: 1.25rem;
-    height: 1.25rem;
-    accent-color: var(--md-primary);
-    margin-top: 0.25rem;
-}
-
-.terms-text {
-    flex: 1;
-    color: var(--md-on-surface-variant);
-    font-size: 0.875rem;
-    line-height: 1.5;
-}
-
-.btn-register {
-    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: var(--md-border-radius);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.btn-register:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
-}
-
-.btn-register:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.login-link {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: var(--md-on-surface-variant);
-}
-
-.login-link a {
-    color: var(--md-primary);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
-}
-
-.progress-indicator {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
-    gap: 0.5rem;
-}
-
-.progress-step {
-    width: 40px;
-    height: 4px;
-    background: var(--md-outline);
-    border-radius: 2px;
-    transition: all 0.3s ease;
-}
-
-.progress-step.active {
-    background: var(--md-primary);
-}
-
-@media (max-width: 768px) {
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .register-container {
-        margin: 1rem auto;
-    }
-    
-    .register-header,
-    .register-body {
-        padding: 1.5rem;
-    }
-}
-
-.error-message {
-    background: #fef2f2;
-    color: #dc2626;
-    padding: 0.75rem;
-    border-radius: var(--md-border-radius);
-    border-left: 4px solid #dc2626;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-}
-
-.success-message {
-    background: #f0fdf4;
-    color: #16a34a;
-    padding: 0.75rem;
-    border-radius: var(--md-border-radius);
-    border-left: 4px solid #16a34a;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-}
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="register-container">
-    <div class="register-card">
-        <div class="register-header">
-            <h2>Join BloodLink</h2>
-            <p>Become a life-saving donor today</p>
-        </div>
-        
-        <div class="register-body">
-            <div class="progress-indicator">
-                <div class="progress-step active"></div>
-                <div class="progress-step active"></div>
-                <div class="progress-step active"></div>
-            </div>
-
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="{{ form.first_name.id_for_label }}">First Name</label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="{{ form.first_name.id_for_label }}" 
-                               name="{{ form.first_name.name }}" 
-                               value="{{ form.first_name.value|default:'' }}"
-                               placeholder="Enter your first name"
-                               required>
-                        {% if form.first_name.errors %}
-                            <small class="text-danger">{{ form.first_name.errors.0 }}</small>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="{{ form.last_name.id_for_label }}">Last Name</label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="{{ form.last_name.id_for_label }}" 
-                               name="{{ form.last_name.name }}" 
-                               value="{{ form.last_name.value|default:'' }}"
-                               placeholder="Enter your last name"
-                               required>
-                        {% if form.last_name.errors %}
-                            <small class="text-danger">{{ form.last_name.errors.0 }}</small>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="{{ form.email.id_for_label }}">Email Address</label>
-                    <input type="email" 
-                           class="form-control" 
-                           id="{{ form.email.id_for_label }}" 
-                           name="{{ form.email.name }}" 
-                           value="{{ form.email.value|default:'' }}"
-                           placeholder="Enter your email address"
-                           required>
-                    {% if form.email.errors %}
-                        <small class="text-danger">{{ form.email.errors.0 }}</small>
-                    {% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="{{ form.phone_number.id_for_label }}">Phone Number</label>
-                    <input type="tel" 
-                           class="form-control" 
-                           id="{{ form.phone_number.id_for_label }}" 
-                           name="{{ form.phone_number.name }}" 
-                           value="{{ form.phone_number.value|default:'' }}"
-                           placeholder="Enter your phone number"
-                           required>
-                    {% if form.phone_number.errors %}
-                        <small class="text-danger">{{ form.phone_number.errors.0 }}</small>
-                    {% endif %}
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="{{ form.blood_type.id_for_label }}">Blood Type</label>
-                        <select class="form-select" 
-                                id="{{ form.blood_type.id_for_label }}" 
-                                name="{{ form.blood_type.name }}"
-                                required>
-                            <option value="">Select your blood type</option>
-                            {% for value, label in form.blood_type.field.choices %}
-                                <option value="{{ value }}" {% if form.blood_type.value == value %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        {% if form.blood_type.errors %}
-                            <small class="text-danger">{{ form.blood_type.errors.0 }}</small>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="{{ form.date_of_birth.id_for_label }}">Date of Birth</label>
-                        <input type="date" 
-                               class="form-control" 
-                               id="{{ form.date_of_birth.id_for_label }}" 
-                               name="{{ form.date_of_birth.name }}" 
-                               value="{{ form.date_of_birth.value|default:'' }}"
-                               required>
-                        {% if form.date_of_birth.errors %}
-                            <small class="text-danger">{{ form.date_of_birth.errors.0 }}</small>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="{{ form.address.id_for_label }}">Address</label>
-                    <textarea class="form-control" 
-                              id="{{ form.address.id_for_label }}" 
-                              name="{{ form.address.name }}" 
-                              rows="3"
-                              placeholder="Enter your residential address"
-                              required>{{ form.address.value|default:'' }}</textarea>
-                    {% if form.address.errors %}
-                        <small class="text-danger">{{ form.address.errors.0 }}</small>
-                    {% endif %}
-                </div>
-
-                <!-- Profile Picture Upload -->
-                <div class="profile-picture-section">
-                    <label class="form-label">Profile Picture (Optional)</label>
-                    <div class="profile-picture-upload">
-                        <div class="profile-picture-preview" id="profilePreview">
-                            <span class="material-icons profile-picture-placeholder">account_circle</span>
-                        </div>
-                        <label for="{{ form.profile_picture.id_for_label }}" class="profile-picture-label">
-                            <span class="material-icons" style="font-size: 1rem; margin-right: 0.5rem; vertical-align: middle;">photo_camera</span>
-                            Choose Photo
-                        </label>
-                        {{ form.profile_picture }}
-                        {% if form.profile_picture.errors %}
-                            <small class="text-danger">{{ form.profile_picture.errors.0 }}</small>
-                        {% endif %}
-                        <div class="profile-picture-help">
-                            Upload a professional photo. Optional - you can add this later in your profile.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="{{ form.occupation.id_for_label }}">Occupation (Optional)</label>
-                    <input type="text" 
-                           class="form-control" 
-                           id="{{ form.occupation.id_for_label }}" 
-                           name="{{ form.occupation.name }}" 
-                           value="{{ form.occupation.value|default:'' }}"
-                           placeholder="Enter your occupation">
-                    {% if form.occupation.errors %}
-                        <small class="text-danger">{{ form.occupation.errors.0 }}</small>
-                    {% endif %}
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
-                        <input type="password" 
-                               class="form-control" 
-                               id="{{ form.password.id_for_label }}" 
-                               name="{{ form.password.name }}" 
-                               placeholder="Create a strong password"
-                               required>
-                        {% if form.password.errors %}
-                            <small class="text-danger">{{ form.password.errors.0 }}</small>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="{{ form.confirm_password.id_for_label }}">Confirm Password</label>
-                        <input type="password" 
-                               class="form-control" 
-                               id="{{ form.confirm_password.id_for_label }}" 
-                               name="{{ form.confirm_password.name }}" 
-                               placeholder="Confirm your password"
-                               required>
-                        {% if form.confirm_password.errors %}
-                            <small class="text-danger">{{ form.confirm_password.errors.0 }}</small>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="terms-section">
-                    <div class="terms-checkbox">
-                        <input type="checkbox" 
-                               id="{{ form.is_available.id_for_label }}" 
-                               name="{{ form.is_available.name }}" 
-                               {% if form.is_available.value %}checked{% endif %}>
-                        <div class="terms-text">
-                            <label for="{{ form.is_available.id_for_label }}">
-                                <strong>I am available for emergency blood donations</strong><br>
-                                By checking this box, you agree to receive SMS notifications when your blood type is urgently needed. You can change this setting anytime in your profile.
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="terms-section">
-                    <div class="terms-checkbox">
-                        <input type="checkbox" id="terms" required>
-                        <div class="terms-text">
-                            <label for="terms">
-                                <strong>I agree to the terms and conditions</strong><br>
-                                By registering, I confirm that I am at least 18 years old, in good health, and willing to donate blood voluntarily. I understand that my information will be used for blood donation coordination purposes only.
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-register">
-                    <span class="material-icons">person_add</span>
-                    Create My Donor Account
-                </button>
-            </form>
-
-            <div class="login-link">
-                Already have an account? <a href="{% url 'donor:login' %}">Sign in here</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Form validation
-    const form = document.querySelector('form');
-    const password = document.querySelector('input[name="password"]');
-    const confirmPassword = document.querySelector('input[name="confirm_password"]');
-    const termsCheckbox = document.getElementById('terms');
-    const submitBtn = document.querySelector('.btn-register');
-
-    function validateForm() {
-        let isValid = true;
-
-        // Check password match
-        if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
-            confirmPassword.setCustomValidity('Passwords do not match');
-            isValid = false;
-        } else {
-            confirmPassword.setCustomValidity('');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register as Donor - BloodLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS VARIABLES FOR THEMING ===== */
+        :root {
+            --primary-color: #dc2626;
+            --primary-hover: #b91c1c;
+            --primary-light: #fef2f2;
+            --primary-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            
+            --success-color: #16a34a;
+            --success-light: #f0fdf4;
+            --success-gradient: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            
+            --warning-color: #d97706;
+            --warning-light: #fffbeb;
+            --warning-gradient: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            
+            --error-color: #dc2626;
+            --error-light: #fef2f2;
+            --error-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            
+            --info-color: #0ea5e9;
+            --info-light: #f0f9ff;
+            --info-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            
+            --neutral-50: #f8f9fa;
+            --neutral-100: #e5e7eb;
+            --neutral-200: #d1d5db;
+            --neutral-300: #9ca3af;
+            --neutral-400: #6b7280;
+            --neutral-500: #4b5563;
+            --neutral-600: #374151;
+            --neutral-700: #1f2937;
+            --neutral-800: #1a1a1a;
+            --neutral-900: #111827;
+            
+            --text-primary: var(--neutral-800);
+            --text-secondary: var(--neutral-500);
+            --text-muted: var(--neutral-400);
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: var(--neutral-50);
+            --bg-tertiary: var(--neutral-100);
+            
+            --border-radius-sm: 0.375rem;
+            --border-radius: 0.5rem;
+            --border-radius-md: 0.75rem;
+            --border-radius-lg: 1rem;
+            --border-radius-xl: 1.5rem;
+            
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --font-family: 'Inter', sans-serif;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+            --font-size-5xl: 3rem;
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            --spacing-3xl: 4rem;
         }
 
-        // Check terms
-        if (!termsCheckbox.checked) {
-            isValid = false;
+        /* ===== DARK MODE VARIABLES ===== */
+        [data-theme="dark"] {
+            --text-primary: var(--neutral-100);
+            --text-secondary: var(--neutral-300);
+            --text-muted: var(--neutral-400);
+            
+            --bg-primary: var(--neutral-900);
+            --bg-secondary: var(--neutral-800);
+            --bg-tertiary: var(--neutral-700);
+            
+            --neutral-50: var(--neutral-900);
+            --neutral-100: var(--neutral-800);
+            --neutral-200: var(--neutral-700);
+            --neutral-300: var(--neutral-600);
+            --neutral-400: var(--neutral-500);
+            --neutral-500: var(--neutral-400);
+            --neutral-600: var(--neutral-300);
+            --neutral-700: var(--neutral-200);
+            --neutral-800: var(--neutral-100);
+            --neutral-900: var(--neutral-50);
         }
 
-        submitBtn.disabled = !isValid;
-        return isValid;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    password.addEventListener('input', validateForm);
-    confirmPassword.addEventListener('input', validateForm);
-    termsCheckbox.addEventListener('change', validateForm);
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            transition: background-color var(--transition-base), color var(--transition-base);
+        }
 
-    // Password strength indicator
-    password.addEventListener('input', function() {
-        const password = this.value;
-        let strength = 0;
-        
-        if (password.length >= 8) strength++;
-        if (password.match(/[a-z]+/)) strength++;
-        if (password.match(/[A-Z]+/)) strength++;
-        if (password.match(/[0-9]+/)) strength++;
-        if (password.match(/[$@#&!]+/)) strength++;
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
 
-        // You could add a visual strength indicator here
-        console.log(`Password strength: ${strength}/5`);
-    });
+        /* ===== TOAST NOTIFICATION SYSTEM ===== */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            pointer-events: none;
+        }
 
-    // Profile picture preview
-    const profilePictureInput = document.querySelector('input[type="file"]');
-    const profilePreview = document.getElementById('profilePreview');
-    
-    if (profilePictureInput && profilePreview) {
-        profilePictureInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profilePreview.innerHTML = `<img src="${e.target.result}" alt="Profile preview">`;
-                };
-                reader.readAsDataURL(file);
+        .toast {
+            background: var(--bg-primary);
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing) var(--spacing-lg);
+            box-shadow: var(--shadow-lg);
+            min-width: 300px;
+            max-width: 500px;
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            pointer-events: auto;
+            animation: slideInRight var(--transition-base) ease-out;
+            transition: all var(--transition-base);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
             }
-        });
-    }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
 
-    // Auto-enable/disable submit button
-    validateForm();
-});
-</script>
-{% endblock %}
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .toast.removing {
+            animation: slideOutRight var(--transition-base) ease-out forwards;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .toast-success .toast-icon {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .toast-error .toast-icon {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .toast-warning .toast-icon {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .toast-info .toast-icon {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .toast-message {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0;
+            font-size: 18px;
+            line-height: 1;
+            transition: color var(--transition-fast);
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* ===== DARK MODE TOGGLE ===== */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            background: var(--bg-primary);
+            border: 2px solid var(--neutral-200);
+            border-radius: 50px;
+            padding: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .theme-toggle-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            transition: all var(--transition-base);
+        }
+
+        /* ===== LOADING SKELETONS ===== */
+        .skeleton {
+            background: linear-gradient(90deg, 
+                var(--neutral-200) 25%, 
+                var(--neutral-100) 50%, 
+                var(--neutral-200) 75%
+            );
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: var(--border-radius);
+        }
+
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .skeleton-text {
+            height: 1rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .skeleton-title {
+            height: 1.5rem;
+            width: 60%;
+            margin-bottom: var(--spacing);
+        }
+
+        .skeleton-button {
+            height: 2.5rem;
+            width: 120px;
+            border-radius: var(--border-radius-md);
+        }
+
+        /* ===== NAVIGATION BAR ===== */
+        .navbar {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             position: fixed;
             top: 0;
-            left: 0;
-            right: 0;
+            width: 100%;
             z-index: 1000;
-            padding: 1rem 0;
+            transition: all 0.3s ease;
         }
 
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 2rem;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
             font-size: 1.5rem;
             font-weight: 700;
             color: #dc2626;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s ease;
         }
 
-        .logo .material-symbols-outlined {
-            font-size: 2rem;
-            color: #dc2626;
-        }
-
-        /* Mobile Menu Button */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: #dc2626;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .mobile-menu-btn:hover {
-            background: rgba(220, 38, 38, 0.1);
-        }
-
-        .mobile-menu-btn:active {
-            transform: scale(0.95);
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .nav-links {
@@ -652,39 +357,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         .nav-links a {
+            color: #4b5563;
             text-decoration: none;
-            color: #374151;
             font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .nav-links a:hover {
             color: #dc2626;
-            background: rgba(220, 38, 38, 0.1);
+            background: rgba(220, 38, 38, 0.05);
         }
 
         .nav-links a.active {
             color: #dc2626;
+            font-weight: 600;
             background: rgba(220, 38, 38, 0.1);
-        }
-
-        .nav-links a.active::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #dc2626;
         }
 
         .nav-link-highlight {
             background: linear-gradient(135deg, #dc2626, #ef4444) !important;
             color: white !important;
             font-weight: 600 !important;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
         }
 
         .nav-link-highlight:hover {
@@ -693,94 +390,126 @@ document.addEventListener('DOMContentLoaded', function() {
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
 
-        /* Main Container */
-        .main-container {
-            min-height: 100vh;
+        .nav-link-logout {
+            background: rgba(239, 68, 68, 0.1) !important;
+            color: #dc2626 !important;
+            font-weight: 600 !important;
+        }
+
+        .nav-link-logout:hover {
+            background: rgba(220, 38, 38, 0.2) !important;
+            color: #b91c1c !important;
+        }
+
+        .user-menu {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            padding-top: 100px;
-        }
-
-        /* Register Card */
-        .register-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            max-width: 1200px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            min-height: 700px;
-        }
-
-        /* Left Side - Benefits */
-        .benefits-section {
-            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-            color: white;
-            padding: 3rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .benefits-header {
-            margin-bottom: 3rem;
-        }
-
-        .benefits-header h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-        }
-
-        .benefits-header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .benefits-list {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .benefit-item {
-            display: flex;
-            align-items: start;
             gap: 1rem;
         }
 
-        .benefit-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.2);
+        .user-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #dc2626;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* ===== REGISTER PAGE STYLES ===== */
+        .register-container {
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
+            padding-top: 80px;
         }
 
-        .benefit-content h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+        .register-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('{% static "images/hospital-nsambya.jpg" %}') center/cover;
+            opacity: 0.1;
+            z-index: 0;
         }
 
-        .benefit-content p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-            line-height: 1.5;
+        .register-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Right Side - Form */
+        .register-content {
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .register-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .register-content h1 span {
+            color: #dc2626;
+        }
+
+        .register-content p {
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
         .register-form {
-            padding: 3rem;
-            overflow-y: auto;
-            max-height: 700px;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: slideInRight 0.8s ease-out;
         }
 
         .form-header {
@@ -788,133 +517,79 @@ document.addEventListener('DOMContentLoaded', function() {
             margin-bottom: 2rem;
         }
 
-        .form-header .logo-large {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            color: white;
+        .form-header h2 {
             font-size: 2rem;
-        }
-
-        .form-header h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
+            font-weight: 700;
             color: #1a1a1a;
+            margin-bottom: 0.5rem;
         }
 
         .form-header p {
             color: #6b7280;
-            font-size: 1rem;
-        }
-
-        /* Progress Bar */
-        .progress-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .progress-bar::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #e5e7eb;
-            transform: translateY(-50%);
-            z-index: 0;
-        }
-
-        .progress-step {
-            width: 30px;
-            height: 30px;
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #6b7280;
-            position: relative;
-            z-index: 1;
-        }
-
-        .progress-step.active {
-            background: #dc2626;
-            border-color: #dc2626;
-            color: white;
-        }
-
-        .progress-step.completed {
-            background: #dc2626;
-            border-color: #dc2626;
-            color: white;
-        }
-
-        /* Form Sections */
-        .form-section {
-            margin-bottom: 2rem;
-        }
-
-        .form-section h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #1a1a1a;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing);
         }
 
-        .form-group label {
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        .form-label .material-symbols-outlined {
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .form-hint {
             display: block;
-            margin-bottom: 0.5rem;
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            margin-top: var(--spacing-xs);
+            font-style: italic;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing);
+        }
+
+        .form-check-label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .form-check-label .material-symbols-outlined {
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        .form-label {
+            display: block;
             font-weight: 600;
             color: #1a1a1a;
-            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
         }
 
-        .form-group label .required {
-            color: #dc2626;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 0.5rem;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .form-group textarea {
+        .form-control {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid #e5e7eb;
@@ -922,429 +597,164 @@ document.addEventListener('DOMContentLoaded', function() {
             font-size: 1rem;
             transition: all 0.3s ease;
             background: white;
-            box-sizing: border-box;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-control:focus {
             outline: none;
             border-color: #dc2626;
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
 
-        .form-group input.error,
-        .form-group select.error,
-        .form-group textarea.error {
-            border-color: #ef4444;
-            background: #fef2f2;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        /* Django form field overrides */
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        input[type="tel"],
-        input[type="number"],
-        input[type="date"],
-        select,
-        textarea {
-            width: 100% !important;
-            padding: 0.75rem 1rem !important;
-            border: 2px solid #e5e7eb !important;
-            border-radius: 0.5rem !important;
-            font-size: 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            transition: all 0.3s ease !important;
-            box-sizing: border-box !important;
-            display: block !important;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        input[type="tel"]:focus,
-        input[type="number"]:focus,
-        input[type="date"]:focus,
-        select:focus,
-        textarea:focus {
-            outline: none !important;
-            border-color: #dc2626 !important;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
-        }
-
-        /* Specific Django form field styling */
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100% !important;
-            padding: 0.75rem 1rem !important;
-            border: 2px solid #e5e7eb !important;
-            border-radius: 0.5rem !important;
-            font-size: 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            transition: all 0.3s ease !important;
-            box-sizing: border-box !important;
-            display: block !important;
-            margin: 0 !important;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none !important;
-            border-color: #dc2626 !important;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
-        }
-
-        /* Override any Django default styles */
-        input[id*="id_"],
-        select[id*="id_"],
-        textarea[id*="id_"] {
-            width: 100% !important;
-            padding: 0.75rem 1rem !important;
-            border: 2px solid #e5e7eb !important;
-            border-radius: 0.5rem !important;
-            font-size: 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            transition: all 0.3s ease !important;
-            box-sizing: border-box !important;
-            display: block !important;
-            margin: 0 !important;
-        }
-
-        /* Ensure visibility with high specificity */
-        body .form-group input,
-        body .form-group select,
-        body .form-group textarea {
-            width: 100% !important;
-            padding: 1rem !important;
-            border: 2px solid #e5e7eb !important;
-            border-radius: 0.75rem !important;
-            font-size: 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            transition: all 0.3s ease !important;
-            box-sizing: border-box !important;
-            display: block !important;
-            margin: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            font-family: 'Inter', sans-serif !important;
-            line-height: 1.5 !important;
-        }
-
-        /* Enhanced focus states */
-        body .form-group input:focus,
-        body .form-group select:focus,
-        body .form-group textarea:focus {
-            outline: none !important;
-            border-color: #dc2626 !important;
-            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1) !important;
-            transform: translateY(-2px) !important;
-        }
-
-        /* Enhanced hover states */
-        body .form-group input:hover,
-        body .form-group select:hover,
-        body .form-group textarea:hover {
-            border-color: #dc2626 !important;
-        }
-
-        /* Placeholder styling */
-        body .form-group input::placeholder,
-        body .form-group textarea::placeholder {
-            color: #9ca3af !important;
-            opacity: 1 !important;
-        }
-
-        /* Select dropdown styling */
-        body .form-group select {
-            cursor: pointer !important;
-            appearance: none !important;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") !important;
-            background-position: right 0.75rem center !important;
-            background-repeat: no-repeat !important;
-            background-size: 1.25rem !important;
-            padding-right: 2.5rem !important;
-            min-height: 52px !important;
-            position: relative !important;
-            z-index: 10 !important;
-        }
-
-        /* Enhanced select options styling */
-        body .form-group select option {
-            padding: 0.75rem 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            font-size: 1rem !important;
-            font-family: 'Inter', sans-serif !important;
-        }
-
-        /* Blood type specific styling */
-        body .form-group select#id_blood_type {
-            font-weight: 600 !important;
-            color: #dc2626 !important;
-        }
-
-        body .form-group select#id_blood_type option {
-            color: #1a1a1a !important;
-            font-weight: 400 !important;
-        }
-
-        body .form-group select#id_blood_type option:first-child {
-            color: #9ca3af !important;
-            font-style: italic !important;
-        }
-
-        /* Date input styling */
-        body .form-group input[type="date"] {
-            cursor: pointer !important;
-        }
-
-        /* Password field styling */
-        body .form-group input[type="password"] {
-            letter-spacing: 0.05em !important;
-        }
-
-        /* Bootstrap form-control class styling */
-        .form-control {
-            width: 100% !important;
-            padding: 0.75rem 1rem !important;
-            border: 2px solid #e5e7eb !important;
-            border-radius: 0.5rem !important;
-            font-size: 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            transition: all 0.3s ease !important;
-            box-sizing: border-box !important;
-            display: block !important;
-            margin: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-
-        .form-control:focus {
-            outline: none !important;
-            border-color: #dc2626 !important;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
-        }
-
-        /* BloodLink specific form classes */
-        .bl-input {
-            width: 100% !important;
-            padding: 0.75rem 1rem !important;
-            border: 2px solid #e5e7eb !important;
-            border-radius: 0.5rem !important;
-            font-size: 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            transition: all 0.3s ease !important;
-            box-sizing: border-box !important;
-            display: block !important;
-            margin: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-
-        .bl-input:focus {
-            outline: none !important;
-            border-color: #dc2626 !important;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
-        }
-
-        .bl-select {
-            width: 100% !important;
-            padding: 0.75rem 1rem !important;
-            border: 2px solid #e5e7eb !important;
-            border-radius: 0.5rem !important;
-            font-size: 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            transition: all 0.3s ease !important;
-            box-sizing: border-box !important;
-            display: block !important;
-            margin: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-
-        .bl-textarea {
-            width: 100% !important;
-            padding: 0.75rem 1rem !important;
-            border: 2px solid #e5e7eb !important;
-            border-radius: 0.5rem !important;
-            font-size: 1rem !important;
-            background: white !important;
-            color: #1a1a1a !important;
-            transition: all 0.3s ease !important;
-            box-sizing: border-box !important;
-            display: block !important;
-            margin: 0 !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            resize: vertical !important;
-            min-height: 100px !important;
-        }
-
-        .error-message {
-            color: #ef4444;
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
-        }
-
-        .help-text {
-            font-size: 0.8rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
-        }
-
-        /* Blood Type Selection */
-        .blood-type-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.5rem;
-        }
-
-        .blood-type-option {
-            position: relative;
-        }
-
-        .blood-type-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-
-        .blood-type-option label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem;
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
             border: 2px solid #e5e7eb;
             border-radius: 0.5rem;
-            cursor: pointer;
+            font-size: 1rem;
             transition: all 0.3s ease;
-            font-weight: 600;
             background: white;
         }
 
-        .blood-type-option input[type="radio"]:checked + label {
-            background: #dc2626;
+        .form-select:focus {
+            outline: none;
             border-color: #dc2626;
-            color: white;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
 
-        .blood-type-option label:hover {
-            border-color: #dc2626;
-        }
-
-        /* Terms Checkbox */
-        .terms-section {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             margin-bottom: 1.5rem;
         }
 
-        .terms-checkbox {
-            display: flex;
-            align-items: start;
-            gap: 0.75rem;
-        }
-
-        .terms-checkbox input[type="checkbox"] {
-            margin-top: 0.25rem;
-            width: auto;
-        }
-
-        .terms-checkbox label {
-            font-size: 0.9rem;
-            color: #6b7280;
-            line-height: 1.5;
-        }
-
-        .terms-checkbox a {
-            color: #dc2626;
-            text-decoration: none;
-        }
-
-        .terms-checkbox a:hover {
-            text-decoration: underline;
-        }
-
-        /* Submit Button */
-        .submit-btn {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-weight: 600;
+        .form-check-input {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #dc2626;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
         }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+        .form-check-label {
+            font-weight: 500;
+            color: #4b5563;
+            cursor: pointer;
         }
 
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Login Link */
-        .login-link {
-            text-align: center;
-            margin-top: 1.5rem;
-            color: #6b7280;
-        }
-
-        .login-link a {
+        .error-message {
+            background: #fef2f2;
             color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #dc2626;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #16a34a;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #16a34a;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-block {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #dc2626;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #9ca3af;
             text-decoration: none;
-            font-weight: 600;
+            transition: color 0.3s ease;
         }
 
-        .login-link a:hover {
-            text-decoration: underline;
+        .footer-section a:hover {
+            color: #dc2626;
         }
 
-        /* Responsive Design */
-        @media (max-width: 968px) {
-            .register-card {
-                grid-template-columns: 1fr;
-                max-width: 600px;
-            }
-
-            .benefits-section {
-                display: none;
-            }
-
-            .register-form {
-                max-height: none;
-            }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
         }
 
+        /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 768px) {
             .mobile-menu-btn {
                 display: block;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .register-container {
+                margin: var(--spacing);
+                border-radius: var(--border-radius);
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: var(--spacing);
+            }
+
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
 
             .nav-links {
@@ -1369,38 +779,47 @@ document.addEventListener('DOMContentLoaded', function() {
             .nav-links a {
                 padding: 0.75rem 1rem;
                 border-radius: 0.25rem;
-                transition: all 0.3s ease;
-                color: #1a1a1a;
-                text-decoration: none;
+                text-align: center;
                 display: block;
             }
 
-            .nav-links a:hover {
-                background: rgba(220, 38, 38, 0.1);
-                color: #dc2626;
+            .user-menu {
+                display: none;
             }
 
-            .nav-links a.active {
-                background: #dc2626;
-                color: white;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .form-grid {
+            .register-wrapper {
                 grid-template-columns: 1fr;
+                gap: 2rem;
             }
 
-            .blood-type-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .register-content h1 {
+                font-size: 2.5rem;
             }
 
             .register-form {
                 padding: 2rem;
             }
 
-            .form-header h1 {
-                font-size: 1.5rem;
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* ===== DESKTOP OPTIMIZATIONS ===== */
+        @media (min-width: 769px) {
+            .mobile-menu-btn {
+                display: none !important;
+            }
+
+            .nav-links {
+                display: flex !important;
+                position: static !important;
+                background: none !important;
+                flex-direction: row !important;
+            }
+
+            .user-menu {
+                display: flex !important;
             }
         }
     </style>
@@ -1422,329 +841,274 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="{% url 'donor:home' %}">Home</a>
                 <a href="{% url 'donor:about' %}">About</a>
                 <a href="{% url 'donor:request_blood' %}">Request Blood</a>
-                <a href="{% url 'donor:dashboard' %}">Dashboard</a>
-                <a href="{% url 'donor:donations' %}">Donations</a>
-                <a href="{% url 'donor:login' %}" class="nav-link-highlight">Login</a>
+                {% if donor %}
+                    <a href="{% url 'donor:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'donor:donations' %}">Donations</a>
+                    <a href="{% url 'donor:profile' %}">Profile</a>
+                    <a href="{% url 'donor:logout' %}" class="nav-link-logout">Logout</a>
+                {% else %}
+                    <a href="{% url 'donor:login' %}" class="nav-link-highlight">Login</a>
+                    <a href="{% url 'donor:register' %}" class="active nav-link-highlight">Register</a>
+                {% endif %}
+            </div>
+            
+            <div class="user-menu">
+                {% if donor %}
+                    <img src="{% static 'images/donor-smiling.png' %}" alt="User" class="user-avatar">
+                    <span>{{ donor.first_name }} {{ donor.last_name }}</span>
+                {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- Main Container -->
-    <div class="main-container">
-        <div class="register-card">
-            <!-- Left Side - Benefits -->
-            <div class="benefits-section">
-                <div class="benefits-header">
-                    <h2>Save Lives</h2>
-                    <p>Join our community of life-saving donors</p>
-                </div>
+    <!-- Register Container -->
+    <div class="register-container">
+        <div class="register-bg"></div>
+        <div class="register-wrapper">
+            <div class="register-content">
+                <h1>Join Our <span>Life-Saving</span> Community</h1>
+                <p>Register as a blood donor and become part of a network that saves lives every day. Your donation can make the difference between life and death.</p>
                 
-                <div class="benefits-list">
+                <div class="register-benefits">
                     <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <span class="material-symbols-outlined">emergency</span>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Emergency Response</h3>
-                            <p>Get notified when your blood type is urgently needed</p>
-                        </div>
+                        <span class="material-symbols-outlined" style="color: #dc2626;">verified_user</span>
+                        <h3>Verified Donor</h3>
+                        <p>Professional verification process ensures quality donations</p>
                     </div>
-                    
                     <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <span class="material-symbols-outlined">favorite</span>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Save Lives</h3>
-                            <p>Your donation can save up to 3 lives per donation</p>
-                        </div>
+                        <span class="material-symbols-outlined" style="color: #dc2626;">notifications_active</span>
+                        <h3>Instant Alerts</h3>
+                        <p>Get notified immediately when your blood type is needed</p>
                     </div>
-                    
                     <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <span class="material-symbols-outlined">military_tech</span>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Recognition</h3>
-                            <p>Earn badges and recognition for your contributions</p>
-                        </div>
-                    </div>
-                    
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <span class="material-symbols-outlined">health_and_safety</span>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Health Benefits</h3>
-                            <p>Regular blood donation has health benefits for donors</p>
-                        </div>
+                        <span class="material-symbols-outlined" style="color: #dc2626;">favorite</span>
+                        <h3>Save Lives</h3>
+                        <p>Make a direct impact on emergency medical situations</p>
                     </div>
                 </div>
             </div>
-
-            <!-- Right Side - Form -->
+            
             <div class="register-form">
                 <div class="form-header">
-                    <div class="logo-large">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bloodtype</span>
-                    </div>
-                    <h1>Become a Donor</h1>
-                    <p>Join our life-saving community today</p>
+                    <h2>Create Account</h2>
+                    <p>Join our community of life-saving donors</p>
                 </div>
-
+                
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">
+                        <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
                             {{ message }}
                         </div>
                     {% endfor %}
                 {% endif %}
-
-                <form method="post" id="registrationForm">
+                
+                <form method="post" action="{% url 'donor:register' %}" id="registrationForm">
                     {% csrf_token %}
                     
-                    <!-- Progress Bar -->
-                    <div class="progress-bar">
-                        <div class="progress-step active">1</div>
-                        <div class="progress-step">2</div>
-                        <div class="progress-step">3</div>
-                    </div>
-
-                    <!-- Personal Information -->
-                    <div class="form-section">
-                        <h3>
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.full_name.id_for_label }}">
                             <span class="material-symbols-outlined">person</span>
-                            Personal Information
-                        </h3>
-                        <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label for="{{ form.full_name.id_for_label }}">Full Name <span class="required">*</span></label>
-                                {{ form.full_name }}
-                                {% if form.full_name.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.full_name.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">Enter your complete legal name as it appears on your ID</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.email.id_for_label }}">Email Address <span class="required">*</span></label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.email.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">We'll send account updates to this email</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.phone_number.id_for_label }}">Phone Number <span class="required">*</span></label>
-                                {{ form.phone_number }}
-                                {% if form.phone_number.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.phone_number.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">We'll use this to send emergency notifications</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.date_of_birth.id_for_label }}">Date of Birth <span class="required">*</span></label>
-                                {{ form.date_of_birth }}
-                                {% if form.date_of_birth.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.date_of_birth.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">You must be at least 18 years old to donate</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.gender.id_for_label }}">Gender <span class="required">*</span></label>
-                                {{ form.gender }}
-                                {% if form.gender.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.gender.errors.0 }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+                            Full Name *
+                        </label>
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}
+                            <div class="error-message">{{ form.full_name.errors.0 }}</div>
+                        {% endif %}
+                        <span class="form-hint">Enter your full name as it appears on your ID</span>
                     </div>
-
-                    <!-- Blood Information -->
-                    <div class="form-section">
-                        <h3>
-                            <span class="material-symbols-outlined">bloodtype</span>
-                            Blood Information
-                        </h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="{{ form.blood_type.id_for_label }}">Blood Type <span class="required">*</span></label>
-                                {{ form.blood_type }}
-                                {% if form.blood_type.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.blood_type.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">Select your blood type for emergency matching</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.location.id_for_label }}">Location <span class="required">*</span></label>
-                                {{ form.location }}
-                                {% if form.location.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.location.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">Your preferred donation location</div>
-                            </div>
-                            
-                            <div class="form-group full-width">
-                                <label for="{{ form.physical_address.id_for_label }}">Physical Address</label>
-                                {{ form.physical_address }}
-                                {% if form.physical_address.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.physical_address.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">Optional: Your residential address for better coordination</div>
-                            </div>
-                        </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.email.id_for_label }}">
+                            <span class="material-symbols-outlined">email</span>
+                            Email Address *
+                        </label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="error-message">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                        <span class="form-hint">We'll use this for account verification</span>
                     </div>
-
-                    <!-- Account Security -->
-                    <div class="form-section">
-                        <h3>
-                            <span class="material-symbols-outlined">security</span>
-                            Account Security
-                        </h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="{{ form.password1.id_for_label }}">Create Password <span class="required">*</span></label>
-                                {{ form.password1 }}
-                                {% if form.password1.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.password1.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">Use at least 8 characters with letters and numbers</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="{{ form.password2.id_for_label }}">Confirm Password <span class="required">*</span></label>
-                                {{ form.password2 }}
-                                {% if form.password2.errors %}
-                                    <div class="error-message">
-                                        <span class="material-symbols-outlined">error</span>
-                                        {{ form.password2.errors.0 }}
-                                    </div>
-                                {% endif %}
-                                <div class="help-text">Re-enter your password to confirm</div>
-                            </div>
-                        </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.phone_number.id_for_label }}">
+                            <span class="material-symbols-outlined">phone</span>
+                            Phone Number *
+                        </label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <div class="error-message">{{ form.phone_number.errors.0 }}</div>
+                        {% endif %}
+                        <span class="form-hint">Format: 07xxxxxxxx or +2567xxxxxxxx</span>
                     </div>
-
-                    <!-- Terms and Conditions -->
-                    <div class="terms-section">
-                        <div class="terms-checkbox">
-                            {{ form.terms }}
-                            <label for="{{ form.terms.id_for_label }}">
-                                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. 
-                                I understand that my information will be used for blood donation coordination and emergency notifications. 
-                                I confirm that I am at least 18 years old and meet the eligibility requirements for blood donation.
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.password1.id_for_label }}">
+                                <span class="material-symbols-outlined">lock</span>
+                                Create Password *
                             </label>
-                            {% if form.terms.errors %}
-                                <div class="error-message">
-                                    <span class="material-symbols-outlined">error</span>
-                                    {{ form.terms.errors.0 }}
-                                </div>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                                <div class="error-message">{{ form.password1.errors.0 }}</div>
+                            {% endif %}
+                            <span class="form-hint">Minimum 8 characters</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.password2.id_for_label }}">
+                                <span class="material-symbols-outlined">lock</span>
+                                Confirm Password *
+                            </label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="error-message">{{ form.password2.errors.0 }}</div>
+                            {% endif %}
+                            <span class="form-hint">Re-enter your password</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.gender.id_for_label }}">
+                                <span class="material-symbols-outlined">wc</span>
+                                Gender *
+                            </label>
+                            {{ form.gender }}
+                            {% if form.gender.errors %}
+                                <div class="error-message">{{ form.gender.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.date_of_birth.id_for_label }}">
+                                <span class="material-symbols-outlined">cake</span>
+                                Date of Birth *
+                            </label>
+                            {{ form.date_of_birth }}
+                            {% if form.date_of_birth.errors %}
+                                <div class="error-message">{{ form.date_of_birth.errors.0 }}</div>
+                            {% endif %}
+                            <span class="form-hint">You must be at least 18 years old</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.blood_type.id_for_label }}">
+                                <span class="material-symbols-outlined">bloodtype</span>
+                                Blood Type *
+                            </label>
+                            {{ form.blood_type }}
+                            {% if form.blood_type.errors %}
+                                <div class="error-message">{{ form.blood_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.location.id_for_label }}">
+                                <span class="material-symbols-outlined">location_on</span>
+                                Location *
+                            </label>
+                            {{ form.location }}
+                            {% if form.location.errors %}
+                                <div class="error-message">{{ form.location.errors.0 }}</div>
                             {% endif %}
                         </div>
                     </div>
                     
-                    <button type="submit" class="submit-btn">
-                        <span class="material-symbols-outlined">person_add</span>
-                        Register as Donor
-                    </button>
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.physical_address.id_for_label }}">
+                            <span class="material-symbols-outlined">home</span>
+                            Physical Address
+                        </label>
+                        {{ form.physical_address }}
+                        {% if form.physical_address.errors %}
+                            <div class="error-message">{{ form.physical_address.errors.0 }}</div>
+                        {% endif %}
+                        <span class="form-hint">Optional but helps us locate you faster</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="{{ form.profile_picture.id_for_label }}">
+                            <span class="material-symbols-outlined">photo_camera</span>
+                            Profile Picture
+                        </label>
+                        {{ form.profile_picture }}
+                        {% if form.profile_picture.errors %}
+                            <div class="error-message">{{ form.profile_picture.errors.0 }}</div>
+                        {% endif %}
+                        <span class="form-hint">Optional: Upload a clear photo of yourself</span>
+                    </div>
+                    
+                    <div class="form-check">
+                        {{ form.terms }}
+                        <label class="form-check-label" for="{{ form.terms.id_for_label }}">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            I agree to the Terms of Service and Privacy Policy *
+                        </label>
+                        {% if form.terms.errors %}
+                            <div class="error-message">{{ form.terms.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <span class="material-symbols-outlined">person_add</span>
+                            Create Account
+                        </button>
+                        <a href="{% url 'donor:login' %}" class="btn btn-secondary btn-block">
+                            <span class="material-symbols-outlined">login</span>
+                            Already have an account?
+                        </a>
+                    </div>
                 </form>
-
-                <div class="login-link">
-                    Already have an account? <a href="{% url 'donor:login' %}">Sign in here</a>
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>BloodLink</h4>
+                <p>Connecting donors with those in need at St. Francis Hospital. Every donation counts.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'donor:home' %}">Home</a></li>
+                    <li><a href="{% url 'donor:about' %}">About Us</a></li>
+                    <li><a href="{% url 'donor:register' %}">Register</a></li>
+                    <li><a href="{% url 'donor:request_blood' %}">Request Blood</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="{% url 'donor:contact' %}">Contact Us</a></li>
+                    <li><a href="{% url 'donor:faq' %}">FAQ</a></li>
+                    <li><a href="{% url 'donor:privacy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'donor:terms' %}">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>St. Francis Hospital<br>
+                Nsambya, Kampala<br>
+                Uganda</p>
+                <p>Emergency: +256 123 456 789</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 BloodLink. All rights reserved. The Clinical Curator Editorial.</p>
+        </div>
+    </footer>
+
     <script>
-        // Form submission enhancement
-        const form = document.getElementById('registrationForm');
-        const submitBtn = document.querySelector('.submit-btn');
-        
-        if (form) {
-            form.addEventListener('submit', function() {
-                // Show loading state
-                submitBtn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Creating Account...';
-                submitBtn.disabled = true;
-            });
-        });
-
-        // Add floating animation to benefits
-        const benefitItems = document.querySelectorAll('.benefit-item');
-        benefitItems.forEach((item, index) => {
-            item.style.animationDelay = `${index * 0.1}s`;
-            item.classList.add('animate-fadeInUp');
-        });
-
-        // Enhanced blood type selection - Simplified
-        const bloodTypeSelect = document.getElementById('id_blood_type');
-        if (bloodTypeSelect) {
-            // Simple change event for visual feedback
-            bloodTypeSelect.addEventListener('change', function() {
-                if (this.value) {
-                    this.style.color = '#dc2626';
-                    this.style.fontWeight = '600';
-                } else {
-                    this.style.color = '#1a1a1a';
-                    this.style.fontWeight = '400';
-                }
-            });
-        }
-
-        // Enhanced all select dropdowns - Simplified
-        const allSelects = document.querySelectorAll('select');
-        allSelects.forEach(select => {
-            select.addEventListener('change', function() {
-                if (this.value) {
-                    this.style.color = '#1a1a1a';
-                    this.style.fontWeight = '500';
-                }
-            });
-        });
-
-        // Password confirmation
-        const password = document.querySelector('input[name="password"]');
-        const confirmPassword = document.querySelector('input[name="confirm_password"]');
-        
-        confirmPassword.addEventListener('input', function() {
-            if (this.value !== password.value) {
-                this.setCustomValidity('Passwords do not match');
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-
         // Mobile Menu Toggle
         function toggleMobileMenu() {
             const navLinks = document.getElementById('navLinks');
@@ -1759,6 +1123,35 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!navLinks.contains(event.target) && !menuBtn.contains(event.target)) {
                 navLinks.classList.remove('active');
             }
+        });
+
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            function validateForm() {
+                const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                    }
+                });
+                
+                submitBtn.disabled = !isValid;
+                return isValid;
+            }
+            
+            // Add event listeners to form fields
+            form.querySelectorAll('input, select, textarea').forEach(field => {
+                field.addEventListener('input', validateForm);
+                field.addEventListener('change', validateForm);
+            });
+            
+            // Initial validation
+            validateForm();
         });
     </script>
 </body>

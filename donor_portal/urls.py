@@ -31,4 +31,10 @@ urlpatterns = [
     
     # Test page
     path('test/', views.test_page, name='test_page'),
+    path('contact/', views.contact, name='contact'),
+    path('contact/submit/', views.contact_submit, name='contact_submit'),
+    path('faq/', views.faq, name='faq'),
+    path('privacy/', views.privacy, name='privacy'),
+    path('terms/', views.terms, name='terms'),
+    path('password-reset/', views.password_reset, name='password_reset'),
 ]

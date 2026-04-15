@@ -1,451 +1,844 @@
-{% extends 'donor_portal/base_donor_material.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Response Confirmation - BloodLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% block title %}Response Confirmation - BloodLink{% endblock %}
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f8f9fa;
+        }
 
-{% block extra_css %}
-<style>
-.confirmation-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    min-height: 70vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
 
-.confirmation-card {
-    background: var(--md-surface);
-    border-radius: var(--md-border-radius-large);
-    box-shadow: var(--md-shadow-2);
-    overflow: hidden;
-    animation: slideInUp 0.6s ease-out;
-}
+        /* ===== NAVIGATION BAR ===== */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
 
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.confirmation-header {
-    padding: 3rem 2rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #dc2626;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s ease;
+        }
 
-{% if notification.donor_response == 'confirmed' %}
-.confirmation-header {
-    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
-    color: white;
-}
-{% elif notification.donor_response == 'declined' %}
-.confirmation-header {
-    background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
-    color: white;
-}
-{% else %}
-.confirmation-header {
-    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
-    color: white;
-}
-{% endif %}
+        .logo:hover {
+            transform: scale(1.05);
+        }
 
-.confirmation-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-    animation: float 6s ease-in-out infinite;
-}
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
 
-@keyframes float {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(-30px, -30px) rotate(180deg); }
-}
+        .nav-links a {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
 
-.response-icon {
-    width: 100px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 3rem;
-    position: relative;
-    z-index: 1;
-}
+        .nav-links a:hover {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.05);
+        }
 
-.confirmation-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    position: relative;
-    z-index: 1;
-}
+        .nav-links a.active {
+            color: #dc2626;
+            font-weight: 600;
+            background: rgba(220, 38, 38, 0.1);
+        }
 
-.confirmation-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    margin-bottom: 0;
-    position: relative;
-    z-index: 1;
-}
+        .nav-link-highlight {
+            background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+            color: white !important;
+            font-weight: 600 !important;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+        }
 
-.confirmation-body {
-    padding: 2rem;
-}
+        .nav-link-highlight:hover {
+            background: linear-gradient(135deg, #b91c1c, #dc2626) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
 
-.response-details {
-    background: var(--md-surface-variant);
-    border-radius: var(--md-border-radius-large);
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 2px solid var(--md-outline);
-}
+        .nav-link-logout {
+            background: rgba(239, 68, 68, 0.1) !important;
+            color: #dc2626 !important;
+            font-weight: 600 !important;
+        }
 
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--md-on-surface);
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .nav-link-logout:hover {
+            background: rgba(220, 38, 38, 0.2) !important;
+            color: #b91c1c !important;
+        }
 
-.detail-grid {
-    display: grid;
-    gap: 1rem;
-}
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-.detail-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: var(--md-surface);
-    border-radius: var(--md-border-radius);
-    border: 1px solid var(--md-outline);
-}
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #dc2626;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-.detail-label {
-    font-weight: 600;
-    color: var(--md-on-surface);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        /* ===== CONFIRMATION PAGE STYLES ===== */
+        .confirmation-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
+            padding-top: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            padding-top: 100px;
+        }
 
-.detail-value {
-    color: var(--md-on-surface-variant);
-    font-weight: 500;
-}
+        .confirmation-wrapper {
+            max-width: 800px;
+            width: 100%;
+        }
 
-.response-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 2rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+        .confirmation-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideInUp 0.6s ease-out;
+        }
 
-.response-confirmed {
-    background: #dcfce7;
-    color: #16a34a;
-}
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.response-declined {
-    background: #f3f4f6;
-    color: #6b7280;
-}
+        .confirmation-header {
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-.response-viewed {
-    background: #dbeafe;
-    color: #2563eb;
-}
+        {% if notification.donor_response == 'confirmed' %}
+        .confirmation-header {
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            color: white;
+        }
+        {% elif notification.donor_response == 'declined' %}
+        .confirmation-header {
+            background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+            color: white;
+        }
+        {% else %}
+        .confirmation-header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            color: white;
+        }
+        {% endif %}
 
-.blood-type-badge {
-    background: var(--md-primary);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 2rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
+        .confirmation-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
 
-.urgency-badge {
-    background: #fef3c7;
-    color: #d97706;
-    padding: 0.25rem 0.75rem;
-    border-radius: 2rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-30px, -30px) rotate(180deg); }
+        }
 
-.next-steps {
-    background: #f0f9ff;
-    border-left: 4px solid #0ea5e9;
-    padding: 1.5rem;
-    border-radius: var(--md-border-radius);
-    margin-bottom: 2rem;
-}
+        .response-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 4rem;
+            position: relative;
+            z-index: 1;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
 
-.next-steps h4 {
-    color: #0c4a6e;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .confirmation-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
 
-.next-steps p {
-    color: #075985;
-    margin-bottom: 0.5rem;
-    line-height: 1.5;
-}
+        .confirmation-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
 
-.next-steps small {
-    color: #0369a1;
-    font-style: italic;
-}
+        .confirmation-body {
+            padding: 3rem;
+        }
 
-.contact-info {
-    background: #fef3c7;
-    border-left: 4px solid #f59e0b;
-    padding: 1.5rem;
-    border-radius: var(--md-border-radius);
-    margin-bottom: 2rem;
-}
+        .response-details {
+            background: #f8f9fa;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            border: 2px solid #e5e7eb;
+        }
 
-.contact-info h4 {
-    color: #92400e;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-.contact-info p {
-    color: #78350f;
-    margin-bottom: 0.5rem;
-    line-height: 1.5;
-}
+        .section-title .material-symbols-outlined {
+            color: #dc2626;
+            font-size: 1.75rem;
+        }
 
-.contact-info small {
-    color: #92400e;
-    font-style: italic;
-}
+        .detail-grid {
+            display: grid;
+            gap: 1rem;
+        }
 
-.action-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
 
-.btn-primary {
-    background: linear-gradient(135deg, var(--md-primary) 0%, #ef4444 100%);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: var(--md-border-radius);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .detail-row:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
 
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
-}
+        .detail-label {
+            font-weight: 600;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
 
-.btn-secondary {
-    background: var(--md-surface-variant);
-    color: var(--md-on-surface);
-    border: 2px solid var(--md-outline);
-    padding: 1rem 2rem;
-    border-radius: var(--md-border-radius);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .detail-label .material-symbols-outlined {
+            color: #dc2626;
+            font-size: 1.25rem;
+        }
 
-.btn-secondary:hover {
-    border-color: var(--md-primary);
-    color: var(--md-primary);
-    background: var(--md-surface);
-}
+        .detail-value {
+            color: #4b5563;
+            font-weight: 500;
+        }
 
-@media (max-width: 768px) {
-    .confirmation-container {
-        margin: 1rem auto;
-        padding: 0 1rem;
-    }
-    
-    .confirmation-header,
-    .confirmation-body {
-        padding: 1.5rem;
-    }
-    
-    .confirmation-title {
-        font-size: 2rem;
-    }
-    
-    .detail-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-</style>
-{% endblock %}
+        .response-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-{% block content %}
-<div class="confirmation-container">
-    <div class="confirmation-card">
-        <div class="confirmation-header">
-            <div class="response-icon">
-                {% if notification.donor_response == 'confirmed' %}
-                    <span class="material-icons">check_circle</span>
-                {% elif notification.donor_response == 'declined' %}
-                    <span class="material-icons">cancel</span>
+        .response-confirmed {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .response-declined {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .response-viewed {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .blood-type-badge {
+            background: #dc2626;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .urgency-badge {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .next-steps {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .next-steps h4 {
+            color: #0c4a6e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .next-steps p {
+            color: #075985;
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+            font-size: 1.125rem;
+        }
+
+        .next-steps small {
+            color: #0369a1;
+            font-style: italic;
+        }
+
+        .contact-info {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .contact-info h4 {
+            color: #92400e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .contact-info p {
+            color: #78350f;
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+            font-size: 1.125rem;
+        }
+
+        .contact-info small {
+            color: #92400e;
+            font-style: italic;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            border-color: #dc2626;
+            color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 2rem 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #dc2626;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #dc2626;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 1rem;
+                min-width: 200px;
+                z-index: 1000;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 0.75rem 1rem;
+                border-radius: 0.25rem;
+                text-align: center;
+                display: block;
+            }
+
+            .user-menu {
+                display: none;
+            }
+
+            .confirmation-container {
+                padding: 1rem;
+                padding-top: 100px;
+            }
+
+            .confirmation-header,
+            .confirmation-body {
+                padding: 2rem;
+            }
+
+            .confirmation-title {
+                font-size: 2rem;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* ===== DESKTOP OPTIMIZATIONS ===== */
+        @media (min-width: 769px) {
+            .mobile-menu-btn {
+                display: none !important;
+            }
+
+            .nav-links {
+                display: flex !important;
+                position: static !important;
+                background: none !important;
+                flex-direction: row !important;
+            }
+
+            .user-menu {
+                display: flex !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'donor:home' %}" class="logo">
+                <span class="material-symbols-outlined">bloodtype</span>
+                BloodLink
+            </a>
+            
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            
+            <div class="nav-links" id="navLinks">
+                <!-- Main Navigation Links -->
+                <a href="{% url 'donor:home' %}">Home</a>
+                <a href="{% url 'donor:about' %}">About</a>
+                <a href="{% url 'donor:request_blood' %}">Request Blood</a>
+                
+                {% if donor %}
+                    <!-- Authenticated User Links -->
+                    <a href="{% url 'donor:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'donor:donations' %}">Donations</a>
+                    <a href="{% url 'donor:profile' %}">Profile</a>
+                    <a href="{% url 'donor:logout' %}" class="nav-link-logout">Logout</a>
                 {% else %}
-                    <span class="material-icons">visibility</span>
+                    <!-- Guest User Links -->
+                    <a href="{% url 'donor:login' %}" class="nav-link-highlight">Login</a>
+                    <a href="{% url 'donor:register' %}" class="nav-link-highlight">Register</a>
                 {% endif %}
-            </h5>
+            </div>
             
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <strong>Your Response:</strong>
+            <div class="user-menu">
+                {% if donor %}
+                    <img src="{% static 'images/donor-smiling.png' %}" alt="User" class="user-avatar">
+                    <span>{{ donor.first_name }} {{ donor.last_name }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Confirmation Container -->
+    <div class="confirmation-container">
+        <div class="confirmation-wrapper">
+            <div class="confirmation-card">
+                <div class="confirmation-header">
+                    <div class="response-icon">
+                        {% if notification.donor_response == 'confirmed' %}
+                            <span class="material-symbols-outlined">check_circle</span>
+                        {% elif notification.donor_response == 'declined' %}
+                            <span class="material-symbols-outlined">cancel</span>
+                        {% else %}
+                            <span class="material-symbols-outlined">visibility</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h1 class="confirmation-title">
+                        {% if notification.donor_response == 'confirmed' %}
+                            Response Confirmed!
+                        {% elif notification.donor_response == 'declined' %}
+                            Response Declined
+                        {% else %}
+                            Alert Viewed
+                        {% endif %}
+                    </h1>
+                    <p class="confirmation-subtitle">
+                        {% if notification.donor_response == 'confirmed' %}
+                            Thank you for confirming your donation availability
+                        {% elif notification.donor_response == 'declined' %}
+                            We understand you're not available at this time
+                        {% else %}
+                            You have viewed the emergency blood request
+                        {% endif %}
+                    </p>
                 </div>
-                <div class="col-md-8">
+                
+                <div class="confirmation-body">
+                    <div class="response-details">
+                        <h2 class="section-title">
+                            <span class="material-symbols-outlined">info</span>
+                            Response Details
+                        </h2>
+                        
+                        <div class="detail-grid">
+                            <div class="detail-row">
+                                <div class="detail-label">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                    Your Response
+                                </div>
+                                <div class="detail-value">
+                                    {% if notification.donor_response == 'confirmed' %}
+                                        <span class="response-badge response-confirmed">I Can Donate</span>
+                                    {% elif notification.donor_response == 'declined' %}
+                                        <span class="response-badge response-declined">Not Available</span>
+                                    {% else %}
+                                        <span class="response-badge response-viewed">Viewed</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    Response Time
+                                </div>
+                                <div class="detail-value">
+                                    {% if notification.fulfilled_at %}
+                                        {{ notification.fulfilled_at|date:"M d, Y g:i A" }}
+                                    {% else %}
+                                        Not yet recorded
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">
+                                    <span class="material-symbols-outlined">bloodtype</span>
+                                    Blood Request
+                                </div>
+                                <div class="detail-value">
+                                    {{ emergency_request.blood_type_needed }} - {{ emergency_request.units_needed }} unit{{ emergency_request.units_needed|pluralize }}
+                                </div>
+                            </div>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">
+                                    <span class="material-symbols-outlined">priority_high</span>
+                                    Urgency Level
+                                </div>
+                                <div class="detail-value">
+                                    <span class="urgency-badge">{{ emergency_request.get_urgency_level_display }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-row">
+                                <div class="detail-label">
+                                    <span class="material-symbols-outlined">local_hospital</span>
+                                    Hospital
+                                </div>
+                                <div class="detail-value">
+                                    St. Francis Hospital Nsambya
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     {% if notification.donor_response == 'confirmed' %}
-                        <span class="badge bg-success text-white">I Can Donate</span>
+                    <div class="next-steps">
+                        <h4>
+                            <span class="material-symbols-outlined">directions</span>
+                            Next Steps
+                        </h4>
+                        <p>The hospital will contact you soon with donation details.</p>
+                        <p><small>Please keep your phone available and ensure you've eaten well before donating.</small></p>
+                    </div>
                     {% elif notification.donor_response == 'declined' %}
-                        <span class="badge bg-secondary text-white">Not Available</span>
-                    {% else %}
-                        <span class="badge bg-info text-white">Viewed</span>
+                    <div class="next-steps" style="background: #f8f9fa; border-left-color: #6b7280;">
+                        <h4>
+                            <span class="material-symbols-outlined" style="color: #6b7280;">thumb_up</span>
+                            Thank You
+                        </h4>
+                        <p style="color: #4b5563;">We understand you're not available at this time.</p>
+                        <p><small style="color: #6b7280;">Your response helps us plan better for emergency needs.</small></p>
+                    </div>
                     {% endif %}
+                    
+                    <div class="contact-info">
+                        <h4>
+                            <span class="material-symbols-outlined">phone</span>
+                            Need to Contact Hospital?
+                        </h4>
+                        <p><strong>Emergency Hotline:</strong> +256 414 267 462</p>
+                        <p><strong>Location:</strong> St. Francis Hospital Nsambya</p>
+                        <p><small>Please call if you need to change your response or have questions.</small></p>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'donor:dashboard' %}" class="btn btn-primary">
+                            <span class="material-symbols-outlined">home</span>
+                            Back to Dashboard
+                        </a>
+                        
+                        {% if notification.donor_response != 'confirmed' and notification.donor_response != 'declined' %}
+                        <a href="{% url 'donor:respond_to_alert' notification.pk %}" class="btn btn-success">
+                            <span class="material-symbols-outlined">reply</span>
+                            Respond to Alert
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <strong>Response Time:</strong>
-                </div>
-                <div class="col-md-8">
-                    {% if notification.fulfilled_at %}
-                        {{ notification.fulfilled_at|date:"M d, Y g:i A" }}
-                    {% else %}
-                        Not yet recorded
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <strong>Blood Request:</strong>
-                </div>
-                <div class="col-md-8">
-                    {{ emergency_request.blood_type_needed }} - {{ emergency_request.units_needed }} unit{{ emergency_request.units_needed|pluralize }}
-                </div>
-            </div>
-            
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <strong>Urgency Level:</strong>
-                </div>
-                <div class="col-md-8">
-                    {{ emergency_request.get_urgency_level_display }}
-                </div>
-            </div>
-            
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <strong>Hospital:</strong>
-                </div>
-                <div class="col-md-8">
-                    St. Francis Hospital Nsambya
-                </div>
-            </div>
-            
-            {% if notification.donor_response == 'confirmed' %}
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <strong>Next Steps:</strong>
-                </div>
-                <div class="col-md-8">
-                    <p class="mb-0">The hospital will contact you soon with donation details.</p>
-                    <p><small>Please keep your phone available and ensure you've eaten well before donating.</small></p>
-                </div>
-            </div>
-            {% elif notification.donor_response == 'declined' %}
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <strong>Thank You:</strong>
-                </div>
-                <div class="col-md-8">
-                    <p class="mb-0">We understand you're not available at this time.</p>
-                    <p><small>Your response helps us plan better for emergency needs.</small></p>
-                </div>
-            </div>
-            {% endif %}
         </div>
     </div>
-    
-    <!-- Action Buttons -->
-    <div class="d-grid gap-2" style="grid-template-columns:1fr 1fr;">
-        <a href="{% url 'donor:dashboard' %}" class="btn btn-outline-primary">
-            <i class="bi bi-house"></i> Back to Dashboard
-        </a>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>BloodLink</h4>
+                <p>Connecting donors with those in need at St. Francis Hospital. Every donation counts.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'donor:home' %}">Home</a></li>
+                    <li><a href="{% url 'donor:about' %}">About Us</a></li>
+                    <li><a href="{% url 'donor:register' %}">Register</a></li>
+                    <li><a href="{% url 'donor:request_blood' %}">Request Blood</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="{% url 'donor:contact' %}">Contact Us</a></li>
+                    <li><a href="{% url 'donor:faq' %}">FAQ</a></li>
+                    <li><a href="{% url 'donor:privacy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'donor:terms' %}">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>St. Francis Hospital<br>
+                Nsambya, Kampala<br>
+                Uganda</p>
+                <p>Emergency: +256 123 456 789</p>
+            </div>
+        </div>
         
-        {% if notification.donor_response != 'confirmed' and notification.donor_response != 'declined' %}
-        <a href="{% url 'donor:respond_to_alert' notification.pk %}" class="btn btn-success">
-            <i class="bi bi-reply"></i> Respond to Alert
-        </a>
-        {% endif %}
-    </div>
-    
-    <!-- Contact Info -->
-    <div class="mt-4 p-3" style="background:var(--bl-red-light);border-radius:8px;">
-        <h6 style="color:var(--bl-red);margin-bottom:8px;">
-            <i class="bi bi-telephone"></i> Need to Contact Hospital?
-        </h6>
-        <p style="font-size:0.9rem;margin:0;">
-            <strong>Emergency Hotline:</strong> +256 414 267 462<br>
-            <strong>Location:</strong> St. Francis Hospital Nsambya<br>
-            <small>Please call if you need to change your response or have questions.</small>
-        </p>
-    </div>
-</div>
-</div>
-{% endblock %}
+        <div class="footer-bottom">
+            <p>&copy; 2024 BloodLink. All rights reserved. The Clinical Curator Editorial.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('navLinks');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (!navLinks.contains(event.target) && !menuBtn.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

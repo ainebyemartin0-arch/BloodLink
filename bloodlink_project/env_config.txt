@@ -1,0 +1,21 @@
+# BloodLink Environment Configuration
+# Copy this file to .env in your project root
+
+# Africa's Talking SMS Configuration
+# For testing with sandbox mode (default)
+AT_USERNAME=sandbox
+AT_API_KEY= atsk_a0afd8eab23bf0e06d12832688770d25b66e9e8e204e0dc1538447dfe6b9c94b3cc397aa
+AT_SENDER_ID=BloodLink
+
+# For production use (replace with your live credentials)
+# AT_USERNAME=your_live_username
+# AT_API_KEY=your_live_api_key
+# AT_SENDER_ID=BloodLink
+
+# Web Push Notifications (optional)
+VAPID_PRIVATE_KEY=your_vapid_private_key_here
+VAPID_PUBLIC_KEY=your_vapid_public_key_here
+
+# Django Settings
+DEBUG=True
+SECRET_KEY=django-insecure-development-key-for-testing-only
