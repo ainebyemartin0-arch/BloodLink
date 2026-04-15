@@ -575,13 +575,13 @@
           {% for donor in recent_donors %}
           <tr>
             <td>
-              <div>{{ donor.first_name }} {{ donor.last_name }}</div>
+              <div>{{ donor.full_name }}</div>
               <small class="text-muted">{{ donor.email }}</small>
             </td>
             <td>
               <span class="badge bg-danger text-white">{{ donor.blood_type }}</span>
             </td>
-            <td>{{ donor.phone }}</td>
+            <td>{{ donor.phone_number }}</td>
             <td>
               <span class="badge {% if donor.is_available %}bg-success{% else %}bg-secondary{% endif %}">
                 {% if donor.is_available %}Available{% else %}Unavailable{% endif %}
