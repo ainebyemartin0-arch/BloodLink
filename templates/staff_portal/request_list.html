@@ -88,7 +88,13 @@
                                     <span class="badge bg-secondary">0 Donors</span>
                                 {% endif %}
                             </td>
-                            <td>{{ req.created_by.get_full_name|default:req.created_by.username }}</td>
+                            <td>
+    {% if req.created_by %}
+        {{ req.created_by.get_full_name|default:req.created_by.username }}
+    {% else %}
+        <span class="text-muted">System</span>
+    {% endif %}
+</td>
                             <td>{{ req.created_at|date:"M d, Y g:i A" }}</td>
                             <td>
                                 <a href="{% url 'staff:request_detail' req.pk %}" class="btn btn-sm btn-outline-primary">View</a>
