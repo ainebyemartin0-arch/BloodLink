@@ -122,14 +122,6 @@ def donor_register(request):
     if request.method == 'POST':
         form = DonorRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            # Debug logging
-            print("=== REGISTRATION DEBUG ===")
-            print("Form is valid")
-            print(f"Email: {form.cleaned_data['email']}")
-            print(f"Password1: {form.cleaned_data['password1']}")
-            print(f"Password2: {form.cleaned_data['password2']}")
-            
-            # Create donor
             donor = Donor(
                 full_name=form.cleaned_data['full_name'],
                 email=form.cleaned_data['email'],
@@ -144,23 +136,9 @@ def donor_register(request):
                 is_active=True,
                 date_registered=timezone.now()
             )
-            
-            print("Donor object created")
             donor.set_password(form.cleaned_data['password1'])
-            print(f"Password set, hash exists: {bool(donor.password_hash)}")
-            
             donor.save()
-            print(f"Donor saved, final hash exists: {bool(donor.password_hash)}")
             
-            # Test password immediately
-            if donor.check_password(form.cleaned_data['password1']):
-                print("✅ Password verification SUCCESS")
-            else:
-                print("❌ Password verification FAILED")
-            
-            print("=== END REGISTRATION DEBUG ===")
-            
-            # Log in the donor
             request.session['donor_id'] = donor.pk
             messages.success(request, f"Welcome {donor.full_name}! Your donor account has been created successfully.")
             return redirect('donor:dashboard')
@@ -179,28 +157,16 @@ def donor_login(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             
-            print("=== LOGIN DEBUG ===")
-            print(f"Login attempt for email: {email}")
-            print(f"Password provided: {'*' * len(password)} (length: {len(password)})")
-            
             try:
                 donor = Donor.objects.get(email=email, is_active=True)
-                print(f"Donor found: {donor.full_name}")
-                print(f"Password hash exists: {bool(donor.password_hash)}")
-                
                 if donor.check_password(password):
-                    print("✅ Password check SUCCESS - Login should work")
                     request.session['donor_id'] = donor.pk
                     messages.success(request, f"Welcome back, {donor.full_name}!")
                     return redirect('donor:dashboard')
                 else:
-                    print("❌ Password check FAILED - Invalid credentials")
                     messages.error(request, "Invalid email or password.")
             except Donor.DoesNotExist:
-                print("❌ Donor not found in database")
                 messages.error(request, "Invalid email or password.")
-            
-            print("=== END LOGIN DEBUG ===")
     else:
         form = DonorLoginForm()
     
@@ -534,7 +500,7 @@ def donor_requests(request):
     
     # Get public requests created by this donor
     public_requests = PublicBloodRequest.objects.filter(
-        requester_phone=donor.phone
+        requester_phone=donor.phone_number
     ).order_by('-submitted_at')
     
     context = {
@@ -563,7 +529,7 @@ def cancel_request(request, pk):
         try:
             public_request = PublicBloodRequest.objects.get(
                 pk=pk,
-                requester_phone=donor.phone,
+                requester_phone=donor.phone_number,
                 status='pending'
             )
             
