@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout, authenticate
+from django.contrib.auth import logout, authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.urls import reverse
@@ -30,7 +30,7 @@ def redirect_root(request):
 
 def staff_login(request):
     if request.method == 'POST':
-        form = StaffLoginForm(request, data=request.POST)
+        form = StaffLoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
