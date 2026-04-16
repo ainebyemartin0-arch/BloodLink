@@ -235,8 +235,11 @@ def donor_dashboard(request):
         'lives_saved': lives_saved,
         'points': points,
         'days_until_next': days_until_next,
+        'pending_requests': pending_response,
+        'confirmed_requests': confirmed_count,
+        'last_donation_days': days_until_next,
     }
-    return render(request, 'donor_portal/dashboard_enhanced.html', context)
+    return render(request, 'donor_portal/dashboard_full.html', context)
 
 @donor_login_required
 def donor_profile(request):
@@ -260,7 +263,7 @@ def donor_profile(request):
         'lives_saved': lives_saved,
         'recent_requests': recent_requests,
     }
-    return render(request, 'donor_portal/profile_enhanced.html', context)
+    return render(request, 'donor_portal/profile_full.html', context)
 
 @donor_login_required
 def donor_profile_edit(request):
@@ -284,12 +287,35 @@ def donor_donations(request):
     all_donations = donor.donation_records.order_by('-donation_date')
     all_alerts = donor.sms_notifications.order_by('-sent_at')
     
+    # Calculate stats
+    total_donations = all_donations.count()
+    lives_saved = total_donations * 3  # Each donation saves up to 3 lives
+    total_units = all_donations.aggregate(total_units=models.Sum('units'))['total_units'] or 0
+    
+    # Calculate days since last donation
+    from django.utils import timezone
+    last_donation = all_donations.first()
+    if last_donation:
+        days_since_last = (timezone.now().date() - last_donation.donation_date).days
+        days_until_next = max(0, 56 - days_since_last)
+        last_donation_days = days_since_last
+        next_eligible_days = days_until_next
+    else:
+        last_donation_days = 0
+        next_eligible_days = 0
+    
     context = {
         'donor': donor,
+        'donations': all_donations,
         'all_donations': all_donations,
         'all_alerts': all_alerts,
+        'total_donations': total_donations,
+        'lives_saved': lives_saved,
+        'total_units': total_units,
+        'last_donation_days': last_donation_days,
+        'next_eligible_days': next_eligible_days,
     }
-    return render(request, 'donor_portal/donations.html', context)
+    return render(request, 'donor_portal/donations_full.html', context)
 
 @donor_login_required
 def donor_change_password(request):

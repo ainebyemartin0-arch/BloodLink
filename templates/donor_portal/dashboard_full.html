@@ -1,0 +1,284 @@
+{% extends 'donor_portal/base_donor_enhanced.html' %}
+
+{% block title %}Donor Dashboard - BloodLink{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<section class="welcome-section-full animate-in">
+    <div class="welcome-content-full">
+        <div class="welcome-text-full">
+            <h1>Welcome back, {{ donor.full_name }}!</h1>
+            <p>Thank you for being a life-saving donor. Your generosity makes a real difference in our community.</p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="{% url 'donor:toggle_availability' %}" style="background: white; color: #dc2626; text-decoration: none; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">toggle_on</i>
+                    {% if donor.is_available %}Available{% else %}Unavailable{% endif %}
+                </a>
+                <a href="{% url 'donor:profile_edit' %}" style="background: transparent; color: white; border: 2px solid white; text-decoration: none; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">edit</i>
+                    Edit Profile
+                </a>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="width: 120px; height: 120px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <i class="material-icons" style="font-size: 3rem; color: white;">bloodtype</i>
+            </div>
+            <div style="margin-top: 1rem; font-weight: 600; font-size: 1.25rem;">{{ donor.blood_type }}</div>
+            <div style="opacity: 0.8; font-size: 0.875rem;">Blood Type</div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="content-wrapper">
+    <!-- Stats Grid -->
+    <div class="stats-grid animate-in">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="material-icons">history</i>
+            </div>
+            <div class="stat-number">{{ total_donations }}</div>
+            <div class="stat-label">Total Donations</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="material-icons">event</i>
+            </div>
+            <div class="stat-number">{{ last_donation_days }}</div>
+            <div class="stat-label">Days Since Last Donation</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="material-icons">notifications</i>
+            </div>
+            <div class="stat-number">{{ pending_requests }}</div>
+            <div class="stat-label">Pending Requests</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="material-icons">verified</i>
+            </div>
+            <div class="stat-number">{{ confirmed_requests }}</div>
+            <div class="stat-label">Confirmed Donations</div>
+        </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="pro-grid pro-grid-2-1 animate-in">
+        <!-- Main Content Area -->
+        <div>
+            <!-- Quick Actions -->
+            <div class="pro-card mb-4">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Quick Actions</h2>
+                    <p class="pro-card-subtitle">Manage your donation activities</p>
+                </div>
+                <div class="action-grid">
+                    <a href="{% url 'donor:toggle_availability' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">toggle_on</i>
+                        </div>
+                        <div class="action-btn-text">Update Availability</div>
+                        <div class="action-btn-desc">Mark yourself as available for donations</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:donations' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">history</i>
+                        </div>
+                        <div class="action-btn-text">Donation History</div>
+                        <div class="action-btn-desc">View your past donations</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:donor_requests' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">list_alt</i>
+                        </div>
+                        <div class="action-btn-text">My Requests</div>
+                        <div class="action-btn-desc">Manage your blood requests</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:request_blood' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">bloodtype</i>
+                        </div>
+                        <div class="action-btn-text">Request Blood</div>
+                        <div class="action-btn-desc">Request blood for someone in need</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:profile_edit' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">edit</i>
+                        </div>
+                        <div class="action-btn-text">Edit Profile</div>
+                        <div class="action-btn-desc">Update your personal information</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:change_password' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">lock</i>
+                        </div>
+                        <div class="action-btn-text">Change Password</div>
+                        <div class="action-btn-desc">Update your account password</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="pro-card">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Recent Activity</h2>
+                    <p class="pro-card-subtitle">Your latest donation activities</p>
+                </div>
+                {% if recent_donations %}
+                <div class="pro-table-container">
+                    <table class="pro-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in recent_donations %}
+                            <tr>
+                                <td>{{ donation.donation_date|date:"M d, Y" }}</td>
+                                <td>{{ donation.donation_type }}</td>
+                                <td>
+                                    <span style="padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; background: {% if donation.status == 'completed' %}#d1fae5; color: #065f46;{% elif donation.status == 'pending' %}#fef3c7; color: #92400e;{% else %}#fee2e2; color: #991b1b;{% endif %};">
+                                        {{ donation.status|title }}
+                                    </span>
+                                </td>
+                                <td>{{ donation.location }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 3rem; color: #6b7280;">
+                    <i class="material-icons" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">history</i>
+                    <p>No donation history yet. Start saving lives today!</p>
+                    <a href="{% url 'donor:request_blood' %}" style="background: #dc2626; color: white; text-decoration: none; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; display: inline-block; margin-top: 1rem;">
+                        Request Blood
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <!-- Profile Summary -->
+            <div class="pro-card mb-4">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Profile Summary</h2>
+                    <p class="pro-card-subtitle">Your donor information</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #dc2626, #ef4444); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="material-icons" style="color: white;">person</i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #1a1a1a;">{{ donor.full_name }}</div>
+                            <div style="color: #6b7280; font-size: 0.875rem;">{{ donor.email }}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 1rem; background: #f8f9fa; border-radius: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: #6b7280;">Blood Type:</span>
+                            <span style="font-weight: 600; color: #dc2626;">{{ donor.blood_type }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: #6b7280;">Location:</span>
+                            <span style="font-weight: 600;">{{ donor.location }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #6b7280;">Availability:</span>
+                            <span style="font-weight: 600; color: {% if donor.is_available %}#10b981{% else %}#ef4444{% endif %};">
+                                {% if donor.is_available %}Available{% else %}Unavailable{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <a href="{% url 'donor:profile' %}" style="color: #dc2626; text-decoration: none; font-weight: 600;">
+                            View Full Profile →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="pro-card mb-4">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Emergency Contact</h2>
+                    <p class="material-icons" style="color: #dc2626; font-size: 1.5rem;">emergency</i>
+                    <p class="pro-card-subtitle">Need urgent assistance?</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="margin-bottom: 1rem;">
+                        <i class="material-icons" style="font-size: 2rem; color: #dc2626; margin-bottom: 0.5rem;">phone</i>
+                        <div style="font-weight: 600; color: #1a1a1a;">+256 414 267 462</div>
+                        <div style="color: #6b7280; font-size: 0.875rem;">24/7 Emergency Hotline</div>
+                    </div>
+                    <a href="tel:+256414267462" style="background: #dc2626; color: white; text-decoration: none; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; display: inline-block;">
+                        <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">call</i>
+                        Call Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="pro-card">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Impact</h2>
+                    <p class="pro-card-subtitle">Your contribution</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 800; color: #dc2626; margin-bottom: 0.5rem;">
+                        {{ lives_saved }}
+                    </div>
+                    <div style="color: #6b7280; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                        Lives Potentially Saved
+                    </div>
+                    <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 0.5rem;">
+                        <p style="color: #6b7280; font-size: 0.875rem; margin: 0;">
+                            Each donation can save up to 3 lives. Thank you for your life-saving contribution!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add animations on scroll
+document.addEventListener('DOMContentLoaded', function() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate-in').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+});
+</script>
+{% endblock %}

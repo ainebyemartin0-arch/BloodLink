@@ -556,21 +556,6 @@ def donation_create(request):
     }
     return render(request, 'staff_portal/donation_form.html', context)
 
-def check_request_fulfillment(emergency_request):
-    """Check if an emergency request has been fulfilled and update status."""
-    # Count total units donated for this request
-    total_donated = DonationRecord.objects.filter(
-        emergency_request=emergency_request
-    ).aggregate(total=Sum('units_donated'))['total'] or 0
-    
-    # If donated units meet or exceed needed units, mark as fulfilled
-    if total_donated >= emergency_request.units_needed:
-        emergency_request.status = 'fulfilled'
-        emergency_request.fulfilled_at = timezone.now()
-        emergency_request.save()
-        
-        # You could send a notification here that request is fulfilled
-        print(f"Emergency Request #{emergency_request.pk} has been fulfilled with {total_donated} units donated.")
 
 @login_required
 def blood_stock(request):

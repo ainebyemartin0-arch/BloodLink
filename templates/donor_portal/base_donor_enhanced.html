@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BloodLink - Save Lives{% endblock %}</title>
+    
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- BloodLink Enhanced Layout CSS -->
+    <link href="{% static 'css/bloodlink-enhanced-layout.css' %}" rel="stylesheet">
+    <!-- BloodLink Material CSS -->
+    <link href="{% static 'css/bloodlink-material.css' %}" rel="stylesheet">
+    
+    <!-- VAPID Public Key for Push Notifications -->
+    <meta name="vapid-public-key" content="{{ VAPID_PUBLIC_KEY }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Enhanced Navigation -->
+    <nav class="enhanced-navbar">
+        <div class="nav-container-full">
+            <a href="{% url 'donor:home' %}" class="logo" style="font-size: 1.5rem; font-weight: 700; color: #dc2626; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="material-icons" style="font-size: 1.75rem;">bloodtype</i>
+                BloodLink
+            </a>
+            
+            {% if donor %}
+            <div class="nav-links" style="display: flex; gap: 1rem; align-items: center;">
+                <a href="{% url 'donor:home' %}" style="color: #4b5563; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">home</i>
+                    Home
+                </a>
+                <a href="{% url 'donor:dashboard' %}" style="color: #4b5563; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">dashboard</i>
+                    Dashboard
+                </a>
+                <a href="{% url 'donor:donations' %}" style="color: #4b5563; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">history</i>
+                    Donations
+                </a>
+                <a href="{% url 'donor:donor_requests' %}" style="color: #4b5563; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">list_alt</i>
+                    My Requests
+                </a>
+                <a href="{% url 'donor:profile' %}" style="color: #4b5563; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">person</i>
+                    Profile
+                </a>
+                <a href="{% url 'donor:logout' %}" style="background: #dc2626; color: white; text-decoration: none; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">logout</i>
+                    Logout
+                </a>
+            </div>
+            {% else %}
+            <div class="nav-links" style="display: flex; gap: 1rem; align-items: center;">
+                <a href="{% url 'donor:home' %}" style="color: #4b5563; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">home</i>
+                    Home
+                </a>
+                <a href="{% url 'donor:about' %}" style="color: #4b5563; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">info</i>
+                    About
+                </a>
+                <a href="{% url 'donor:request_blood' %}" style="color: #4b5563; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">bloodtype</i>
+                    Request Blood
+                </a>
+                <a href="{% url 'donor:login' %}" style="border: 2px solid #e5e7eb; color: #1a1a1a; text-decoration: none; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">login</i>
+                    Login
+                </a>
+                <a href="{% url 'donor:register' %}" style="background: #dc2626; color: white; text-decoration: none; font-weight: 600; padding: 0.5rem 1rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.25rem;">person_add</i>
+                    Register
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content-full">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="content-wrapper">
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="pro-card" style="background: {% if message.tags == 'success' %}#d1fae5{% elif message.tags == 'error' %}#fee2e2{% elif message.tags == 'warning' %}#fef3c7{% else %}#dbeafe{% endif %}; border-left: 4px solid {% if message.tags == 'success' %}#10b981{% elif message.tags == 'error' %}#ef4444{% elif message.tags == 'warning' %}#f59e0b{% else %}#3b82f6{% endif %}; padding: 1rem 1.5rem; margin-bottom: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="material-icons" style="color: {% if message.tags == 'success' %}#10b981{% elif message.tags == 'error' %}#ef4444{% elif message.tags == 'warning' %}#f59e0b{% else %}#3b82f6{% endif %};">
+                            {% if message.tags == 'success' %}check_circle{% endif %}
+                            {% if message.tags == 'error' %}error{% endif %}
+                            {% if message.tags == 'warning' %}warning{% endif %}
+                            {% if message.tags == 'info' %}info{% endif %}
+                        </i>
+                        <span style="color: {% if message.tags == 'success' %}#065f46{% elif message.tags == 'error' %}#991b1b{% elif message.tags == 'warning' %}#92400e{% else %}#1e3a8a{% endif %}; font-weight: 500;">{{ message }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Enhanced Footer -->
+    <footer style="background: #1a1a1a; color: white; padding: 3rem 0 1rem; margin-top: 0;">
+        <div class="content-wrapper">
+            <div class="pro-grid pro-grid-3" style="gap: 2rem; margin-bottom: 2rem;">
+                <div>
+                    <h5 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 700;">
+                        <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">bloodtype</i>
+                        BloodLink
+                    </h5>
+                    <p style="color: #9ca3af; line-height: 1.6;">
+                        Connecting blood donors with those in need through innovative technology and compassionate care.
+                    </p>
+                </div>
+                <div>
+                    <h6 style="color: white; margin-bottom: 1rem; font-weight: 600;">Quick Links</h6>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <a href="{% url 'donor:home' %}" style="color: #9ca3af; text-decoration: none; padding: 0.25rem 0; transition: color 0.3s ease;">Home</a>
+                        <a href="{% url 'donor:about' %}" style="color: #9ca3af; text-decoration: none; padding: 0.25rem 0; transition: color 0.3s ease;">About Us</a>
+                        <a href="{% url 'donor:register' %}" style="color: #9ca3af; text-decoration: none; padding: 0.25rem 0; transition: color 0.3s ease;">Become a Donor</a>
+                        <a href="{% url 'donor:request_blood' %}" style="color: #9ca3af; text-decoration: none; padding: 0.25rem 0; transition: color 0.3s ease;">Request Blood</a>
+                    </div>
+                </div>
+                <div>
+                    <h6 style="color: white; margin-bottom: 1rem; font-weight: 600;">Contact</h6>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; color: #9ca3af;">
+                            <i class="material-icons" style="font-size: 1.25rem;">location_on</i>
+                            St. Francis Hospital Nsambya
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; color: #9ca3af;">
+                            <i class="material-icons" style="font-size: 1.25rem;">phone</i>
+                            +256 414 267 462
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; color: #9ca3af;">
+                            <i class="material-icons" style="font-size: 1.25rem;">email</i>
+                            emergency@bloodlink.ug
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr style="border-color: #374151; margin: 2rem 0;">
+            <div style="text-align: center; color: #9ca3af;">
+                <p style="margin: 0;">&copy; 2024 BloodLink. All rights reserved. | Saving lives, one donation at a time.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Action Button -->
+    {% if donor %}
+    <button onclick="window.location.href='{% url 'donor:request_blood' %}'" style="position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; background: linear-gradient(135deg, #dc2626, #ef4444); color: white; border: none; border-radius: 50%; box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3); cursor: pointer; transition: all 0.3s ease; z-index: 999; display: flex; align-items: center; justify-content: center;" title="Request Blood">
+        <i class="material-icons" style="font-size: 1.5rem;">add</i>
+    </button>
+    {% endif %}
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Push Notifications -->
+    <script src="{% static 'js/push-notifications.js' %}"></script>
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/js/service-worker.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered');
+                })
+                .catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
