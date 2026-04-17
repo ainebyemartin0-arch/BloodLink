@@ -68,6 +68,11 @@
             <div class="col-md-6">
                 <p><strong>Name:</strong> {{ donor.full_name }}</p>
                 <p><strong>Blood Type:</strong> <span class="badge badge-blood">{{ donor.blood_type }}</span></p>
+                <p><strong>Eligibility Status:</strong> 
+                    <span class="badge {% if donor.is_eligible %}bg-success{% else %}bg-danger{% endif %}">
+                        {% if donor.is_eligible %}Eligible{% else %}Not Eligible{% endif %}
+                    </span>
+                </p>
                 <p><strong>Phone:</strong> {{ donor.phone_number }}</p>
                 <p><strong>Email:</strong> {{ donor.email }}</p>
             </div>

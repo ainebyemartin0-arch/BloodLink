@@ -1,0 +1,1156 @@
+{% extends 'donor_portal/base_donor_enhanced.html' %}
+
+{% block title %}Donor Dashboard - BloodLink{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== DARK MODE VARIABLES ===== */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e5e7eb;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --border-color: #e5e7eb;
+    --card-bg: #ffffff;
+    --nav-bg: rgba(255, 255, 255, 0.98);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #404040;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-muted: #808080;
+    --border-color: #404040;
+    --card-bg: #2d2d2d;
+    --nav-bg: rgba(26, 26, 26, 0.98);
+    --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== SKELETON LOADING ===== */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+    height: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    height: 2rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.skeleton-card {
+    height: 200px;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ===== ALERT/SMS STYLES ===== */
+.alert-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.alert-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.alert-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+.alert-urgent::before {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+.alert-normal::before {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+}
+
+.alert-info::before {
+    background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.alert-title {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.125rem;
+}
+
+.alert-time {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.alert-content {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.alert-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.alert-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-btn-confirm {
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+}
+
+.alert-btn-confirm:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    transform: translateY(-1px);
+}
+
+.alert-btn-decline {
+    background: linear-gradient(135deg, #ef4444, #f87171);
+    color: white;
+}
+
+.alert-btn-decline:hover {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    transform: translateY(-1px);
+}
+
+.alert-btn-view {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.alert-btn-view:hover {
+    background: var(--border-color);
+}
+
+/* ===== CHART CONTAINER ===== */
+.chart-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.chart-canvas {
+    width: 100%;
+    height: 300px;
+    position: relative;
+}
+
+/* ===== SEARCH COMPONENT ===== */
+.search-container {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1rem 3rem 1rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    margin-top: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.search-suggestion {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-suggestion:hover {
+    background: var(--bg-secondary);
+}
+
+.search-suggestion:last-child {
+    border-bottom: none;
+}
+
+/* ===== KEYBOARD SHORTCUTS MODAL ===== */
+.shortcuts-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.shortcuts-content {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 0.5rem;
+}
+
+.shortcut-key {
+    background: var(--bg-tertiary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-weight: 600;
+}
+
+/* ===== PWA INSTALL PROMPT ===== */
+.pwa-install-prompt {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    max-width: 350px;
+    z-index: 1000;
+    display: none;
+}
+
+.pwa-install-prompt.show {
+    display: block;
+}
+
+/* ===== REAL-TIME NOTIFICATION ===== */
+.real-time-notification {
+    position: fixed;
+    top: 100px;
+    right: 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    max-width: 400px;
+    z-index: 1001;
+    transform: translateX(500px);
+    transition: transform 0.3s ease;
+}
+
+.real-time-notification.show {
+    transform: translateX(0);
+}
+
+/* ===== DARK MODE TOGGLE ===== */
+.theme-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    transition: all 0.3s ease;
+    z-index: 998;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+.theme-toggle i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .shortcuts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pwa-install-prompt {
+        left: 1rem;
+        right: 1rem;
+        max-width: none;
+    }
+    
+    .real-time-notification {
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+    
+    .alert-actions {
+        flex-direction: column;
+    }
+    
+    .alert-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Enhanced Welcome Section -->
+<section class="welcome-section-full animate-in">
+    <div class="welcome-content-full">
+        <div class="welcome-text-full">
+            <h1>Welcome back, {{ donor.full_name }}!</h1>
+            <p>Thank you for being a life-saving donor. Your generosity makes a real difference in our community.</p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="{% url 'donor:toggle_availability' %}" style="background: white; color: #dc2626; text-decoration: none; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">toggle_on</i>
+                    {% if donor.is_available %}Available{% else %}Unavailable{% endif %}
+                </a>
+                <a href="{% url 'donor:profile_edit' %}" style="background: transparent; color: white; border: 2px solid white; text-decoration: none; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s ease;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">edit</i>
+                    Edit Profile
+                </a>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="width: 120px; height: 120px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <i class="material-icons" style="font-size: 3rem; color: white;">bloodtype</i>
+            </div>
+            <div style="margin-top: 1rem; font-weight: 600; font-size: 1.25rem;">{{ donor.blood_type }}</div>
+            <div style="opacity: 0.8; font-size: 0.875rem;">Blood Type</div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="content-wrapper">
+    <!-- Search Bar -->
+    <div class="search-container animate-in">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search alerts, donations, or profile information...">
+        <i class="material-icons search-icon">search</i>
+        <div class="search-suggestions" id="searchSuggestions"></div>
+    </div>
+
+    <!-- Stats Grid with Charts -->
+    <div class="stats-grid animate-in">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="material-icons">history</i>
+            </div>
+            <div class="stat-number">{{ total_donations }}</div>
+            <div class="stat-label">Total Donations</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="material-icons">event</i>
+            </div>
+            <div class="stat-number">{{ last_donation_days }}</div>
+            <div class="stat-label">Days Since Last Donation</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="material-icons">notifications</i>
+            </div>
+            <div class="stat-number">{{ pending_requests }}</div>
+            <div class="stat-label">Pending Requests</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="material-icons">verified</i>
+            </div>
+            <div class="stat-number">{{ confirmed_requests }}</div>
+            <div class="stat-label">Confirmed Donations</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="chart-container animate-in">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-primary);">Donation Trends</h2>
+        <div class="chart-canvas">
+            <canvas id="donationChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="pro-grid pro-grid-2-1 animate-in">
+        <!-- Main Content Area -->
+        <div>
+            <!-- SMS/Alerts Section -->
+            <div class="pro-card mb-4">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">SMS Alerts & Notifications</h2>
+                    <p class="pro-card-subtitle">View and respond to blood donation requests</p>
+                </div>
+                
+                <div id="alertsContainer">
+                    <!-- Alerts will be loaded here -->
+                    <div class="skeleton skeleton-card"></div>
+                    <div class="skeleton skeleton-card"></div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 1rem;">
+                    <button id="loadMoreAlerts" class="alert-btn alert-btn-view">
+                        <i class="material-icons">expand_more</i>
+                        Load More Alerts
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="pro-card">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Quick Actions</h2>
+                    <p class="pro-card-subtitle">Manage your donation activities</p>
+                </div>
+                <div class="action-grid">
+                    <a href="{% url 'donor:toggle_availability' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">toggle_on</i>
+                        </div>
+                        <div class="action-btn-text">Update Availability</div>
+                        <div class="action-btn-desc">Mark yourself as available for donations</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:donations' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">history</i>
+                        </div>
+                        <div class="action-btn-text">Donation History</div>
+                        <div class="action-btn-desc">View your past donations</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:donor_requests' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">list_alt</i>
+                        </div>
+                        <div class="action-btn-text">My Requests</div>
+                        <div class="action-btn-desc">Manage your blood requests</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:request_blood' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">bloodtype</i>
+                        </div>
+                        <div class="action-btn-text">Request Blood</div>
+                        <div class="action-btn-desc">Request blood for someone in need</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:profile_edit' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">edit</i>
+                        </div>
+                        <div class="action-btn-text">Edit Profile</div>
+                        <div class="action-btn-desc">Update your personal information</div>
+                    </a>
+                    
+                    <a href="{% url 'donor:change_password' %}" class="action-btn">
+                        <div class="action-btn-icon">
+                            <i class="material-icons">lock</i>
+                        </div>
+                        <div class="action-btn-text">Change Password</div>
+                        <div class="action-btn-desc">Update your account password</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <!-- Profile Summary -->
+            <div class="pro-card mb-4">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Profile Summary</h2>
+                    <p class="pro-card-subtitle">Your donor information</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #dc2626, #ef4444); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="material-icons" style="color: white;">person</i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary);">{{ donor.full_name }}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.875rem;">{{ donor.email }}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 1rem; background: var(--bg-secondary); border-radius: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: var(--text-secondary);">Blood Type:</span>
+                            <span style="font-weight: 600; color: #dc2626;">{{ donor.blood_type }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: var(--text-secondary);">Location:</span>
+                            <span style="font-weight: 600;">{{ donor.location }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Availability:</span>
+                            <span style="font-weight: 600; color: {% if donor.is_available %}#10b981{% else %}#ef4444{% endif %};">
+                                {% if donor.is_available %}Available{% else %}Unavailable{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <a href="{% url 'donor:profile' %}" style="color: #dc2626; text-decoration: none; font-weight: 600;">
+                            View Full Profile →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="pro-card mb-4">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Emergency Contact</h2>
+                    <p class="pro-card-subtitle">Need urgent assistance?</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="margin-bottom: 1rem;">
+                        <i class="material-icons" style="font-size: 2rem; color: #dc2626; margin-bottom: 0.5rem;">phone</i>
+                        <div style="font-weight: 600; color: var(--text-primary);">+256 414 267 462</div>
+                        <div style="color: var(--text-secondary); font-size: 0.875rem;">24/7 Emergency Hotline</div>
+                    </div>
+                    <a href="tel:+256414267462" style="background: #dc2626; color: white; text-decoration: none; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; display: inline-block;">
+                        <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">call</i>
+                        Call Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="pro-card">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Impact</h2>
+                    <p class="pro-card-subtitle">Your contribution</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 800; color: #dc2626; margin-bottom: 0.5rem;">
+                        {{ lives_saved }}
+                    </div>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                        Lives Potentially Saved
+                    </div>
+                    <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: 0.5rem;">
+                        <p style="color: var(--text-secondary); font-size: 0.875rem; margin: 0;">
+                            Each donation can save up to 3 lives. Thank you for your life-saving contribution!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<div class="theme-toggle" id="themeToggle">
+    <i class="material-icons" id="themeIcon">dark_mode</i>
+</div>
+
+<!-- PWA Install Prompt -->
+<div class="pwa-install-prompt" id="pwaInstallPrompt">
+    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Install BloodLink App</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Install our app for faster access and offline features!</p>
+    <div style="display: flex; gap: 0.75rem;">
+        <button id="installBtn" style="background: #dc2626; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">
+            Install
+        </button>
+        <button id="dismissBtn" style="background: var(--bg-tertiary); color: var(--text-primary); border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">
+            Dismiss
+        </button>
+    </div>
+</div>
+
+<!-- Real-time Notification -->
+<div class="real-time-notification" id="realTimeNotification">
+    <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">New Alert!</h4>
+    <p style="color: var(--text-secondary); margin-bottom: 1rem;">You have a new blood donation request.</p>
+    <button style="background: #dc2626; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">
+        View Details
+    </button>
+</div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div class="shortcuts-modal" id="shortcutsModal">
+    <div class="shortcuts-content">
+        <h2 style="margin-bottom: 1rem; color: var(--text-primary);">Keyboard Shortcuts</h2>
+        <div class="shortcuts-grid">
+            <div class="shortcut-item">
+                <span>Toggle Dark Mode</span>
+                <span class="shortcut-key">Ctrl + D</span>
+            </div>
+            <div class="shortcut-item">
+                <span>Search</span>
+                <span class="shortcut-key">Ctrl + K</span>
+            </div>
+            <div class="shortcut-item">
+                <span>Profile</span>
+                <span class="shortcut-key">Ctrl + P</span>
+            </div>
+            <div class="shortcut-item">
+                <span>Dashboard</span>
+                <span class="shortcut-key">Ctrl + H</span>
+            </div>
+            <div class="shortcut-item">
+                <span>Donations</span>
+                <span class="shortcut-key">Ctrl + N</span>
+            </div>
+            <div class="shortcut-item">
+                <span>Help</span>
+                <span class="shortcut-key">Ctrl + ?</span>
+            </div>
+        </div>
+        <button id="closeShortcuts" style="background: #dc2626; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; margin-top: 1.5rem;">
+            Close
+        </button>
+    </div>
+</div>
+
+<script>
+// ===== DASHBOARD JAVASCRIPT =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dashboard
+    initializeDashboard();
+    
+    // Load alerts
+    loadAlerts();
+    
+    // Initialize search
+    initializeSearch();
+    
+    // Initialize keyboard shortcuts
+    initializeKeyboardShortcuts();
+    
+    // Initialize dark mode
+    initializeDarkMode();
+    
+    // Initialize PWA
+    initializePWA();
+    
+    // Initialize real-time updates
+    initializeRealTimeUpdates();
+    
+    // Initialize charts
+    initializeCharts();
+});
+
+// ===== CSRF TOKEN HELPER =====
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// ===== ALERTS LOADING =====
+async function loadAlerts() {
+    const alertsContainer = document.getElementById('alertsContainer');
+    
+    try {
+        // Show loading state
+        alertsContainer.innerHTML = `
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+        `;
+        
+        // Fetch alerts from API
+        const response = await fetch('/donor/api/alerts/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Display alerts
+            if (data.alerts.length > 0) {
+                alertsContainer.innerHTML = data.alerts.map(alert => createAlertHTML(alert)).join('');
+                
+                // Add event listeners for alert actions
+                document.querySelectorAll('.alert-btn-confirm').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        respondToAlert(this.dataset.alertId, 'confirmed');
+                    });
+                });
+                
+                document.querySelectorAll('.alert-btn-decline').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        respondToAlert(this.dataset.alertId, 'declined');
+                    });
+                });
+            } else {
+                alertsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <i class="material-icons" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">notifications_none</i>
+                        <p>No alerts at this time. You're all caught up!</p>
+                    </div>
+                `;
+            }
+        } else {
+            throw new Error(data.error);
+        }
+    } catch (error) {
+        console.error('Error loading alerts:', error);
+        alertsContainer.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <i class="material-icons" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">error</i>
+                <p>Failed to load alerts. Please refresh the page.</p>
+            </div>
+        `;
+    }
+}
+
+function createAlertHTML(alert) {
+    const alertClass = alert.type === 'urgent' ? 'alert-urgent' : alert.type === 'normal' ? 'alert-normal' : 'alert-info';
+    const statusBadge = alert.status === 'pending' ? '<span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600;">Pending</span>' : '';
+    
+    return `
+        <div class="alert-item ${alertClass}" data-alert-id="${alert.id}">
+            <div class="alert-header">
+                <div class="alert-title">${alert.title}</div>
+                <div class="alert-time">${alert.time}</div>
+            </div>
+            <div class="alert-content">${alert.content}</div>
+            <div class="alert-actions">
+                ${alert.status === 'pending' ? `
+                    <button class="alert-btn alert-btn-confirm" data-alert-id="${alert.id}">
+                        <i class="material-icons">check</i>
+                        Confirm
+                    </button>
+                    <button class="alert-btn alert-btn-decline" data-alert-id="${alert.id}">
+                        <i class="material-icons">close</i>
+                        Decline
+                    </button>
+                ` : ''}
+                <button class="alert-btn alert-btn-view" onclick="viewAlertDetails(${alert.id})">
+                    <i class="material-icons">visibility</i>
+                    View Details
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+async function respondToAlert(alertId, response) {
+    // Show loading state
+    const btn = document.querySelector(`[data-alert-id="${alertId}"]`);
+    btn.disabled = true;
+    btn.innerHTML = '<i class="material-icons">hourglass_empty</i> Processing...';
+    
+    try {
+        // Make API call
+        const response_data = await fetch(`/donor/api/alerts/${alertId}/respond/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                response: response
+            })
+        });
+        
+        const data = await response_data.json();
+        
+        if (data.success) {
+            // Update UI
+            const alertItem = document.querySelector(`.alert-item[data-alert-id="${alertId}"]`);
+            alertItem.style.opacity = '0.7';
+            
+            // Show success message
+            showNotification(data.message, 'success');
+            
+            // Remove action buttons
+            const actionsDiv = alertItem.querySelector('.alert-actions');
+            actionsDiv.innerHTML = `
+                <span style="color: var(--text-secondary); font-weight: 600;">
+                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px;">check_circle</i>
+                    ${response === 'confirmed' ? 'Confirmed' : 'Declined'}
+                </span>
+            `;
+        } else {
+            throw new Error(data.error);
+        }
+    } catch (error) {
+        console.error('Error responding to alert:', error);
+        showNotification('Failed to respond to alert. Please try again.', 'error');
+        
+        // Reset button
+        btn.disabled = false;
+        btn.innerHTML = `<i class="material-icons">${response === 'confirmed' ? 'check' : 'close'}</i> ${response === 'confirmed' ? 'Confirm' : 'Decline'}`;
+    }
+}
+
+function viewAlertDetails(alertId) {
+    // Navigate to alert details page
+    window.location.href = `/donor/alert/${alertId}/`;
+}
+
+// ===== SEARCH FUNCTIONALITY =====
+function initializeSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const suggestionsContainer = document.getElementById('searchSuggestions');
+    
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        
+        if (query.length > 2) {
+            // Simulate search suggestions
+            const suggestions = [
+                'Blood donation history',
+                'Emergency requests',
+                'Profile settings',
+                'Contact information',
+                'Donation eligibility',
+                'Blood bank locations'
+            ].filter(item => item.toLowerCase().includes(query));
+            
+            if (suggestions.length > 0) {
+                suggestionsContainer.innerHTML = suggestions.map(suggestion => 
+                    `<div class="search-suggestion" onclick="selectSuggestion('${suggestion}')">${suggestion}</div>`
+                ).join('');
+                suggestionsContainer.style.display = 'block';
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
+        } else {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+}
+
+function selectSuggestion(suggestion) {
+    document.getElementById('searchInput').value = suggestion;
+    document.getElementById('searchSuggestions').style.display = 'none';
+    // Perform search
+    performSearch(suggestion);
+}
+
+function performSearch(query) {
+    console.log('Searching for:', query);
+    // Implement search functionality
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+function initializeKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + D: Toggle dark mode
+        if (e.ctrlKey && e.key === 'd') {
+            e.preventDefault();
+            toggleDarkMode();
+        }
+        
+        // Ctrl + K: Focus search
+        if (e.ctrlKey && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('searchInput').focus();
+        }
+        
+        // Ctrl + P: Profile
+        if (e.ctrlKey && e.key === 'p') {
+            e.preventDefault();
+            window.location.href = '/donor/profile/';
+        }
+        
+        // Ctrl + H: Dashboard
+        if (e.ctrlKey && e.key === 'h') {
+            e.preventDefault();
+            window.location.href = '/donor/dashboard/';
+        }
+        
+        // Ctrl + N: Donations
+        if (e.ctrlKey && e.key === 'n') {
+            e.preventDefault();
+            window.location.href = '/donor/donations/';
+        }
+        
+        // Ctrl + ?: Help
+        if (e.ctrlKey && e.key === '?') {
+            e.preventDefault();
+            document.getElementById('shortcutsModal').style.display = 'flex';
+        }
+    });
+    
+    // Close shortcuts modal
+    document.getElementById('closeShortcuts').addEventListener('click', function() {
+        document.getElementById('shortcutsModal').style.display = 'none';
+    });
+}
+
+// ===== DARK MODE =====
+function initializeDarkMode() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+    
+    document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
+}
+
+function toggleDarkMode() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+    
+    showNotification(`${newTheme === 'dark' ? 'Dark' : 'Light'} mode enabled`, 'info');
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.getElementById('themeIcon');
+    icon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+}
+
+// ===== PWA =====
+function initializePWA() {
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install prompt
+        setTimeout(() => {
+            document.getElementById('pwaInstallPrompt').classList.add('show');
+        }, 5000);
+    });
+    
+    document.getElementById('installBtn').addEventListener('click', function() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function(choiceResult) {
+                if (choiceResult.outcome === 'accepted') {
+                    showNotification('App installed successfully!', 'success');
+                }
+                deferredPrompt = null;
+                document.getElementById('pwaInstallPrompt').classList.remove('show');
+            });
+        }
+    });
+    
+    document.getElementById('dismissBtn').addEventListener('click', function() {
+        document.getElementById('pwaInstallPrompt').classList.remove('show');
+    });
+}
+
+// ===== REAL-TIME UPDATES =====
+function initializeRealTimeUpdates() {
+    // Simulate WebSocket connection
+    setInterval(() => {
+        // Simulate receiving new alert
+        if (Math.random() > 0.8) {
+            showRealTimeNotification();
+        }
+    }, 30000); // Check every 30 seconds
+}
+
+function showRealTimeNotification() {
+    const notification = document.getElementById('realTimeNotification');
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 5000);
+}
+
+// ===== CHARTS =====
+function initializeCharts() {
+    const ctx = document.getElementById('donationChart');
+    if (ctx) {
+        // Simple chart implementation
+        const chartData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Donations',
+                data: [2, 3, 1, 4, 2, 3],
+                backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                borderColor: '#dc2626',
+                borderWidth: 2
+            }]
+        };
+        
+        // Create simple chart
+        createSimpleChart(ctx, chartData);
+    }
+}
+
+function createSimpleChart(ctx, data) {
+    // Simple chart drawing implementation
+    const canvas = ctx.getContext('2d');
+    // This would normally use a charting library like Chart.js
+    // For now, we'll create a simple representation
+    canvas.fillStyle = '#f8f9fa';
+    canvas.fillRect(0, 0, ctx.width, ctx.height);
+}
+
+// ===== NOTIFICATIONS =====
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'real-time-notification show';
+    notification.innerHTML = `
+        <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">${type.charAt(0).toUpperCase() + type.slice(1)}</h4>
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">${message}</p>
+        <button onclick="this.parentElement.remove()" style="background: #dc2626; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">
+            Dismiss
+        </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// ===== DASHBOARD INITIALIZATION =====
+function initializeDashboard() {
+    // Add animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate-in').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+}
+
+// Load more alerts
+document.getElementById('loadMoreAlerts').addEventListener('click', function() {
+    this.innerHTML = '<i class="material-icons">hourglass_empty</i> Loading...';
+    
+    setTimeout(() => {
+        // Simulate loading more alerts
+        loadAlerts();
+        this.innerHTML = '<i class="material-icons">expand_more</i> Load More Alerts';
+    }, 1000);
+});
+</script>
+{% endblock %}

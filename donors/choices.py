@@ -25,6 +25,6 @@ GENDER_CHOICES = [
 
 URGENCY_CHOICES = [
     ('critical', 'Critical — Immediate Response Required'),
-    ('urgent', 'Urgent — Within 2 Hours'),
+    ('moderate', 'Moderate — Within 2 Hours'),
     ('normal', 'Normal — Within 24 Hours'),
 ]

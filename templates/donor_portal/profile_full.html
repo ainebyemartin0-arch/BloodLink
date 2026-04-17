@@ -63,6 +63,16 @@
                         </div>
                         
                         <div style="margin-bottom: 1.5rem;">
+                            <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.25rem;">Eligibility Status</div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="padding: 0.5rem 1rem; {% if donor.is_eligible %}background: #10b981; color: white;{% else %}background: #ef4444; color: white;{% endif %} border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem;">
+                                    {% if donor.is_eligible %}Eligible{% else %}Not Eligible{% endif %}
+                                </span>
+                                <span style="color: #6b7280; font-size: 0.875rem;">Can donate blood</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
                             <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.25rem;">Gender</div>
                             <div style="font-weight: 600; color: #1a1a1a;">{{ donor.get_gender_display }}</div>
                         </div>

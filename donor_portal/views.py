@@ -239,7 +239,7 @@ def donor_dashboard(request):
         'confirmed_requests': confirmed_count,
         'last_donation_days': days_until_next,
     }
-    return render(request, 'donor_portal/dashboard_full.html', context)
+    return render(request, 'donor_portal/dashboard_complete.html', context)
 
 @donor_login_required
 def donor_profile(request):

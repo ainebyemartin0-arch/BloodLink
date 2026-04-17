@@ -1,10 +1,13 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from .views import get_logged_in_donor
+from .views import donor_login_required
 from notifications.models import SMSNotification
 from django.utils import timezone
 from datetime import timedelta
+import json
 
 @require_http_methods(["GET"])
 def urgent_alerts(request):
@@ -97,3 +100,119 @@ def toggle_availability(request):
             'success': False,
             'error': str(e)
         }, status=400)
+
+@donor_login_required
+@require_http_methods(["POST"])
+def respond_to_alert(request, alert_id):
+    """Handle donor response to SMS alerts"""
+    try:
+        donor = get_logged_in_donor(request)
+        alert = get_object_or_404(SMSNotification, id=alert_id, donor=donor)
+        
+        # Parse response data
+        data = json.loads(request.body)
+        response = data.get('response')  # 'confirmed' or 'declined'
+        
+        if response not in ['confirmed', 'declined']:
+            return JsonResponse({'success': False, 'error': 'Invalid response'}, status=400)
+        
+        # Update alert
+        alert.donor_response = response
+        alert.responded_at = timezone.now()
+        alert.save()
+        
+        # Update donor availability if confirmed
+        if response == 'confirmed':
+            donor.is_available = True
+            donor.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Alert {response} successfully',
+            'alert_id': alert_id,
+            'response': response
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@donor_login_required
+@require_http_methods(["GET"])
+def get_alerts_list(request):
+    """Get all alerts for donor"""
+    try:
+        donor = get_logged_in_donor(request)
+        
+        # Get query parameters
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        status = request.GET.get('status', 'all')  # 'all', 'pending', 'confirmed', 'declined', 'read'
+        
+        # Filter alerts
+        alerts = SMSNotification.objects.filter(donor=donor)
+        
+        if status != 'all':
+            if status == 'pending':
+                alerts = alerts.filter(donor_response='no_response', is_fulfilled=False)
+            else:
+                alerts = alerts.filter(donor_response=status)
+        
+        # Order by sent date
+        alerts = alerts.order_by('-sent_at')
+        
+        # Pagination
+        total = alerts.count()
+        start = (page - 1) * limit
+        end = start + limit
+        alerts_page = alerts[start:end]
+        
+        # Format alerts
+        alerts_data = []
+        for alert in alerts_page:
+            alert_type = 'info'
+            if alert.emergency_request and alert.emergency_request.urgency_level == 'critical':
+                alert_type = 'urgent'
+            elif alert.emergency_request and alert.emergency_request.urgency_level == 'urgent':
+                alert_type = 'normal'
+            
+            alerts_data.append({
+                'id': alert.id,
+                'type': alert_type,
+                'title': alert.emergency_request.patient_name if alert.emergency_request else 'Notification',
+                'content': alert.message,
+                'time': alert.sent_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'time_ago': get_time_ago(alert.sent_at),
+                'status': 'pending' if alert.donor_response == 'no_response' else alert.donor_response,
+                'is_fulfilled': alert.is_fulfilled,
+                'emergency_request_id': alert.emergency_request.id if alert.emergency_request else None
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'alerts': alerts_data,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'total': total,
+                'pages': (total + limit - 1) // limit
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+def get_time_ago(dt):
+    """Get human-readable time ago string"""
+    now = timezone.now()
+    diff = now - dt
+    
+    if diff.days > 0:
+        return f"{diff.days} day{'s' if diff.days > 1 else ''} ago"
+    elif diff.seconds > 3600:
+        hours = diff.seconds // 3600
+        return f"{hours} hour{'s' if hours > 1 else ''} ago"
+    elif diff.seconds > 60:
+        minutes = diff.seconds // 60
+        return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
+    else:
+        return "Just now"

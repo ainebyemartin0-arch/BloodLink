@@ -125,6 +125,9 @@ def send_emergency_sms(emergency_request):
         )
         sms_service = africastalking.SMS
         
+        # Define priority locations (within 10km radius)
+        priority_locations = ['Nsambya', 'Kabalagala', 'Namuwongo', 'Makindye', 'Kibuli']
+        
         # Find all matching available donors
         matching_donors = Donor.objects.filter(
             blood_type=emergency_request.blood_type_needed,
@@ -132,7 +135,16 @@ def send_emergency_sms(emergency_request):
             is_active=True
         )
         
+        # Separate priority and other donors
+        priority_donors = matching_donors.filter(location__in=priority_locations)
+        other_donors = matching_donors.exclude(location__in=priority_locations)
+        
+        # Combine: priority donors first, then others
+        ordered_donors = list(priority_donors) + list(other_donors)
+        
         result['total_matched'] = matching_donors.count()
+        result['priority_count'] = priority_donors.count()
+        result['other_count'] = other_donors.count()
         
         if matching_donors.count() == 0:
             print(f"No matching donors found for blood type {emergency_request.blood_type_needed}")
@@ -148,9 +160,10 @@ def send_emergency_sms(emergency_request):
             f"Thank you for saving a life! - BloodLink"
         )
         
-        print(f"Sending SMS to {matching_donors.count()} donors with blood type {emergency_request.blood_type_needed}")
+        print(f"Sending SMS to {len(ordered_donors)} donors with blood type {emergency_request.blood_type_needed}")
+        print(f"Priority donors: {result['priority_count']}, Other donors: {result['other_count']}")
         
-        for donor in matching_donors:
+        for donor in ordered_donors:
             # Create notification record first
             notification = SMSNotification.objects.create(
                 emergency_request=emergency_request,

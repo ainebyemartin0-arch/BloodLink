@@ -28,6 +28,8 @@ urlpatterns = [
     path('api/urgent-alerts/', api_views.urgent_alerts, name='api_urgent_alerts'),
     path('api/notification-stats/', api_views.notification_stats, name='api_notification_stats'),
     path('api/toggle-availability/', api_views.toggle_availability, name='api_toggle_availability'),
+    path('api/alerts/', api_views.get_alerts_list, name='api_alerts'),
+    path('api/alerts/<int:alert_id>/respond/', api_views.respond_to_alert, name='api_respond_alert'),
     
     # Test page
     path('test/', views.test_page, name='test_page'),

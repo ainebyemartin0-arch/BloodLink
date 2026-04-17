@@ -173,6 +173,60 @@
             </div>
         </div>
 
+        <!-- SMS Alerts & Response Tracking -->
+        <div>
+            <div class="pro-card mb-4">
+                <div class="pro-card-header">
+                    <h2 class="pro-card-title">Recent SMS Alerts</h2>
+                    <p class="pro-card-subtitle">Track your response to blood donation requests</p>
+                </div>
+                {% if sms_alerts %}
+                <div style="max-height: 400px; overflow-y: auto;">
+                    {% for alert in sms_alerts %}
+                    <div class="alert-item" style="padding: 1rem; border-bottom: 1px solid #e5e7eb; {% if forloop.last %}border-bottom: none;{% endif %}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 0.25rem;">
+                                    {% if alert.emergency_request %}
+                                        {{ alert.emergency_request.blood_type_needed }} Blood - {{ alert.emergency_request.get_urgency_level_display }}
+                                    {% else %}
+                                        Blood Donation Alert
+                                    {% endif %}
+                                </div>
+                                <div style="font-size: 0.875rem; color: #6b7280;">
+                                    Sent: {{ alert.sent_at|date:"M d, Y H:i" }}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; 
+                                    {% if alert.donor_response == 'confirmed' %}background: #d1fae5; color: #065f46;
+                                    {% elif alert.donor_response == 'declined' %}background: #fee2e2; color: #991b1b;
+                                    {% elif alert.donor_response == 'no_response' %}background: #fef3c7; color: #92400e;
+                                    {% else %}background: #e5e7eb; color: #6b7280;{% endif %}">
+                                    {% if alert.donor_response == 'confirmed' %}✓ Confirmed
+                                    {% elif alert.donor_response == 'declined' %}✗ Declined
+                                    {% elif alert.donor_response == 'no_response' %}⏰ No Response
+                                    {% else %}📤 Pending{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% if alert.emergency_request %}
+                        <div style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">
+                            {{ alert.emergency_request.units_needed }} unit(s) needed for {{ alert.emergency_request.patient_name|default:"Patient" }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                    <i class="material-icons" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.5;">notifications_none</i>
+                    <p>No SMS alerts received yet. You'll see alerts here when your blood type is needed.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
         <!-- Sidebar -->
         <div>
             <!-- Profile Summary -->

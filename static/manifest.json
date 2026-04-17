@@ -1,0 +1,125 @@
+{
+  "name": "BloodLink - Save Lives",
+  "short_name": "BloodLink",
+  "description": "Connecting blood donors with those in need through innovative technology and compassionate care.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#dc2626",
+  "theme_color": "#dc2626",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["health", "medical", "social"],
+  "icons": [
+    {
+      "src": "/static/images/bloodlink-icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/bloodlink-icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/bloodlink-icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/bloodlink-icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/bloodlink-icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/bloodlink-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/bloodlink-icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/static/images/bloodlink-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Request Blood",
+      "short_name": "Request",
+      "description": "Request blood for someone in need",
+      "url": "/donor/request-blood/",
+      "icons": [
+        {
+          "src": "/static/images/bloodlink-icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your donor dashboard",
+      "url": "/donor/dashboard/",
+      "icons": [
+        {
+          "src": "/static/images/bloodlink-icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Emergency",
+      "short_name": "Emergency",
+      "description": "Emergency blood request",
+      "url": "/donor/request-blood/?emergency=true",
+      "icons": [
+        {
+          "src": "/static/images/bloodlink-icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/images/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "BloodLink Desktop Dashboard"
+    },
+    {
+      "src": "/static/images/screenshot-mobile.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "BloodLink Mobile Dashboard"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
+}

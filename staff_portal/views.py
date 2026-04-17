@@ -22,6 +22,14 @@ from staff_portal.models import EmergencyRequest, DonationRecord, BloodShortageA
 from .forms import StaffLoginForm, StaffRegistrationForm, DonorForm, EmergencyRequestForm, DonationRecordForm
 from notifications.utils import send_emergency_sms
 
+def is_it_staff(user):
+    """Check if user has IT staff designation."""
+    return hasattr(user, 'designation') and user.designation == 'it_staff'
+
+def can_manage_system(user):
+    """Check if user can manage system (IT staff or superuser)."""
+    return user.is_superuser or is_it_staff(user)
+
 def redirect_root(request):
     if request.user.is_authenticated:
         return redirect('staff:dashboard')
@@ -332,6 +340,10 @@ def request_list(request):
 
 @login_required
 def request_create(request):
+    # IT staff cannot create emergency requests
+    if is_it_staff(request.user):
+        messages.error(request, 'IT staff cannot create emergency requests. Please contact clinical staff.')
+        return redirect('staff:request_list')
     if request.method == 'POST':
         form = EmergencyRequestForm(request.POST)
         if form.is_valid():
@@ -982,9 +994,9 @@ def reject_public_request(request, pk):
 
 @login_required
 def activity_log(request):
-    """View staff activity log — superuser only."""
-    if not request.user.is_superuser:
-        messages.error(request, 'Access denied. Superuser only.')
+    """View staff activity log — superuser and IT staff only."""
+    if not can_manage_system(request.user):
+        messages.error(request, 'Access denied. System administrators and IT staff only.')
         return redirect('staff:dashboard')
     
     logs = ActivityLog.objects.select_related('staff_user').all()[:200]
