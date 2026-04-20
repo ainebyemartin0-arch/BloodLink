@@ -1,0 +1,187 @@
+{% extends 'donor_portal/base_donor_enhanced.html' %}
+{% load static %}
+
+{% block title %}Test Page - BloodLink{% endblock %}
+
+{% block content %}
+<div class="test-container">
+    <div class="page-header">
+        <h1>Test Page</h1>
+        <p>Development and testing page</p>
+    </div>
+
+    <div class="test-sections">
+        <div class="test-section">
+            <h2>System Information</h2>
+            <div class="test-info">
+                <div class="info-item">
+                    <label>Django Version</label>
+                    <p>6.0.4</p>
+                </div>
+                <div class="info-item">
+                    <label>Environment</label>
+                    <p>Development</p>
+                </div>
+                <div class="info-item">
+                    <label>Debug Mode</label>
+                    <p>Enabled</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Authentication Test</h2>
+            <div class="test-info">
+                <div class="info-item">
+                    <label>Logged In Donor</label>
+                    <p>{% if request.session.donor_id %}Yes{% else %}No{% endif %}</p>
+                </div>
+                <div class="info-item">
+                    <label>Session ID</label>
+                    <p>{{ request.session.session_key|default:"No session" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Quick Links</h2>
+            <div class="test-links">
+                <a href="{% url 'donor:login' %}" class="test-link">
+                    <span class="material-symbols-outlined">login</span>
+                    Donor Login
+                </a>
+                <a href="{% url 'donor:register' %}" class="test-link">
+                    <span class="material-symbols-outlined">person_add</span>
+                    Donor Registration
+                </a>
+                <a href="{% url 'donor:dashboard' %}" class="test-link">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Donor Dashboard
+                </a>
+                <a href="{% url 'donor:google_login' %}" class="test-link">
+                    <span class="material-symbols-outlined">mail</span>
+                    Google Login Test
+                </a>
+                <a href="{% url 'donor:phone_login' %}" class="test-link">
+                    <span class="material-symbols-outlined">phone</span>
+                    Phone Login Test
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.test-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    color: #6b7280;
+}
+
+.test-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.test-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.test-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.test-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-item label {
+    font-weight: 500;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.info-item p {
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.test-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.test-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    color: #374151;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.test-link:hover {
+    background: #dc2626;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+.test-link .material-symbols-outlined {
+    font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .test-container {
+        padding: 1rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .test-info,
+    .test-links {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

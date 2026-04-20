@@ -104,10 +104,14 @@
                                 </button>
                             </div>
                             {% elif pr.status == 'approved' %}
+                            {% if pr.linked_emergency_request %}
                             <a href="{% url 'staff:request_detail' pr.linked_emergency_request.pk %}"
                                class="btn-bl-outline btn-sm">
                                 View Request
                             </a>
+                            {% else %}
+                            <span class="text-muted">No linked request</span>
+                            {% endif %}
                             {% else %}
                             <span style="font-size:0.78rem;color:var(--staff-muted);">
                                 Rejected

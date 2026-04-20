@@ -8,43 +8,72 @@
 {% endblock %}
 
 {% block topbar_actions %}
-  <a href="{% url 'staff:request_create' %}" class="btn-donor btn-donor-secondary">
+  {% if request.user.is_superuser %}
+  <a href="{% url 'staff:register_admin' %}" class="btn-staff btn-staff-warning">
+    <i class="bi bi-person-badge"></i> Add Staff
+  </a>
+  {% endif %}
+  <a href="{% url 'staff:request_create' %}" class="btn-staff btn-staff-secondary">
     <i class="bi bi-plus-lg"></i> Emergency Request
   </a>
 {% endblock %}
 
 {% block content %}
-<!-- Emergency Banner -->
+<!-- Enhanced Emergency Banner -->
 {% if open_requests %}
-<div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+<div class="emergency-banner alert-danger alert-dismissible fade show mb-4" role="alert">
   <div class="d-flex align-items-center">
-    <div class="me-3">
-      <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+    <div class="emergency-icon me-3">
+      <div class="pulse-animation">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
     </div>
     <div class="flex-grow-1">
-      <h6 class="alert-heading mb-2">
-        🚨 {{ open_requests }} Open Emergency Requests
-      </h6>
-      <span class="small">Some require immediate attention</span>
+      <div class="d-flex align-items-center mb-2">
+        <span class="emergency-badge">
+          <i class="bi bi-shield-exclamation me-1"></i>
+          CRITICAL ALERT
+        </span>
+        <span class="emergency-count">{{ open_requests }}</span>
+      </div>
+      <h6 class="alert-heading mb-1">Open Emergency Requests</h6>
+      <span class="small">Immediate attention required - Click to view details</span>
     </div>
-    <a href="{% url 'staff:request_list' %}" class="btn btn-outline-light btn-sm">
-      View All
+    <a href="{% url 'staff:request_list' %}" class="btn btn-danger btn-sm emergency-action">
+      <i class="bi bi-arrow-right me-1"></i> View All
     </a>
   </div>
 </div>
 {% endif %}
 
-<!-- Blood Shortage Alerts -->
+<!-- Enhanced Blood Shortage Alerts -->
 {% if emergency_alerts or critical_alerts %}
-<div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+<div class="blood-shortage-banner alert-danger alert-dismissible fade show mb-4" role="alert">
   <div class="d-flex align-items-center">
-    <div class="me-3">
-      <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+    <div class="shortage-icon me-3">
+      <div class="warning-pulse">
+        <i class="bi bi-droplet-fill"></i>
+      </div>
     </div>
     <div class="flex-grow-1">
-      <h6 class="alert-heading mb-2">
-        🚨 BLOOD SHORTAGE ALERTS DETECTED
-      </h6>
+      <div class="d-flex align-items-center mb-2">
+        <span class="shortage-badge">
+          <i class="bi bi-exclamation-triangle me-1"></i>
+          BLOOD SHORTAGE
+        </span>
+        <span class="shortage-severity">
+          {% if emergency_alerts %}
+            <i class="bi bi-circle-fill text-danger me-1"></i>
+            EMERGENCY
+          {% endif %}
+          {% if critical_alerts %}
+            <i class="bi bi-triangle-fill text-warning me-1"></i>
+            CRITICAL
+          {% endif %}
+        </span>
+      </div>
+      <h6 class="alert-heading mb-1">Blood Supply Shortage Detected</h6>
+      <span class="small">Immediate action required - Check blood inventory</span>
       {% if emergency_alerts %}
         <div class="mb-2">
           <strong>Emergency Shortages:</strong>
@@ -245,20 +274,20 @@
   </div>
 </div>
 
-<!-- Quick Actions Card -->
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-header bg-white border-bottom">
+<!-- Enhanced Quick Actions Card -->
+<div class="staff-card border-0 shadow-sm mb-4">
+  <div class="card-header staff-card-header">
     <div class="d-flex align-items-center justify-content-between">
       <div class="d-flex align-items-center">
-        <div class="bg-primary bg-gradient rounded-2 p-2 me-3">
-          <i class="bi bi-lightning-fill text-white"></i>
+        <div class="staff-card-icon staff-card-actions me-3">
+          <i class="bi bi-lightning-fill"></i>
         </div>
         <div>
-          <h5 class="mb-0">Quick Actions</h5>
-          <small class="text-muted">Common tasks and shortcuts</small>
+          <h5 class="mb-0">Staff Control Center</h5>
+          <small class="text-muted">Quick access to essential functions</small>
         </div>
       </div>
-      <a href="{% url 'staff:reports' %}" class="btn btn-outline-primary btn-sm">
+      <a href="{% url 'staff:reports' %}" class="btn btn-outline-primary btn-sm staff-action-btn">
         <i class="bi bi-graph-up"></i> View Reports
       </a>
     </div>
@@ -266,60 +295,87 @@
   <div class="card-body">
     <div class="row g-2">
       <div class="col-md-3 col-6">
-        <a href="{% url 'staff:request_create' %}" class="btn btn-danger w-100 mb-2">
+        <a href="{% url 'staff:request_create' %}" class="staff-quick-btn staff-quick-emergency w-100 mb-2">
           <i class="bi bi-exclamation-triangle"></i><br>
           <small>Emergency Request</small>
         </a>
       </div>
       <div class="col-md-3 col-6">
-        <a href="{% url 'staff:donor_add' %}" class="btn btn-outline-primary w-100 mb-2">
+        <a href="{% url 'staff:donor_add' %}" class="staff-quick-btn staff-quick-donor w-100 mb-2">
           <i class="bi bi-person-plus"></i><br>
           <small>Add Donor</small>
         </a>
       </div>
       <div class="col-md-3 col-6">
+        {% if request.user.is_superuser %}
+        <a href="{% url 'staff:register_admin' %}" class="staff-quick-btn staff-quick-staff w-100 mb-2">
+          <i class="bi bi-person-badge"></i><br>
+          <small>Add Staff</small>
+        </a>
+        {% else %}
         <a href="{% url 'staff:donation_create' %}" class="btn btn-success w-100 mb-2">
           <i class="bi bi-droplet-fill"></i><br>
           <small>Record Donation</small>
         </a>
+        {% endif %}
       </div>
       <div class="col-md-3 col-6">
+        {% if request.user.is_superuser %}
+        <a href="{% url 'staff:donation_create' %}" class="staff-quick-btn staff-quick-donation w-100 mb-2">
+          <i class="bi bi-droplet-fill"></i><br>
+          <small>Record Donation</small>
+        </a>
+        {% else %}
+        <a href="{% url 'notifications:list' %}" class="staff-quick-btn staff-quick-sms w-100 mb-2">
+          <i class="bi bi-chat-dots"></i><br>
+          <small>SMS Log</small>
+        </a>
+        {% endif %}
+      </div>
+      <div class="col-md-3 col-6">
+        {% if request.user.is_superuser %}
         <a href="{% url 'notifications:list' %}" class="btn btn-outline-primary w-100 mb-2">
           <i class="bi bi-chat-dots"></i><br>
           <small>SMS Log</small>
         </a>
+        {% else %}
+        <a href="{% url 'staff:blood_stock' %}" class="btn btn-info w-100 mb-2">
+          <i class="bi bi-droplet"></i><br>
+          <small>Blood Stock</small>
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>
 </div>
 
-<!-- Detailed Statistics Cards -->
+<!-- Enhanced Statistics Cards -->
 <div class="row g-3 mb-4">
   <div class="col-lg-4 col-md-6">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-header bg-white border-bottom">
+    <div class="staff-stat-card border-0 shadow-sm h-100">
+      <div class="card-header staff-stat-header">
         <div class="d-flex align-items-center">
-          <div class="bg-success bg-gradient rounded-2 p-2 me-3">
-            <i class="bi bi-chat-dots text-white"></i>
+          <div class="staff-stat-icon staff-stat-sms me-3">
+            <i class="bi bi-chat-dots"></i>
           </div>
           <div>
-            <h6 class="mb-0">SMS Statistics</h6>
-            <small class="text-muted">Message delivery status</small>
+            <h6 class="mb-0">SMS Communications</h6>
+            <small class="text-muted">Message delivery analytics</small>
           </div>
         </div>
       </div>
       <div class="card-body">
         <div class="row text-center">
           <div class="col-3">
-            <div class="fw-bold text-primary">{{ total_sms }}</div>
+            <div class="staff-stat-number text-primary">{{ total_sms }}</div>
             <small class="text-muted">Total</small>
           </div>
           <div class="col-3">
-            <div class="fw-bold text-success">{{ delivered_sms }}</div>
+            <div class="staff-stat-number text-success">{{ delivered_sms }}</div>
             <small class="text-muted">Delivered</small>
           </div>
           <div class="col-3">
-            <div class="fw-bold text-warning">{{ sent_sms }}</div>
+            <div class="staff-stat-number text-warning">{{ sent_sms }}</div>
             <small class="text-muted">Sent</small>
           </div>
           <div class="col-3">
@@ -332,30 +388,30 @@
   </div>
   
   <div class="col-lg-4 col-md-6">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-header bg-white border-bottom">
+    <div class="staff-stat-card border-0 shadow-sm h-100">
+      <div class="card-header staff-stat-header">
         <div class="d-flex align-items-center">
-          <div class="bg-info bg-gradient rounded-2 p-2 me-3">
-            <i class="bi bi-person-check text-white"></i>
+          <div class="staff-stat-icon staff-stat-responses me-3">
+            <i class="bi bi-people"></i>
           </div>
           <div>
-            <h6 class="mb-0">Donor Responses</h6>
-            <small class="text-muted">Response status breakdown</small>
+            <h6 class="mb-0">Donor Engagement</h6>
+            <small class="text-muted">Response analytics</small>
           </div>
         </div>
       </div>
       <div class="card-body">
         <div class="row text-center">
           <div class="col-4">
-            <div class="fw-bold text-success">{{ confirmed_responses }}</div>
+            <div class="staff-stat-number text-success">{{ confirmed_responses }}</div>
             <small class="text-muted">Confirmed</small>
           </div>
           <div class="col-4">
-            <div class="fw-bold text-danger">{{ declined_responses }}</div>
+            <div class="staff-stat-number text-danger">{{ declined_responses }}</div>
             <small class="text-muted">Declined</small>
           </div>
           <div class="col-4">
-            <div class="fw-bold text-secondary">{{ no_response_count }}</div>
+            <div class="staff-stat-number text-secondary">{{ no_response_count }}</div>
             <small class="text-muted">No Response</small>
           </div>
         </div>
@@ -364,26 +420,26 @@
   </div>
   
   <div class="col-lg-4 col-md-6">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-header bg-white border-bottom">
+    <div class="staff-stat-card border-0 shadow-sm h-100">
+      <div class="card-header staff-stat-header">
         <div class="d-flex align-items-center">
-          <div class="bg-danger bg-gradient rounded-2 p-2 me-3">
-            <i class="bi bi-heart-fill text-white"></i>
+          <div class="staff-stat-icon staff-stat-donations me-3">
+            <i class="bi bi-heart-fill"></i>
           </div>
           <div>
             <h6 class="mb-0">Donation Activity</h6>
-            <small class="text-muted">Blood donation statistics</small>
+            <small class="text-muted">Blood donation metrics</small>
           </div>
         </div>
       </div>
       <div class="card-body">
         <div class="row text-center">
           <div class="col-6">
-            <div class="fw-bold text-primary">{{ total_donations }}</div>
+            <div class="staff-stat-number text-primary">{{ total_donations }}</div>
             <small class="text-muted">Total Donations</small>
           </div>
           <div class="col-6">
-            <div class="fw-bold text-success">{{ donations_this_month }}</div>
+            <div class="staff-stat-number text-success">{{ donations_this_month }}</div>
             <small class="text-muted">This Month</small>
           </div>
         </div>
@@ -392,20 +448,20 @@
   </div>
 </div>
 
-<!-- Recent Requests Card -->
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-header bg-white border-bottom">
+<!-- Enhanced Recent Requests Card -->
+<div class="staff-card border-0 shadow-sm mb-4">
+  <div class="card-header staff-card-header">
     <div class="d-flex align-items-center justify-content-between">
       <div class="d-flex align-items-center">
-        <div class="bg-primary bg-gradient rounded-2 p-2 me-3">
-          <i class="bi bi-activity text-white"></i>
+        <div class="staff-card-icon staff-card-requests me-3">
+          <i class="bi bi-activity"></i>
         </div>
         <div>
-          <h5 class="mb-0">Recent Emergency Requests</h5>
-          <small class="text-muted">Latest blood donation requests</small>
+          <h5 class="mb-0">Emergency Request Queue</h5>
+          <small class="text-muted">Active blood donation requests</small>
         </div>
       </div>
-      <a href="{% url 'staff:request_list' %}" class="btn btn-outline-primary btn-sm">
+      <a href="{% url 'staff:request_list' %}" class="btn btn-outline-primary btn-sm staff-action-btn">
         <i class="bi bi-list"></i> View All
       </a>
     </div>
@@ -613,4 +669,315 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+
+<style>
+/* ===== STAFF PORTAL DISTINCTIVE STYLES ===== */
+
+/* Emergency Banner Styles */
+.emergency-banner {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(220, 53, 69, 0.3) !important;
+}
+
+.emergency-icon {
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.emergency-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+}
+
+.emergency-count {
+    background: #fff;
+    color: #dc3545;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    margin-left: 8px;
+    font-size: 0.8rem;
+}
+
+.emergency-action {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #fff !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.emergency-action:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px);
+}
+
+/* Blood Shortage Banner */
+.blood-shortage-banner {
+    background: linear-gradient(135deg, #fd7e14 0%, #e8590c 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(253, 126, 20, 0.3) !important;
+}
+
+.shortage-icon {
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+.warning-pulse {
+    animation: warningPulse 2s infinite;
+}
+
+@keyframes warningPulse {
+    0% { transform: scale(1); color: #fff; }
+    50% { transform: scale(1.1); color: #ffeaa7; }
+    100% { transform: scale(1); color: #fff; }
+}
+
+.shortage-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+}
+
+.shortage-severity {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    margin-left: 8px;
+}
+
+/* Staff Statistics Cards */
+.staff-stat-card {
+    border-radius: 16px !important;
+    border: 1px solid #e9ecef !important;
+    transition: all 0.3s ease !important;
+    background: #fff !important;
+}
+
+.staff-stat-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.staff-stat-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 1.25rem !important;
+}
+
+.staff-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+.staff-stat-sms {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.staff-stat-responses {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+.staff-stat-donations {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.staff-stat-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+/* Staff Cards */
+.staff-card {
+    border-radius: 16px !important;
+    border: 1px solid #e9ecef !important;
+    transition: all 0.3s ease !important;
+    background: #fff !important;
+}
+
+.staff-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+.staff-card-header {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 1.25rem !important;
+    color: #fff !important;
+}
+
+.staff-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.staff-card-requests {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.staff-card-actions {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.staff-action-btn {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #fff !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.staff-action-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px);
+}
+
+/* Staff Quick Action Buttons */
+.staff-quick-btn {
+    border-radius: 12px !important;
+    padding: 1rem 0.75rem !important;
+    border: none !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    text-decoration: none !important;
+    display: block !important;
+}
+
+.staff-quick-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+    text-decoration: none !important;
+}
+
+.staff-quick-btn i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.staff-quick-emergency {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+    color: #fff !important;
+}
+
+.staff-quick-donor {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    color: #fff !important;
+}
+
+.staff-quick-staff {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+    color: #212529 !important;
+}
+
+.staff-quick-donation {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+    color: #fff !important;
+}
+
+.staff-quick-sms {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    color: #fff !important;
+}
+
+/* Table Enhancements */
+.staff-card .table {
+    border-radius: 0 0 16px 16px !important;
+}
+
+.staff-card .table th {
+    background: #f8f9fa !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    font-weight: 600 !important;
+    color: #495057 !important;
+}
+
+.staff-card .table td {
+    vertical-align: middle !important;
+    border-bottom: 1px solid #f1f3f4 !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .staff-stat-icon, .staff-card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .staff-stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .staff-quick-btn {
+        padding: 0.75rem 0.5rem !important;
+    }
+    
+    .staff-quick-btn i {
+        font-size: 1.25rem;
+    }
+}
+
+/* Distinct from Donor Portal - Professional Staff Theme */
+.staff-card, .staff-stat-card {
+    background: #ffffff !important;
+    border-color: #e3e6ea !important;
+}
+
+.staff-card-header, .staff-stat-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+    color: #ffffff !important;
+}
+
+/* Professional hover effects */
+.staff-card:hover, .staff-stat-card:hover {
+    box-shadow: 0 12px 40px rgba(44, 62, 80, 0.15) !important;
+    border-color: #2c3e50 !important;
+}
+</style>
 {% endblock %}

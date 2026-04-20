@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BloodLink - Blood Donation Management System">
+    <meta name="keywords" content="blood donation, blood bank, emergency blood, save lives">
+    
+    <title>{% block title %}BloodLink - Blood Donation System{% endblock %}</title>
+    
+    <!-- Static CSS -->
+    <link rel="stylesheet" href="{% static 'css/bloodlink.css' %}">
+    <link rel="stylesheet" href="{% static 'css/material-design.css' %}">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#e53935">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <!-- VAPID Public Key for Push Notifications -->
+    <script>
+        window.VAPID_PUBLIC_KEY = "{{ VAPID_PUBLIC_KEY }}";
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center">
+                        <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
+                            <i class="material-icons text-white">bloodtype</i>
+                        </div>
+                        <span class="ml-2 text-xl font-bold text-gray-900">BloodLink</span>
+                    </a>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="/donor/" class="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium">
+                        Donor Portal
+                    </a>
+                    <a href="/staff/" class="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium">
+                        Staff Portal
+                    </a>
+                </nav>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button type="button" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700">
+                        <i class="material-icons">menu</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Messages -->
+        {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- About -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About BloodLink</h3>
+                    <p class="text-gray-300 text-sm">
+                        BloodLink is a comprehensive blood donation management system that connects donors with patients in need, 
+                        saving lives through efficient blood donation coordination.
+                    </p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/donor/" class="text-gray-300 hover:text-white">Donor Portal</a></li>
+                        <li><a href="/staff/" class="text-gray-300 hover:text-white">Staff Portal</a></li>
+                        <li><a href="/notifications/" class="text-gray-300 hover:text-white">Notifications</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li>📍 St. Francis Hospital Nsambya</li>
+                        <li>📞 +256 414 532 299</li>
+                        <li>📧 info@bloodlink.ug</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2024 BloodLink. All rights reserved. | Saving Lives Through Donation</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/bloodlink.js' %}"></script>
+    <script src="{% static 'js/material-design.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Push Notification Service Worker -->
+    {% if VAPID_PUBLIC_KEY %}
+        <script>
+            // Register service worker for push notifications
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('{% static "js/service-worker.js" %}')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+                        
+                        // Subscribe to push notifications
+                        return registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: window.VAPID_PUBLIC_KEY
+                        });
+                    })
+                    .then(subscription => {
+                        console.log('Push subscription:', subscription);
+                        // Send subscription to server
+                        fetch('/notifications/subscribe/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify(subscription)
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            }
+            
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        </script>
+    {% endif %}
+</body>
+</html>

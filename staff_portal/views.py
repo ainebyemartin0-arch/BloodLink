@@ -35,88 +35,81 @@ def redirect_root(request):
         return redirect('staff:login')
 
 def staff_login(request):
+    """
+    Clean and robust staff login view with proper error handling
+    """
     # If user is already authenticated, redirect to dashboard
     if request.user.is_authenticated:
         return redirect('staff:dashboard')
     
     if request.method == 'POST':
         form = StaffLoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            
-            # Provide user-friendly feedback
-            if not username:
-                messages.error(request, 'Please enter your username')
-                return render(request, 'staff_portal/login.html', {'form': form})
-            
-            if not password:
-                messages.error(request, 'Please enter your password')
-                return render(request, 'staff_portal/login.html', {'form': form})
-            
+        
+        # Skip form.is_valid() for AuthenticationForm and validate manually
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        
+        # Basic validation
+        if not username:
+            messages.error(request, 'Username is required.')
+            return render(request, 'staff_portal/login.html', {'form': form})
+        
+        if not password:
+            messages.error(request, 'Password is required.')
+            return render(request, 'staff_portal/login.html', {'form': form})
+        
+        # Authenticate user directly
+        try:
             user = authenticate(username=username, password=password)
+            
             if user is not None:
-                # Check if user account is approved
+                # Check if user has staff designation
+                if not hasattr(user, 'designation'):
+                    messages.error(request, 'Access denied. This login is for staff members only.')
+                    return render(request, 'staff_portal/login.html', {'form': form})
+                
+                # Check if user is approved
                 if hasattr(user, 'is_approved') and not user.is_approved:
-                    messages.warning(request, 
-                        f'Your account ({username}) is pending approval. '
-                        'Please contact the system administrator.')
+                    messages.warning(request, 'Your account is pending approval. Please contact the system administrator.')
                     return render(request, 'staff_portal/login.html', {'form': form})
                 
                 # Check if user is active
                 if not user.is_active:
-                    messages.error(request, 
-                        f'Your account ({username}) has been deactivated. '
-                        'Please contact the system administrator.')
+                    messages.error(request, 'Your account has been deactivated. Please contact the system administrator.')
                     return render(request, 'staff_portal/login.html', {'form': form})
                 
                 # Successful login
                 login(request, user)
                 
                 # Log the activity
-                log_activity(request, 'login', f'Staff login: {username}')
+                try:
+                    log_activity(request, 'login', f'Staff login: {username}')
+                except Exception as e:
+                    pass  # Silently ignore activity logging errors
                 
-                # Show success message
-                messages.success(request, 
-                    f'Welcome back, {user.get_full_name() or username}! '
-                    f'You have successfully logged in as {user.get_designation_display()}.')
+                # Success message
+                messages.success(request, f'Welcome back, {user.get_full_name() or username}!')
                 
-                print(f"LOGIN SUCCESS: Redirecting {username} to dashboard")
+                # Set session data (don't flush session after login!)
+                request.session['staff_user_id'] = user.id
+                request.session.set_expiry(86400)  # 24 hours
+                request.session.save()  # Ensure session is saved
+                
+                # Redirect to dashboard
                 return redirect('staff:dashboard')
+                
             else:
-                # Authentication failed - provide helpful guidance
-                if StaffUser.objects.filter(username=username).exists():
-                    messages.error(request, 
-                        f'Incorrect password for username "{username}". '
-                        'Please check your password and try again.')
-                else:
-                    messages.error(request, 
-                        f'Username "{username}" not found. '
-                        'Please check your username or contact the administrator.')
-        else:
-            # Form validation errors
-            error_messages = []
-            for field, errors in form.errors.items():
-                for error in errors:
-                    if field == 'username':
-                        if 'required' in error.lower():
-                            error_messages.append('Username is required')
-                        else:
-                            error_messages.append(f'Username error: {error}')
-                    elif field == 'password':
-                        if 'required' in error.lower():
-                            error_messages.append('Password is required')
-                        else:
-                            error_messages.append(f'Password error: {error}')
-                    else:
-                        error_messages.append(f'{field.title()}: {error}')
+                # Authentication failed
+                messages.error(request, 'Invalid username or password. Please check your credentials and try again.')
+                return render(request, 'staff_portal/login.html', {'form': form})
+                
+        except Exception as e:
+            messages.error(request, f'Authentication error: {str(e)}. Please try again.')
+            return render(request, 'staff_portal/login.html', {'form': form})
             
-            if error_messages:
-                messages.error(request, f"Please correct the following errors: {' | '.join(error_messages)}")
     else:
         form = StaffLoginForm()
-    
-    return render(request, 'staff_portal/login.html', {'form': form})
+        return render(request, 'staff_portal/login.html', {'form': form})
 
 def staff_logout(request):
     logout(request)
@@ -124,7 +117,6 @@ def staff_logout(request):
 
 @login_required
 def dashboard(request):
-    print(f"DASHBOARD ACCESS: User {request.user.username} accessing dashboard")
     # Donor Statistics - ACCURATE
     total_donors = Donor.objects.filter(is_active=True).count()
     available_donors = Donor.objects.filter(is_available=True, is_active=True).count()
@@ -243,11 +235,15 @@ def register_staff_public(request):
             log_activity(request, 'staff_registration_pending', 
                 f'New staff registration: {user.get_full_name()} ({user.designation}) - Pending approval')
             
-            return redirect('staff:login')
+            return redirect('staff:register-success')
     else:
         form = StaffRegistrationForm()
     
     return render(request, 'staff_portal/register_public.html', {'form': form})
+
+def register_success(request):
+    """Registration success page"""
+    return render(request, 'staff_portal/register_success.html')
 
 @login_required
 def approve_staff_list(request):
@@ -324,14 +320,47 @@ def register_staff(request):
         form = StaffRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password1'])
+            password = form.cleaned_data['password1']
+            user.set_password(password)
+            user.is_active = True  # Admin can activate immediately
+            user.is_approved = True  # Admin can approve immediately
             user.save()
-            messages.success(request, f'Staff member {user.username} has been registered successfully.')
-            return redirect('staff:dashboard')
+            
+            # Log the registration
+            log_activity(request, 'staff_registered_by_admin', 
+                f'Admin registered new staff: {user.get_full_name()} ({user.designation})',
+                user_id=user.pk)
+            
+            # Store credentials in session for display
+            request.session['new_staff_credentials'] = {
+                'username': user.username,
+                'password': password,
+                'full_name': user.get_full_name(),
+                'designation': user.get_designation_display() if hasattr(user, 'get_designation_display') else user.designation
+            }
+            
+            messages.success(request, f'Staff member {user.get_full_name()} has been registered successfully.')
+            return redirect('staff:register_staff_success')
     else:
         form = StaffRegistrationForm()
     
     return render(request, 'staff_portal/register_staff.html', {'form': form})
+
+def register_staff_success(request):
+    """Staff registration success page with credentials display"""
+    if not request.user.is_superuser:
+        messages.error(request, 'Access denied.')
+        return redirect('staff:dashboard')
+    
+    credentials = request.session.pop('new_staff_credentials', None)
+    if not credentials:
+        messages.warning(request, 'Staff credentials not found.')
+        return redirect('staff:register_admin')
+    
+    context = {
+        'credentials': credentials
+    }
+    return render(request, 'staff_portal/register_staff_success.html', context)
 
 @login_required
 def donor_list(request):
@@ -349,9 +378,19 @@ def donor_list(request):
     elif availability == 'unavailable':
         donors = donors.filter(is_available=False)
     
+    available_donors = donors.filter(is_available=True, is_active=True)
+    
+    # Calculate availability rate
+    total_donors = donors.count()
+    if total_donors > 0:
+        availability_rate = round((available_donors.count() / total_donors) * 100, 1)
+    else:
+        availability_rate = 0
+    
     context = {
         'donors': donors,
-        'available_donors': donors.filter(is_available=True, is_active=True),
+        'available_donors': available_donors,
+        'availability_rate': availability_rate,
         'blood_type': blood_type,
         'location': location,
         'availability': availability,
@@ -373,25 +412,28 @@ def donor_add(request):
                 donor.set_password(password)
                 donor.save()
                 
-                # Show detailed success message
+                # Store credentials in session for display
                 password_option = form.cleaned_data.get('password_option')
-                success_message = f"Successfully registered new donor: {donor.full_name}"
+                request.session['new_donor_credentials'] = {
+                    'full_name': donor.full_name,
+                    'email': donor.email,
+                    'phone_number': donor.phone_number,
+                    'blood_type': donor.blood_type,
+                    'password': password,
+                    'password_option': password_option,
+                    'password_display': password,
+                }
                 
+                # Format password display for staff
                 if password_option == 'auto':
-                    success_message += f". Generated password: {password}"
+                    request.session['new_donor_credentials']['password_display'] = f"{password} (Generated)"
                 elif password_option == 'phone':
-                    success_message += f". Password set to their phone number: {password}"
+                    request.session['new_donor_credentials']['password_display'] = f"{password} (Phone Number)"
                 else:
-                    success_message += " with custom password."
+                    request.session['new_donor_credentials']['password_display'] = f"{password} (Custom)"
                 
-                success_message += f" Blood type: {donor.blood_type}, Contact: {donor.phone_number}"
-                
-                messages.success(request, success_message)
-                
-                # Additional helpful information
-                messages.info(request, 
-                    f"The donor can now log in using their email ({donor.email}) and password. "
-                    f"Please inform them of their login credentials.")
+                # Show basic success message
+                messages.success(request, f"Successfully registered new donor: {donor.full_name}")
                 
                 # Log the activity
                 log_activity(
@@ -400,7 +442,7 @@ def donor_add(request):
                     donor_id=donor.pk
                 )
                 
-                return redirect('staff:donor_list')
+                return redirect('staff:donor_add_success')
                 
             except Exception as e:
                 messages.error(request, 
@@ -424,6 +466,18 @@ def donor_add(request):
         form = DonorForm()
     
     return render(request, 'staff_portal/donor_form.html', {'form': form, 'title': 'Register Donor'})
+
+def donor_add_success(request):
+    """Donor registration success page with credentials display"""
+    credentials = request.session.pop('new_donor_credentials', None)
+    if not credentials:
+        messages.warning(request, 'Donor credentials not found.')
+        return redirect('staff:donor_add')
+    
+    context = {
+        'credentials': credentials
+    }
+    return render(request, 'staff_portal/donor_add_success.html', context)
 
 @login_required
 def donor_detail(request, pk):

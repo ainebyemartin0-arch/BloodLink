@@ -1,0 +1,302 @@
+{% extends 'donor_portal/base_donor_enhanced.html' %}
+{% load static %}
+
+{% block title %}Respond to Blood Request - BloodLink{% endblock %}
+
+{% block content %}
+<div class="respond-container">
+    <div class="page-header">
+        <h1>Respond to Blood Request</h1>
+        <p>Your donation can save a life</p>
+    </div>
+
+    <div class="request-card">
+        <div class="request-header">
+            <div class="urgency-badge urgency-{{ blood_request.urgency_level|default:'normal' }}">
+                {{ blood_request.get_urgency_level_display|default:"Normal" }}
+            </div>
+            <div class="blood-type-badge">
+                {{ blood_request.blood_type_needed }}
+            </div>
+        </div>
+
+        <div class="request-details">
+            <div class="detail-section">
+                <h2>Patient Information</h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label>Patient Name</label>
+                        <p>{{ blood_request.patient_name|default:"Anonymous" }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Hospital</label>
+                        <p>{{ blood_request.hospital_name|default:"St. Francis Hospital" }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Ward</label>
+                        <p>{{ blood_request.hospital_ward|default:"Not specified" }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Blood Type Needed</label>
+                        <p>{{ blood_request.blood_type_needed }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h2>Request Details</h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label>Requested By</label>
+                        <p>{{ blood_request.requested_by.full_name }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Date Requested</label>
+                        <p>{{ blood_request.created_at|date:"F d, Y, g:i A" }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Units Needed</label>
+                        <p>{{ blood_request.units_needed|default:"1" }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Status</label>
+                        <p>{{ blood_request.get_status_display }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if blood_request.additional_notes %}
+            <div class="detail-section">
+                <h2>Additional Information</h2>
+                <div class="notes-content">
+                    <p>{{ blood_request.additional_notes }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="post" class="response-form">
+            {% csrf_token %}
+            <div class="response-actions">
+                <h3>Will you donate?</h3>
+                <div class="action-buttons">
+                    <button type="submit" name="response" value="accept" class="btn btn-success">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        Yes, I will donate
+                    </button>
+                    <button type="submit" name="response" value="decline" class="btn btn-danger">
+                        <span class="material-symbols-outlined">cancel</span>
+                        No, I cannot donate
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.respond-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    color: #6b7280;
+}
+
+.request-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.urgency-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.urgency-critical {
+    background: #dc2626;
+    color: white;
+}
+
+.urgency-urgent {
+    background: #f59e0b;
+    color: white;
+}
+
+.urgency-normal {
+    background: #10b981;
+    color: white;
+}
+
+.blood-type-badge {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.detail-section {
+    margin-bottom: 2rem;
+}
+
+.detail-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-item label {
+    font-weight: 500;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.detail-item p {
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.notes-content {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 4px solid #dc2626;
+}
+
+.notes-content p {
+    color: #374151;
+    line-height: 1.6;
+}
+
+.response-form {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #f3f4f6;
+}
+
+.response-actions h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+@media (max-width: 768px) {
+    .respond-container {
+        padding: 1rem;
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .request-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

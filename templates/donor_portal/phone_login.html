@@ -1,0 +1,417 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Login - BloodLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            max-width: 450px;
+            width: 100%;
+            margin: 2rem;
+            overflow: hidden;
+        }
+
+        .phone-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .phone-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .phone-icon .material-symbols-outlined {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .phone-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .phone-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 2rem;
+        }
+
+        .form-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            background: white;
+        }
+
+        .btn-phone {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-phone:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-phone:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .verification-info {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .verification-info .material-symbols-outlined {
+            color: #10b981;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .verification-text {
+            color: #065f46;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .code-display {
+            background: white;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #10b981;
+            letter-spacing: 0.25rem;
+            margin: 0.5rem 0;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .links a {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 0.5rem;
+        }
+
+        .links a:hover {
+            color: #10b981;
+            text-decoration: underline;
+        }
+
+        .error-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .error-list li {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #dc2626;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #065f46;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+        }
+
+        @media (max-width: 640px) {
+            .login-container {
+                margin: 1rem;
+                border-radius: 16px;
+            }
+            
+            .phone-header {
+                padding: 1.5rem;
+            }
+            
+            .form-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="phone-header">
+            <div class="phone-icon">
+                <span class="material-symbols-outlined">phone</span>
+            </div>
+            <div class="phone-title">Phone Login</div>
+            <div class="phone-subtitle">Login with your phone number</div>
+        </div>
+        
+        <div class="form-container">
+            <h2 class="form-title">Enter Your Phone Number</h2>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            {% if form.non_field_errors %}
+                <ul class="error-list">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            
+            <form method="post" id="phoneLoginForm">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number *</label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <ul class="error-list">
+                            {% for error in form.phone_number.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group" id="verificationGroup" style="display: none;">
+                    <label for="{{ form.verification_code.id_for_label }}" class="form-label">Verification Code *</label>
+                    {{ form.verification_code }}
+                    {% if form.verification_code.errors %}
+                        <ul class="error-list">
+                            {% for error in form.verification_code.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="btn-phone" id="submitBtn">
+                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">send</span>
+                    <span id="btnText">Send Verification Code</span>
+                </button>
+            </form>
+            
+            <div class="verification-info" id="verificationInfo" style="display: none;">
+                <span class="material-symbols-outlined">verified</span>
+                <div class="verification-text">Verification code sent!</div>
+                <div class="code-display" id="codeDisplay">------</div>
+                <div class="verification-text">Enter the code above to complete login</div>
+            </div>
+            
+            <div class="links">
+                <a href="{% url 'donor:login' %}">
+                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">email</span>
+                    Email Login
+                </a>
+                <a href="{% url 'donor:phone_register' %}">
+                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">person_add</span>
+                    Register
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('phoneLoginForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const verificationGroup = document.getElementById('verificationGroup');
+        const verificationInfo = document.getElementById('verificationInfo');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const phoneInput = document.querySelector('#{{ form.phone_number.id_for_label }}');
+        
+        let verificationSent = false;
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const phone = formData.get('phone_number');
+            const code = formData.get('verification_code');
+            
+            if (!verificationSent) {
+                // Send verification code
+                submitBtn.disabled = true;
+                btnText.textContent = 'Sending...';
+                
+                fetch('{% url "donor:phone_login" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        verificationSent = true;
+                        verificationGroup.style.display = 'block';
+                        verificationInfo.style.display = 'block';
+                        
+                        if (data.code) {
+                            codeDisplay.textContent = data.code;
+                        }
+                        
+                        btnText.textContent = 'Verify & Login';
+                        submitBtn.disabled = false;
+                        
+                        // Focus on verification code input
+                        document.querySelector('#{{ form.verification_code.id_for_label }}').focus();
+                    } else {
+                        alert(data.message || 'Error sending verification code');
+                        btnText.textContent = 'Send Verification Code';
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error sending verification code');
+                    btnText.textContent = 'Send Verification Code';
+                    submitBtn.disabled = false;
+                });
+            } else {
+                // Verify code and login
+                submitBtn.disabled = true;
+                btnText.textContent = 'Verifying...';
+                
+                fetch('{% url "donor:phone_login" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirect;
+                    } else {
+                        alert(data.message || 'Invalid verification code');
+                        btnText.textContent = 'Verify & Login';
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error verifying code');
+                    btnText.textContent = 'Verify & Login';
+                    submitBtn.disabled = false;
+                });
+            }
+        });
+    });
+    </script>
+</body>
+</html>

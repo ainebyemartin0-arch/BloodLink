@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from donors.models import Donor
 from donors.choices import BLOOD_TYPE_CHOICES, LOCATION_CHOICES, GENDER_CHOICES
+import random
+import string
 
 class DonorRegistrationForm(forms.Form):
     full_name = forms.CharField(
@@ -185,7 +187,107 @@ class PublicBloodRequestForm(forms.Form):
         required=False,
         widget=forms.Textarea(attrs={
             'class': 'bl-input bl-textarea',
-            'placeholder': 'Any additional information...',
-            'rows': 3
+            'placeholder': 'Additional medical information (optional)'
         })
     )
+
+
+# ===== GOOGLE AND PHONE AUTHENTICATION FORMS =====
+
+class GoogleLoginForm(forms.Form):
+    """Form for Google OAuth login."""
+    google_id = forms.CharField(widget=forms.HiddenInput())
+    email = forms.EmailField(widget=forms.HiddenInput())
+    name = forms.CharField(widget=forms.HiddenInput())
+    picture_url = forms.URLField(widget=forms.HiddenInput(), required=False)
+
+
+class PhoneLoginForm(forms.Form):
+    """Form for phone number login."""
+    phone_number = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '07xxxxxxxx or +2567xxxxxxxx'
+        })
+    )
+    verification_code = forms.CharField(
+        max_length=6,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter 6-digit code'
+        }),
+        required=False
+    )
+
+
+class PhoneRegistrationForm(forms.Form):
+    """Form for phone registration."""
+    full_name = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your full name'})
+    )
+    phone_number = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '07xxxxxxxx or +2567xxxxxxxx'})
+    )
+    gender = forms.ChoiceField(
+        choices=GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    date_of_birth = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+    )
+    blood_type = forms.CharField(
+        max_length=3,
+        widget=forms.Select(attrs={'class': 'form-control'}, choices=BLOOD_TYPE_CHOICES)
+    )
+    location = forms.CharField(
+        max_length=100,
+        widget=forms.Select(attrs={'class': 'form-control'}, choices=LOCATION_CHOICES)
+    )
+    physical_address = forms.CharField(
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Physical address (optional)'})
+    )
+    
+    def generate_verification_code(self):
+        """Generate a 6-digit verification code."""
+        return ''.join(random.choices(string.digits, k=6))
+
+
+class GoogleRegistrationForm(forms.Form):
+    """Form for Google registration completion."""
+    phone_number = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '07xxxxxxxx or +2567xxxxxxxx'
+        })
+    )
+    gender = forms.ChoiceField(
+        choices=GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    date_of_birth = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+    )
+    blood_type = forms.CharField(
+        max_length=3,
+        widget=forms.Select(attrs={'class': 'form-control'}, choices=BLOOD_TYPE_CHOICES)
+    )
+    location = forms.CharField(
+        max_length=100,
+        widget=forms.Select(attrs={'class': 'form-control'}, choices=LOCATION_CHOICES)
+    )
+    physical_address = forms.CharField(
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Physical address (optional)'})
+    )
+    
+    google_id = forms.CharField(widget=forms.HiddenInput())
+    email = forms.EmailField(widget=forms.HiddenInput())
+    name = forms.CharField(widget=forms.HiddenInput())
+    picture_url = forms.URLField(widget=forms.HiddenInput(), required=False)

@@ -9,13 +9,25 @@ class Donor(models.Model):
     full_name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, unique=True)
-    password_hash = models.CharField(max_length=255)  # Hashed password for donor portal login
+    password_hash = models.CharField(max_length=255, blank=True, null=True)  # Hashed password for donor portal login
+    google_id = models.CharField(max_length=255, blank=True, null=True, unique=True)  # Google OAuth ID
+    phone_verified = models.BooleanField(default=False)  # Phone verification status
+    auth_method = models.CharField(
+        max_length=20,
+        choices=[
+            ('email', 'Email'),
+            ('google', 'Google'),
+            ('phone', 'Phone'),
+        ],
+        default='email'
+    )
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='Other')
     date_of_birth = models.DateField()
     blood_type = models.CharField(max_length=3, choices=BLOOD_TYPE_CHOICES)
     location = models.CharField(max_length=100, choices=LOCATION_CHOICES, default='Other')
     physical_address = models.CharField(max_length=200, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    google_profile_picture = models.URLField(blank=True, null=True)  # Google profile picture URL
     is_available = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     last_donation_date = models.DateField(null=True, blank=True)
@@ -33,7 +45,48 @@ class Donor(models.Model):
         """Get profile picture URL or return default avatar."""
         if self.profile_picture:
             return self.profile_picture.url
+        elif self.google_profile_picture:
+            return self.google_profile_picture
         return 'https://ui-avatars.com/api/?name=' + self.full_name.replace(' ', '+') + '&background=dc2626&color=fff&size=200'
+    
+    @classmethod
+    def get_by_google_id(cls, google_id):
+        """Get donor by Google OAuth ID."""
+        try:
+            return cls.objects.get(google_id=google_id, is_active=True)
+        except cls.DoesNotExist:
+            return None
+    
+    @classmethod
+    def get_by_phone_number(cls, phone_number):
+        """Get donor by phone number."""
+        try:
+            return cls.objects.get(phone_number=phone_number, is_active=True)
+        except cls.DoesNotExist:
+            return None
+    
+    def authenticate_with_google(self, google_id, email=None, name=None, picture_url=None):
+        """Authenticate or create donor using Google OAuth."""
+        if self.google_id == google_id:
+            return True
+        
+        # Update existing donor with Google info
+        self.google_id = google_id
+        if email and not self.email:
+            self.email = email
+        if name and not self.full_name:
+            self.full_name = name
+        if picture_url and not self.profile_picture:
+            self.google_profile_picture = picture_url
+        self.auth_method = 'google'
+        self.save()
+        return True
+    
+    def authenticate_with_phone(self, phone_number):
+        """Authenticate donor using phone number."""
+        if self.phone_number == phone_number and self.phone_verified:
+            return True
+        return False
     
     @property
     def is_eligible(self):

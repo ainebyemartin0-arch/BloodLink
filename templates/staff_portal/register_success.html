@@ -1,0 +1,132 @@
+{% extends 'base_staff_modern.html' %}
+{% load static %}
+
+{% block title %}Registration Successful - BloodLink{% endblock %}
+
+{% block auth_content %}
+<div class="container-fluid vh-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5 text-center">
+                    <!-- Success Icon -->
+                    <div class="mb-4">
+                        <div class="rounded-circle bg-success bg-gradient text-white mx-auto d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                            <i class="bi bi-check-lg fs-1"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Success Message -->
+                    <h2 class="text-success mb-3">Registration Successful!</h2>
+                    <p class="text-muted mb-4">
+                        Your staff registration has been submitted successfully and is now pending approval.
+                    </p>
+                    
+                    <!-- Next Steps -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-info-circle me-2"></i>
+                            What Happens Next?
+                        </h5>
+                        <ul class="mb-0">
+                            <li><strong>Review Process:</strong> Your registration will be reviewed by system administrators.</li>
+                            <li><strong>Approval Notification:</strong> You will receive an email once your account is approved.</li>
+                            <li><strong>Login Access:</strong> After approval, you can login using your credentials.</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'staff:login' %}" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Go to Login
+                        </a>
+                        <a href="{% url 'staff:register' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Register Another Account
+                        </a>
+                    </div>
+                    
+                    <!-- Help Information -->
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            <i class="bi bi-question-circle me-1"></i>
+                            Need help? Contact your system administrator.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.shadow-lg {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.border-0 {
+    border: none;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.alert-info {
+    background: rgba(23, 162, 184, 0.1);
+    border: 1px solid rgba(23, 162, 184, 0.3);
+}
+
+.alert-heading {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+}
+
+.btn-outline-secondary {
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.d-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .d-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

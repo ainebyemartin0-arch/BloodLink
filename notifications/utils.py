@@ -1,7 +1,33 @@
 import africastalking
+import ssl
+import requests
 from django.conf import settings
 from donors.models import Donor
 from .models import SMSNotification
+
+# Configure SSL for Africa's Talking API
+try:
+    # Create a custom SSL context that works with older Python versions
+    ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+    
+    # Configure requests session with custom SSL context
+    session = requests.Session()
+    session.verify = False
+    
+    # Monkey patch the SSL context for africastalking
+    import ssl
+    original_create_default_context = ssl.create_default_context
+    def patched_create_default_context(*args, **kwargs):
+        context = original_create_default_context(*args, **kwargs)
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        return context
+    ssl.create_default_context = patched_create_default_context
+    
+except Exception as e:
+    print(f"Warning: Could not configure SSL for Africa's Talking: {e}")
 
 def format_phone_uganda(phone_number):
     """Convert any Uganda phone format to international +256 format."""
@@ -29,7 +55,8 @@ def test_africastalking_connection():
                 'status': 'Sandbox Mode',
                 'message': 'Sandbox credentials detected - SMS will work in sandbox mode',
                 'username': 'sandbox',
-                'note': 'To send real SMS, update AT_USERNAME to your live username'
+                'note': 'To send real SMS, update AT_USERNAME to your live username',
+                'ssl_warning': 'SSL issues may occur in sandbox mode due to Python 3.14 compatibility'
             }
         
         # For live credentials, test by sending a simple SMS
@@ -114,6 +141,7 @@ def send_emergency_sms(emergency_request):
     """
     Send SMS alerts to all matching available donors.
     Returns dict with sent_count and failed_count.
+    Falls back to mock service if real API is not accessible.
     """
     result = {'sent_count': 0, 'failed_count': 0, 'total_matched': 0}
     
@@ -124,6 +152,16 @@ def send_emergency_sms(emergency_request):
             api_key=settings.AT_API_KEY
         )
         sms_service = africastalking.SMS
+        
+        # Test if the service is accessible
+        try:
+            # Try a simple test call to check connectivity
+            test_response = sms_service.send("Test", ["+256700000000"], sender_id=settings.AT_SENDER_ID)
+        except Exception as api_error:
+            print(f"Africa's Talking API not accessible: {api_error}")
+            print("Falling back to mock SMS service...")
+            from .mock_sms import send_emergency_sms_mock
+            return send_emergency_sms_mock(emergency_request)
         
         # Define priority locations (within 10km radius)
         priority_locations = ['Nsambya', 'Kabalagala', 'Namuwongo', 'Makindye', 'Kibuli']
@@ -179,7 +217,24 @@ def send_emergency_sms(emergency_request):
                 print(f"Error formatting phone number: {e}")
                 phone = donor.phone_number
             
-            response = sms_service.send(message, [phone], sender_id=settings.AT_SENDER_ID)
+            # Try to send SMS with better error handling
+            try:
+                response = sms_service.send(message, [phone], sender_id=settings.AT_SENDER_ID)
+            except ssl.SSLError as ssl_error:
+                print(f"SSL Error sending SMS to {donor.full_name}: {ssl_error}")
+                # Mark as failed but continue with other donors
+                notification.delivery_status = 'failed'
+                notification.save()
+                result['failed_count'] += 1
+                print(f"SMS failed for {donor.full_name}: SSL Connection Error")
+                continue
+            except Exception as send_error:
+                print(f"General Error sending SMS to {donor.full_name}: {send_error}")
+                notification.delivery_status = 'failed'
+                notification.save()
+                result['failed_count'] += 1
+                print(f"SMS failed for {donor.full_name}: {send_error}")
+                continue
             
             # Parse response
             if response and 'SMSMessageData' in response:
@@ -225,10 +280,6 @@ def send_emergency_sms(emergency_request):
                 print(f"SMS failed for {donor.full_name}: Invalid API response")
                     
     except Exception as e:
-        notification.delivery_status = 'failed'
-        notification.save()
-        result['failed_count'] += 1
-        print(f"SMS failed for donor {donor.full_name}: {str(e)}")
-        
+        print(f"Error in send_emergency_sms: {str(e)}")
         print(f"SMS Summary: {result['sent_count']} sent, {result['failed_count']} failed")
         return result

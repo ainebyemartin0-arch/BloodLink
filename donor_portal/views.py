@@ -14,7 +14,10 @@ from donors.models import Donor
 from donors.choices import BLOOD_TYPE_CHOICES
 from notifications.models import SMSNotification
 from staff_portal.models import PublicBloodRequest, DonationRecord
-from .forms import DonorRegistrationForm, DonorLoginForm, DonorProfileEditForm, DonorChangePasswordForm, PublicBloodRequestForm
+from .forms import (
+    DonorRegistrationForm, DonorLoginForm, DonorProfileEditForm, DonorChangePasswordForm, PublicBloodRequestForm,
+    GoogleLoginForm, PhoneLoginForm, PhoneRegistrationForm, GoogleRegistrationForm
+)
 
 def get_logged_in_donor(request):
     donor_id = request.session.get('donor_id')
@@ -46,70 +49,18 @@ def donor_home(request):
     }
     return render(request, 'donor_portal/home_enhanced.html', context)
 
-
 def contact(request):
-    """Contact page for donor portal"""
-    return render(request, 'donor_portal/contact.html')
-
-def faq(request):
-    """FAQ page for donor portal"""
-    return render(request, 'donor_portal/faq.html')
-
-def privacy(request):
-    """Privacy policy page for donor portal"""
-    return render(request, 'donor_portal/privacy.html')
-
-def terms(request):
-    """Terms of service page for donor portal"""
-    return render(request, 'donor_portal/terms.html')
-
-def contact_submit(request):
-    """Handle contact form submissions"""
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        email = request.POST.get('email', '').strip()
-        subject = request.POST.get('subject', '').strip()
-        message = request.POST.get('message', '').strip()
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        subject = request.POST.get('subject', '')
+        message = request.POST.get('message', '')
         
-        # Basic validation
-        if not name or not email or not subject or not message:
-            messages.error(request, 'Please fill in all required fields.')
-            return redirect('donor:contact')
-        
-        if '@' not in email or '.' not in email:
-            messages.error(request, 'Please enter a valid email address.')
-            return redirect('donor:contact')
-        
-        # In a real implementation, you would send an email here
-        # For now, we'll just show a success message
-        messages.success(request, f'Thank you {name}! Your message has been received. We will get back to you at {email} soon.')
+        # Here you would typically send an email
+        messages.success(request, 'Your message has been sent successfully!')
         return redirect('donor:contact')
     
-    return redirect('donor:contact')
-
-def test_page(request):
-    """Simple test page to debug issues"""
-    total_donors = Donor.objects.filter(is_active=True).count()
-    
-    context = {
-        'total_donors': total_donors,
-    }
-    return render(request, 'donor_portal/test_page.html', context)
-
-def password_reset(request):
-    """Password reset page for donor portal"""
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        try:
-            donor = Donor.objects.get(email=email)
-            # In a real implementation, you would send a password reset email
-            # For now, we'll just show a success message
-            messages.success(request, 'Password reset instructions have been sent to your email.')
-            return redirect('donor:login')
-        except Donor.DoesNotExist:
-            messages.error(request, 'No donor found with this email address.')
-    
-    return render(request, 'donor_portal/password_reset.html')
+    return render(request, 'donor_portal/contact.html')
 
 def about_bloodlink(request):
     """About BloodLink page with detailed information"""
@@ -178,438 +129,463 @@ def donor_logout(request):
         messages.success(request, "You have been logged out safely.")
     return redirect('donor:login')
 
-@donor_login_required
-def donor_dashboard(request):
-    donor = get_logged_in_donor(request)
-    
-    # Get SMS alerts with more detail (exclude fulfilled notifications)
-    sms_alerts = donor.sms_notifications.select_related('emergency_request').filter(is_fulfilled=False).order_by('-sent_at')[:5]
-    total_alerts = donor.sms_notifications.count()
-    confirmed_count = donor.sms_notifications.filter(donor_response='confirmed').count()
-    declined_count = donor.sms_notifications.filter(donor_response='declined').count()
-    pending_response = donor.sms_notifications.filter(donor_response='no_response').count()
-    donation_count = donor.donation_records.count()
-    recent_donations = donor.donation_records.order_by('-donation_date')[:3]
-    
-    # Check for urgent requests
-    urgent_requests = PublicBloodRequest.objects.filter(
-        blood_type_needed=donor.blood_type,
-        status='pending'
-    ).order_by('-submitted_at')[:3]
-    
-    # Calculate stats
-    total_donations = donor.donation_records.count()
-    lives_saved = total_donations * 3  # Each donation saves up to 3 lives
-    points = total_donations * 10  # Calculate points based on donation count (10 points per donation)
-    
-    # Calculate days until next donation (56 days between donations)
-    from django.utils import timezone
-    last_donation = donor.donation_records.order_by('-donation_date').first()
-    if last_donation:
-        days_since_last = (timezone.now().date() - last_donation.donation_date).days
-        days_until_next = max(0, 56 - days_since_last)
-    else:
-        days_until_next = 0
-    
-    # Check for unread alerts (no response and not fulfilled) and mark as viewed
-    unread_alerts = donor.sms_notifications.filter(donor_response='no_response', is_fulfilled=False).order_by('-sent_at')
-    
-    # Mark alerts as viewed when donor accesses dashboard
-    donor.sms_notifications.filter(last_viewed_at__isnull=True).update(
-        last_viewed_at=timezone.now(),
-        view_count=F('view_count') + 1
-    )
-    
-    context = {
-        'donor': donor,
-        'sms_alerts': sms_alerts,
-        'total_alerts': total_alerts,
-        'confirmed_count': confirmed_count,
-        'declined_count': declined_count,
-        'pending_response': pending_response,
-        'donation_count': donation_count,
-        'recent_donations': recent_donations,
-        'unread_alerts': unread_alerts,
-        'urgent_requests': urgent_requests,
-        'total_donations': total_donations,
-        'lives_saved': lives_saved,
-        'points': points,
-        'days_until_next': days_until_next,
-        'pending_requests': pending_response,
-        'confirmed_requests': confirmed_count,
-        'last_donation_days': days_until_next,
-    }
-    return render(request, 'donor_portal/dashboard_complete.html', context)
 
-@donor_login_required
-def donor_profile(request):
-    donor = get_logged_in_donor(request)
-    
-    # Get recent donations
-    recent_donations = donor.donation_records.order_by('-donation_date')[:5]
-    
-    # Calculate stats
-    total_donations = donor.donation_records.count()
-    lives_saved = total_donations * 3  # Each donation saves up to 3 lives
-    
-    # Get recent requests
-    from django.utils import timezone
-    recent_requests = donor.sms_notifications.select_related('emergency_request').order_by('-sent_at')[:3]
-    
-    context = {
-        'donor': donor,
-        'recent_donations': recent_donations,
-        'total_donations': total_donations,
-        'lives_saved': lives_saved,
-        'recent_requests': recent_requests,
-    }
-    return render(request, 'donor_portal/profile_full.html', context)
+# ===== GOOGLE AND PHONE AUTHENTICATION VIEWS =====
 
-@donor_login_required
-def donor_profile_edit(request):
-    donor = get_logged_in_donor(request)
+def google_login(request):
+    """Handle Google OAuth login."""
+    if get_logged_in_donor(request):
+        return redirect('donor:dashboard')
     
     if request.method == 'POST':
-        form = DonorProfileEditForm(request.POST, instance=donor)
+        form = GoogleLoginForm(request.POST)
+        if form.is_valid():
+            google_id = form.cleaned_data['google_id']
+            email = form.cleaned_data['email']
+            name = form.cleaned_data['name']
+            picture_url = form.cleaned_data.get('picture_url')
+            
+            # Try to find existing donor by Google ID
+            donor = Donor.get_by_google_id(google_id)
+            
+            if donor:
+                # Existing Google user - login
+                request.session['donor_id'] = donor.pk
+                messages.success(request, f"Welcome back, {donor.full_name}!")
+                return JsonResponse({'success': True, 'redirect': reverse('donor:dashboard')})
+            else:
+                # Check if donor exists with this email
+                try:
+                    donor = Donor.objects.get(email=email, is_active=True)
+                    # Link Google account to existing donor
+                    donor.authenticate_with_google(google_id, email, name, picture_url)
+                    request.session['donor_id'] = donor.pk
+                    messages.success(request, f"Google account linked successfully! Welcome back, {donor.full_name}!")
+                    return JsonResponse({'success': True, 'redirect': reverse('donor:dashboard')})
+                except Donor.DoesNotExist:
+                    # New user - need to complete registration
+                    request.session['google_data'] = {
+                        'google_id': google_id,
+                        'email': email,
+                        'name': name,
+                        'picture_url': picture_url
+                    }
+                    return JsonResponse({
+                        'success': True, 
+                        'redirect': reverse('donor:google_register'),
+                        'message': 'Please complete your registration'
+                    })
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid Google data'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
+def google_register(request):
+    """Complete registration for Google users."""
+    if get_logged_in_donor(request):
+        return redirect('donor:dashboard')
+    
+    google_data = request.session.get('google_data')
+    if not google_data:
+        messages.error(request, 'Google session expired. Please try again.')
+        return redirect('donor:login')
+    
+    if request.method == 'POST':
+        form = GoogleRegistrationForm(request.POST)
+        if form.is_valid():
+            # Create new donor with Google data
+            donor = Donor(
+                full_name=google_data['name'],
+                email=google_data['email'],
+                phone_number=form.cleaned_data['phone_number'],
+                gender=form.cleaned_data['gender'],
+                date_of_birth=form.cleaned_data['date_of_birth'],
+                blood_type=form.cleaned_data['blood_type'],
+                location=form.cleaned_data['location'],
+                physical_address=form.cleaned_data['physical_address'],
+                google_id=google_data['google_id'],
+                google_profile_picture=google_data.get('picture_url'),
+                auth_method='google',
+                is_available=True,
+                is_active=True,
+                date_registered=timezone.now()
+            )
+            donor.save()
+            
+            # Clear session data
+            request.session.pop('google_data', None)
+            request.session['donor_id'] = donor.pk
+            
+            messages.success(request, f"Welcome {donor.full_name}! Your Google account has been registered successfully.")
+            return redirect('donor:dashboard')
+    else:
+        # Pre-fill form with available data
+        initial_data = {
+            'google_id': google_data['google_id'],
+            'email': google_data['email'],
+            'name': google_data['name'],
+            'picture_url': google_data.get('picture_url')
+        }
+        form = GoogleRegistrationForm(initial=initial_data)
+    
+    return render(request, 'donor_portal/google_register.html', {
+        'form': form,
+        'google_data': google_data
+    })
+
+
+def phone_login(request):
+    """Handle phone number login."""
+    if get_logged_in_donor(request):
+        return redirect('donor:dashboard')
+    
+    if request.method == 'POST':
+        form = PhoneLoginForm(request.POST)
+        if form.is_valid():
+            phone_number = form.cleaned_data['phone_number']
+            verification_code = form.cleaned_data.get('verification_code')
+            
+            donor = Donor.get_by_phone_number(phone_number)
+            
+            if not donor:
+                return JsonResponse({'success': False, 'message': 'Phone number not registered'})
+            
+            if verification_code:
+                # Verify code and login
+                if verification_code == request.session.get('phone_verification_code'):
+                    # Mark phone as verified
+                    donor.phone_verified = True
+                    donor.save()
+                    
+                    # Clear verification code
+                    request.session.pop('phone_verification_code', None)
+                    
+                    # Login
+                    request.session['donor_id'] = donor.pk
+                    messages.success(request, f"Welcome back, {donor.full_name}!")
+                    return JsonResponse({'success': True, 'redirect': reverse('donor:dashboard')})
+                else:
+                    return JsonResponse({'success': False, 'message': 'Invalid verification code'})
+            else:
+                # Send verification code
+                if donor.phone_verified:
+                    # Already verified - login directly
+                    request.session['donor_id'] = donor.pk
+                    messages.success(request, f"Welcome back, {donor.full_name}!")
+                    return JsonResponse({'success': True, 'redirect': reverse('donor:dashboard')})
+                else:
+                    # Generate and send verification code
+                    form_instance = PhoneRegistrationForm()
+                    code = form_instance.generate_verification_code()
+                    request.session['phone_verification_code'] = code
+                    request.session['phone_verification_phone'] = phone_number
+                    
+                    # TODO: Send SMS with verification code
+                    # For now, just return the code for testing
+                    return JsonResponse({
+                        'success': True, 
+                        'message': f'Verification code sent to {phone_number}',
+                        'code': code  # Remove this in production
+                    })
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid phone number'})
+    
+    form = PhoneLoginForm()
+    return render(request, 'donor_portal/phone_login.html', {'form': form})
+
+
+def phone_register(request):
+    """Handle phone number registration."""
+    if get_logged_in_donor(request):
+        return redirect('donor:dashboard')
+    
+    if request.method == 'POST':
+        form = PhoneRegistrationForm(request.POST)
+        if form.is_valid():
+            # Create new donor
+            donor = Donor(
+                full_name=form.cleaned_data['full_name'],
+                phone_number=form.cleaned_data['phone_number'],
+                gender=form.cleaned_data['gender'],
+                date_of_birth=form.cleaned_data['date_of_birth'],
+                blood_type=form.cleaned_data['blood_type'],
+                location=form.cleaned_data['location'],
+                physical_address=form.cleaned_data['physical_address'],
+                auth_method='phone',
+                phone_verified=False,  # Will be verified during login
+                is_available=True,
+                is_active=True,
+                date_registered=timezone.now()
+            )
+            donor.save()
+            
+            messages.success(request, f"Registration successful! You can now login with your phone number.")
+            return redirect('donor:phone_login')
+    else:
+        form = PhoneRegistrationForm()
+    
+    return render(request, 'donor_portal/phone_register.html', {'form': form})
+
+
+# ===== ADDITIONAL REQUIRED VIEWS =====
+
+def donor_dashboard(request):
+    """Donor dashboard view."""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
+    
+    context = {
+        'donor': donor,
+    }
+    return render(request, 'donor_portal/dashboard.html', context)
+
+def donor_profile(request):
+    """Donor profile view."""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
+    
+    context = {
+        'donor': donor,
+    }
+    return render(request, 'donor_portal/profile.html', context)
+
+def donor_profile_edit(request):
+    """Donor profile edit view."""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
+    
+    if request.method == 'POST':
+        form = DonorProfileEditForm(request.POST, request.FILES, instance=donor)
         if form.is_valid():
             form.save()
-            messages.success(request, "Your profile has been updated successfully.")
+            messages.success(request, 'Profile updated successfully!')
             return redirect('donor:profile')
     else:
         form = DonorProfileEditForm(instance=donor)
     
     return render(request, 'donor_portal/profile_edit.html', {'form': form})
 
-@donor_login_required
 def donor_donations(request):
+    """Donor donations view."""
     donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
     
-    all_donations = donor.donation_records.order_by('-donation_date')
-    all_alerts = donor.sms_notifications.order_by('-sent_at')
-    
-    # Calculate stats
-    total_donations = all_donations.count()
-    lives_saved = total_donations * 3  # Each donation saves up to 3 lives
-    total_units = all_donations.aggregate(total_units=models.Sum('units'))['total_units'] or 0
-    
-    # Calculate days since last donation
-    from django.utils import timezone
-    last_donation = all_donations.first()
-    if last_donation:
-        days_since_last = (timezone.now().date() - last_donation.donation_date).days
-        days_until_next = max(0, 56 - days_since_last)
-        last_donation_days = days_since_last
-        next_eligible_days = days_until_next
-    else:
-        last_donation_days = 0
-        next_eligible_days = 0
+    # Get donor's donation records
+    donations = DonationRecord.objects.filter(donor=donor).order_by('-donation_date')
     
     context = {
         'donor': donor,
-        'donations': all_donations,
-        'all_donations': all_donations,
-        'all_alerts': all_alerts,
-        'total_donations': total_donations,
-        'lives_saved': lives_saved,
-        'total_units': total_units,
-        'last_donation_days': last_donation_days,
-        'next_eligible_days': next_eligible_days,
+        'donations': donations,
     }
-    return render(request, 'donor_portal/donations_full.html', context)
+    return render(request, 'donor_portal/donations.html', context)
 
-@donor_login_required
-def donor_change_password(request):
+def donor_requests(request):
+    """Donor requests view."""
     donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
+    
+    # Get blood requests that match donor's blood type
+    requests = PublicBloodRequest.objects.filter(
+        blood_type_needed=donor.blood_type,
+        status='pending'
+    ).order_by('-created_at')
+    
+    context = {
+        'donor': donor,
+        'requests': requests,
+    }
+    return render(request, 'donor_portal/requests.html', context)
+
+def toggle_availability(request):
+    """Toggle donor availability."""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return JsonResponse({'success': False, 'error': 'Not logged in'})
+    
+    if request.method == 'POST':
+        is_available = request.POST.get('available') == 'true'
+        donor.is_available = is_available
+        donor.save()
+        
+        return JsonResponse({
+            'success': True,
+            'available': is_available,
+            'message': f'You are now {"available" if is_available else "unavailable"} for donations.'
+        })
+        
+    return JsonResponse({
+        'success': False,
+        'error': 'Invalid request method.'
+    })
+
+def cancel_request(request, pk):
+    """Cancel a blood request."""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
+    
+    blood_request = get_object_or_404(PublicBloodRequest, pk=pk)
+    
+    if blood_request.status != 'pending':
+        messages.error(request, 'This request cannot be cancelled.')
+        return redirect('donor:requests')
+    
+    blood_request.status = 'cancelled'
+    blood_request.save()
+    
+    messages.success(request, 'Request cancelled successfully.')
+    return redirect('donor:requests')
+
+def donor_change_password(request):
+    """Donor change password view."""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
     
     if request.method == 'POST':
         form = DonorChangePasswordForm(request.POST)
         if form.is_valid():
-            current_password = form.cleaned_data['current_password']
-            new_password1 = form.cleaned_data['new_password1']
+            old_password = form.cleaned_data['old_password']
+            new_password = form.cleaned_data['new_password1']
             
-            if donor.check_password(current_password):
-                donor.set_password(new_password1)
+            if donor.check_password(old_password):
+                donor.set_password(new_password)
                 donor.save()
-                messages.success(request, "Password changed successfully.")
+                messages.success(request, 'Password changed successfully!')
                 return redirect('donor:profile')
             else:
-                messages.error(request, "Current password is incorrect.")
+                messages.error(request, 'Current password is incorrect.')
     else:
         form = DonorChangePasswordForm()
     
     return render(request, 'donor_portal/change_password.html', {'form': form})
 
-def request_blood(request):
-    """Public blood request form — anyone can submit."""
-    if request.method == 'POST':
-        form = PublicBloodRequestForm(request.POST)
-        if form.is_valid():
-            public_request = PublicBloodRequest.objects.create(
-                requester_name=form.cleaned_data['requester_name'],
-                requester_phone=form.cleaned_data['requester_phone'],
-                requester_relationship=form.cleaned_data['requester_relationship'],
-                patient_name=form.cleaned_data['patient_name'],
-                blood_type_needed=form.cleaned_data['blood_type_needed'],
-                units_needed=form.cleaned_data['units_needed'],
-                urgency_level=form.cleaned_data['urgency_level'],
-                hospital_ward=form.cleaned_data.get('hospital_ward', ''),
-                additional_notes=form.cleaned_data.get('additional_notes', ''),
-            )
-            messages.success(
-                request,
-                f'✅ Your blood request has been submitted successfully! '
-                f'Reference #: BL-{public_request.pk:04d}. '
-                f'Hospital staff will review and send alerts to donors shortly.'
-            )
-            return redirect('donor:request_blood_success',
-                          pk=public_request.pk)
-    else:
-        form = PublicBloodRequestForm()
-
-    return render(request, 'donor_portal/request_blood.html', {
-        'form': form
-    })
-
-def request_blood_success(request, pk):
-    """Confirmation page after submitting blood request."""
-    public_request = get_object_or_404(PublicBloodRequest, pk=pk)
-    return render(request, 'donor_portal/request_blood_success.html', {
-        'public_request': public_request
-    })
-
-@donor_login_required
 def respond_to_alert(request, pk):
-    """Allow donor to respond to SMS alert"""
+    """Respond to blood donation alert."""
     donor = get_logged_in_donor(request)
-    notification = get_object_or_404(SMSNotification, pk=pk, donor=donor)
+    if not donor:
+        return redirect('donor:login')
     
-    # Mark as opened when donor views alert
-    if notification.opened_at is None:
-        notification.opened_at = timezone.now()
+    blood_request = get_object_or_404(PublicBloodRequest, pk=pk)
     
     if request.method == 'POST':
         response = request.POST.get('response')
-        if response in ['confirmed', 'declined']:
-            # Store original message status before updating
-            original_message_status = notification.message_status
-            
-            # Update donor response
-            notification.donor_response = response
-            
-            # Update message status based on donor response
-            if response == 'confirmed':
-                notification.message_status = 'confirmed'
-                # Update delivery status based on original message status
-                if original_message_status in ['delivered', 'success']:
-                    notification.delivery_status = 'delivered'
-                    if notification.delivered_at is None:
-                        notification.delivered_at = timezone.now()
-                elif original_message_status in ['sent', 'submitted']:
-                    notification.delivery_status = 'sent'
-                else:
-                    # If message wasn't successfully delivered, still mark as sent since donor responded
-                    notification.delivery_status = 'sent'
-                
-                # Mark the notification as "fulfilled" so it disappears from donor's active list
-                notification.is_fulfilled = True
-                notification.fulfilled_at = timezone.now()
-                
-                # Check if this is the first confirmed donor for this emergency request
-                emergency_request = notification.emergency_request
-                confirmed_count = SMSNotification.objects.filter(
-                    emergency_request=emergency_request,
-                    donor_response='confirmed'
-                ).exclude(pk=notification.pk).count()
-                
-                # If this is the first confirmed donor, mark request as fulfilled
-                if confirmed_count == 0 and emergency_request.status == 'open':
-                    emergency_request.status = 'fulfilled'
-                    emergency_request.fulfilled_at = timezone.now()
-                    emergency_request.save()
-                    
-                    # Log the fulfillment
-                    from staff_portal.models import ActivityLog
-                    ActivityLog.objects.create(
-                        staff_user=None,  # System action
-                        action='request_fulfilled',
-                        description=f'Emergency request for {emergency_request.blood_type_needed} blood automatically marked as fulfilled when {donor.full_name} confirmed availability',
-                        related_request_id=emergency_request.pk
-                    )
-                
-                messages.success(request, "Thank you for confirming! The hospital will contact you soon.")
-            else:
-                notification.message_status = 'declined'
-                # For declined responses, still mark as delivered if it was delivered
-                if original_message_status in ['delivered', 'success']:
-                    notification.delivery_status = 'delivered'
-                    if notification.delivered_at is None:
-                        notification.delivered_at = timezone.now()
-                elif original_message_status in ['sent', 'submitted']:
-                    notification.delivery_status = 'sent'
-                else:
-                    # If message wasn't successfully delivered, still mark as sent since donor responded
-                    notification.delivery_status = 'sent'
-                
-                # Mark as fulfilled so it disappears from donor's active list
-                notification.is_fulfilled = True
-                notification.fulfilled_at = timezone.now()
-                
-                messages.info(request, "Thank you for your response. We understand you're not available at this time.")
-            
-            # Update last viewed and view count
-            notification.last_viewed_at = timezone.now()
-            notification.view_count += 1
-            
-            # Save all updates
-            notification.save()
-                
-        return redirect('donor:dashboard')
-    
-    return redirect('donor:dashboard')
-
-@donor_login_required
-def mark_sms_opened(request, pk):
-    """Mark SMS as opened when donor views details"""
-    donor = get_logged_in_donor(request)
-    notification = get_object_or_404(SMSNotification, pk=pk, donor=donor)
-    
-    # Mark as opened when donor views alert
-    if notification.opened_at is None:
-        notification.opened_at = timezone.now()
         
-        # Update delivery status if message was successfully sent
-        if notification.message_status in ['delivered', 'success']:
-            notification.delivery_status = 'delivered'
-            notification.delivered_at = timezone.now()
-        elif notification.message_status in ['sent', 'submitted']:
-            notification.delivery_status = 'sent'
+        if response == 'accept':
+            blood_request.status = 'accepted'
+            blood_request.accepted_by = donor
+            blood_request.accepted_at = timezone.now()
+        elif response == 'decline':
+            blood_request.status = 'declined'
+            blood_request.declined_by = donor
+            blood_request.declined_at = timezone.now()
         
-        # Update last viewed and view count
-        notification.last_viewed_at = timezone.now()
-        notification.view_count += 1
+        blood_request.save()
         
-        # Save all updates
-        notification.save()
-                
-        return redirect('donor:respond_to_alert', pk=pk)
-    
-    return redirect('donor:respond_to_alert', pk=pk)
-
-
-@donor_login_required  
-def response_confirmation(request, pk):
-    """Show detailed response confirmation page"""
-    donor = get_logged_in_donor(request)
-    notification = get_object_or_404(SMSNotification, pk=pk, donor=donor)
+        messages.success(request, f'You have {response}ed the blood donation request.')
+        return redirect('donor:response_confirmation', pk=pk)
     
     context = {
         'donor': donor,
-        'notification': notification,
-        'emergency_request': notification.emergency_request,
+        'blood_request': blood_request,
     }
+    return render(request, 'donor_portal/respond.html', context)
+
+def response_confirmation(request, pk):
+    """Response confirmation page."""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
     
+    blood_request = get_object_or_404(PublicBloodRequest, pk=pk)
+    
+    context = {
+        'donor': donor,
+        'blood_request': blood_request,
+    }
     return render(request, 'donor_portal/response_confirmation.html', context)
 
+def mark_sms_opened(request, pk):
+    """Mark SMS as opened (for tracking)."""
+    try:
+        sms = SMSNotification.objects.get(pk=pk)
+        sms.is_opened = True
+        sms.opened_at = timezone.now()
+        sms.save()
+        return JsonResponse({'success': True})
+    except SMSNotification.DoesNotExist:
+        return JsonResponse({'success': False})
 
-@donor_login_required
-def donor_requests(request):
-    """Show all requests sent by this donor with management options"""
+def request_blood(request):
+    """Request blood form."""
     donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
     
-    # Get all SMS notifications (requests sent to this donor)
-    all_requests = donor.sms_notifications.select_related('emergency_request').order_by('-sent_at')
+    if request.method == 'POST':
+        form = PublicBloodRequestForm(request.POST)
+        if form.is_valid():
+            blood_request = form.save(commit=False)
+            blood_request.requested_by = donor
+            blood_request.save()
+            
+            messages.success(request, 'Blood request submitted successfully!')
+            return redirect('donor:request_blood_success', pk=blood_request.pk)
+    else:
+        form = PublicBloodRequestForm()
     
-    # Categorize requests
-    pending_requests = all_requests.filter(donor_response='no_response', is_fulfilled=False)
-    confirmed_requests = all_requests.filter(donor_response='confirmed')
-    declined_requests = all_requests.filter(donor_response='declined')
+    return render(request, 'donor_portal/request_blood.html', {'form': form})
+
+def request_blood_success(request, pk):
+    """Blood request success page."""
+    donor = get_logged_in_donor(request)
+    if not donor:
+        return redirect('donor:login')
     
-    # Get public requests created by this donor
-    public_requests = PublicBloodRequest.objects.filter(
-        requester_phone=donor.phone_number
-    ).order_by('-submitted_at')
+    blood_request = get_object_or_404(PublicBloodRequest, pk=pk)
     
     context = {
         'donor': donor,
-        'all_requests': all_requests,
-        'pending_requests': pending_requests,
-        'confirmed_requests': confirmed_requests,
-        'declined_requests': declined_requests,
-        'public_requests': public_requests,
-        'total_requests': all_requests.count(),
-        'pending_count': pending_requests.count(),
-        'confirmed_count': confirmed_requests.count(),
-        'declined_count': declined_requests.count(),
-        'public_count': public_requests.count(),
+        'blood_request': blood_request,
     }
-    
-    return render(request, 'donor_portal/donor_requests.html', context)
+    return render(request, 'donor_portal/request_blood_success.html', context)
 
+def test_page(request):
+    """Test page for development."""
+    return render(request, 'donor_portal/test.html')
 
-@donor_login_required
-def cancel_request(request, pk):
-    """Cancel a public blood request created by this donor"""
-    donor = get_logged_in_donor(request)
-    
+def contact_submit(request):
+    """Handle contact form submission."""
     if request.method == 'POST':
-        try:
-            public_request = PublicBloodRequest.objects.get(
-                pk=pk,
-                requester_phone=donor.phone_number,
-                status='pending'
-            )
-            
-            public_request.status = 'rejected'
-            public_request.save()
-            
-            return JsonResponse({
-                'success': True,
-                'message': 'Blood request cancelled successfully.'
-            })
-            
-        except PublicBloodRequest.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'Request not found or already processed.'
-            })
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'error': str(e)
-            })
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        subject = request.POST.get('subject', '')
+        message = request.POST.get('message', '')
+        
+        # Here you would typically send an email
+        messages.success(request, 'Your message has been sent successfully!')
+        return redirect('donor:contact')
     
-    return JsonResponse({
-        'success': False,
-        'error': 'Invalid request method.'
-    })
+    return redirect('donor:contact')
 
+def faq(request):
+    """FAQ page."""
+    return render(request, 'donor_portal/faq.html')
 
-@donor_login_required
-def toggle_availability(request):
-    """Toggle donor availability status"""
-    donor = get_logged_in_donor(request)
-    
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            is_available = data.get('available', False)
-            
-            donor.is_available = is_available
-            donor.save()
-            
-            return JsonResponse({
-                'success': True,
-                'available': is_available,
-                'message': f'You are now {"available" if is_available else "unavailable"} for donations.'
-            })
-            
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'error': str(e)
-            })
-    
-    return JsonResponse({
-        'success': False,
-        'error': 'Invalid request method.'
-    })
+def privacy(request):
+    """Privacy policy page."""
+    return render(request, 'donor_portal/privacy.html')
+
+def terms(request):
+    """Terms of service page."""
+    return render(request, 'donor_portal/terms.html')
+
+def password_reset(request):
+    """Password reset page."""
+    return render(request, 'donor_portal/password_reset.html')

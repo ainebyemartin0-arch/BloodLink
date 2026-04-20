@@ -783,11 +783,11 @@
                 </div>
                 
                 <div class="social-login">
-                    <button type="button" class="social-btn">
+                    <button type="button" class="social-btn" id="googleLoginBtn">
                         <span class="material-symbols-outlined">mail</span>
                         Google
                     </button>
-                    <button type="button" class="social-btn">
+                    <button type="button" class="social-btn" id="phoneLoginBtn">
                         <span class="material-symbols-outlined">phone</span>
                         Phone
                     </button>
@@ -1047,22 +1047,64 @@
         document.head.appendChild(style);
 
         // Social login handlers (placeholder)
-        document.querySelectorAll('.social-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const provider = this.textContent.trim();
-                console.log(`Login with ${provider} - This would integrate with OAuth providers`);
-                
-                // Show loading state
-                this.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Connecting...';
-                this.disabled = true;
-                
-                setTimeout(() => {
-                    this.innerHTML = this.textContent.includes('Google') ? 
-                        '<span class="material-symbols-outlined">mail</span> Google' : 
-                        '<span class="material-symbols-outlined">phone</span> Phone';
+        // Google Login Handler
+        document.getElementById('googleLoginBtn').addEventListener('click', function() {
+            // For demo purposes, simulate Google OAuth
+            const googleData = {
+                google_id: 'google_' + Date.now(),
+                email: 'user@gmail.com',
+                name: 'Google User',
+                picture_url: 'https://ui-avatars.com/api/?name=Google+User&background=4285f4&color=fff&size=200'
+            };
+            
+            // Show loading state
+            this.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Connecting...';
+            this.disabled = true;
+            
+            // Send Google login data to server
+            const formData = new FormData();
+            formData.append('google_id', googleData.google_id);
+            formData.append('email', googleData.email);
+            formData.append('name', googleData.name);
+            formData.append('picture_url', googleData.picture_url);
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            fetch('{% url "donor:google_login" %}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else if (data.message) {
+                        alert(data.message);
+                        window.location.href = '{% url "donor:google_register" %}';
+                    }
+                } else {
+                    alert(data.message || 'Google login failed');
+                    this.innerHTML = '<span class="material-symbols-outlined">mail</span> Google';
                     this.disabled = false;
-                }, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('Google login error:', error);
+                alert('Error connecting to Google');
+                this.innerHTML = '<span class="material-symbols-outlined">mail</span> Google';
+                this.disabled = false;
             });
+        });
+        
+        // Phone Login Handler
+        document.getElementById('phoneLoginBtn').addEventListener('click', function() {
+            // Redirect to phone login page
+            this.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Redirecting...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                window.location.href = '{% url "donor:phone_login" %}';
+            }, 500);
         });
     </script>
 <!-- Scripts -->
