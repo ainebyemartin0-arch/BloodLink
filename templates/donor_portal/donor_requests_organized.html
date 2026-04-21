@@ -1,0 +1,559 @@
+{% extends 'donor_portal/base_donor_enhanced.html' %}
+{% load static %}
+
+{% block title %}My Blood Requests - BloodLink{% endblock %}
+
+{% block extra_css %}
+<style>
+.requests-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.stats-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.requests-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.section-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.section-subtitle {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    margin: 0.5rem 0 0 0;
+}
+
+.btn-action {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-action:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.requests-list {
+    padding: 1.5rem;
+}
+
+.request-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.request-card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+.request-card.urgent {
+    border-left: 4px solid #e74c3c;
+}
+
+.request-card.critical {
+    border-left: 4px solid #dc3545;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 2px 4px rgba(220, 53, 69, 0.05); }
+    50% { box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2); }
+    100% { box-shadow: 0 2px 4px rgba(220, 53, 69, 0.05); }
+}
+
+.request-header {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.request-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.blood-type-badge {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: #ffc107;
+    color: #856404;
+}
+
+.status-approved {
+    background: #28a745;
+    color: white;
+}
+
+.status-rejected {
+    background: #dc3545;
+    color: white;
+}
+
+.request-details {
+    padding: 1.5rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.detail-icon {
+    color: #6c757d;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.detail-content {
+    flex: 1;
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.detail-value {
+    font-size: 0.875rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.request-actions {
+    padding: 1.5rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: #6c757d;
+    font-size: 2rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.empty-description {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .requests-container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+    }
+    
+    .stats-header {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .request-actions {
+        flex-direction: column;
+    }
+    
+    .btn-action {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="requests-container">
+    <!-- Statistics Header -->
+    <div class="stats-header">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">pending_actions</span>
+            </div>
+            <div class="stat-number">{{ pending_requests }}</div>
+            <div class="stat-label">Pending Requests</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">check_circle</span>
+            </div>
+            <div class="stat-number">{{ confirmed_requests }}</div>
+            <div class="stat-label">Confirmed</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">history</span>
+            </div>
+            <div class="stat-number">{{ completed_requests }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons">bloodtype</span>
+            </div>
+            <div class="stat-number">{{ total_requests }}</div>
+            <div class="stat-label">Total Requests</div>
+        </div>
+    </div>
+
+    <!-- Requests Section -->
+    <div class="requests-section">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Available Blood Requests</h2>
+                <p class="section-subtitle">Matching your blood type: {{ donor.blood_type }}</p>
+            </div>
+            <a href="{% url 'donor:request_blood' %}" class="btn-action">
+                <span class="material-icons">add</span>
+                Request Blood
+            </a>
+        </div>
+        
+        <div class="requests-list">
+            {% if requests %}
+                {% for request in requests %}
+                <div class="request-card {% if request.urgency_level == 'critical' %}critical{% elif request.urgency_level == 'urgent' %}urgent{% endif %}">
+                    <div class="request-header">
+                        <div>
+                            <h3 class="request-title">
+                                {{ request.patient_name }}
+                                <div class="blood-type-badge">{{ request.blood_type_needed }}</div>
+                            </h3>
+                        </div>
+                        <div class="status-badge status-{{ request.status }}">
+                            {{ request.get_status_display }}
+                        </div>
+                    </div>
+                    
+                    <div class="request-details">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">calendar_today</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Date Submitted</div>
+                                    <div class="detail-value">{{ request.submitted_at|date:"F d, Y" }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">schedule</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Time Submitted</div>
+                                    <div class="detail-value">{{ request.submitted_at|date:"h:i A" }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">location_on</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Hospital</div>
+                                    <div class="detail-value">{{ request.requester_name }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">phone</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Contact</div>
+                                    <div class="detail-value">{{ request.requester_phone }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">bloodtype</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Blood Type</div>
+                                    <div class="detail-value">{{ request.blood_type_needed }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">inventory</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Units Needed</div>
+                                    <div class="detail-value">{{ request.units_needed }} unit{% if request.units_needed != 1 %}s{% endif %}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">priority_high</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Urgency</div>
+                                    <div class="detail-value">{{ request.get_urgency_level_display }}</div>
+                                </div>
+                            </div>
+                            
+                            {% if request.hospital_ward %}
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">local_hospital</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Ward/Department</div>
+                                    <div class="detail-value">{{ request.hospital_ward }}</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if request.requester_relationship %}
+                            <div class="detail-item">
+                                <span class="detail-icon material-icons">people</span>
+                                <div class="detail-content">
+                                    <div class="detail-label">Requester Relationship</div>
+                                    <div class="detail-value">{{ request.requester_relationship }}</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if request.additional_notes %}
+                        <div class="detail-item" style="grid-column: 1 / -1;">
+                            <span class="detail-icon material-icons">notes</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Additional Notes</div>
+                                <div class="detail-value">{{ request.additional_notes }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="request-actions">
+                        <button class="btn-action btn-primary" onclick="showRequestDetails({{ request.id }})">
+                            <span class="material-icons">visibility</span>
+                            View Details
+                        </button>
+                        
+                        {% if request.status == 'pending' %}
+                        <button class="btn-action btn-secondary" onclick="printRequest({{ request.id }})">
+                            <span class="material-icons">print</span>
+                            Print
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <span class="material-icons">search_off</span>
+                    </div>
+                    <h3 class="empty-title">No Matching Blood Requests</h3>
+                    <p class="empty-description">
+                        There are currently no blood requests that match your blood type ({{ donor.blood_type }}). 
+                        We'll notify you immediately when a matching request becomes available.
+                    </p>
+                    <a href="{% url 'donor:request_blood' %}" class="btn-action btn-primary">
+                        <span class="material-icons">add</span>
+                        Create Blood Request
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function showRequestDetails(requestId) {
+    // Show request details in a modal or navigate to detail page
+    window.open(`/donor/requests/${requestId}/`, '_blank');
+}
+
+function printRequest(requestId) {
+    window.open(`/donor/requests/${requestId}/print/`, '_blank');
+}
+
+// Auto-refresh for urgent/critical requests
+{% if requests %}
+    {% for request in requests %}
+        {% if request.urgency_level == 'critical' %}
+            setTimeout(() => {
+                location.reload();
+            }, 60000); // Refresh every minute for critical requests
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</script>
+{% endblock %}

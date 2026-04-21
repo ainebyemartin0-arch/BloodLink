@@ -384,23 +384,33 @@ def donor_donations(request):
     }
     return render(request, 'donor_portal/donations.html', context)
 
+@donor_login_required
 def donor_requests(request):
     """Donor requests view."""
     donor = get_logged_in_donor(request)
-    if not donor:
-        return redirect('donor:login')
     
     # Get blood requests that match donor's blood type
     requests = PublicBloodRequest.objects.filter(
         blood_type_needed=donor.blood_type,
         status='pending'
-    ).order_by('-created_at')
+    ).order_by('-submitted_at')
+    
+    # Calculate statistics
+    pending_requests = requests.count()
+    confirmed_requests = 0  # This would be for requests donor has confirmed
+    completed_requests = 0  # This would be for completed donations
+    total_requests = pending_requests + confirmed_requests + completed_requests
     
     context = {
         'donor': donor,
         'requests': requests,
+        'pending_requests': pending_requests,
+        'confirmed_requests': confirmed_requests,
+        'completed_requests': completed_requests,
+        'total_requests': total_requests,
+        'pending_count': pending_requests,  # For header stats
     }
-    return render(request, 'donor_portal/requests.html', context)
+    return render(request, 'donor_portal/donor_requests_organized.html', context)
 
 def toggle_availability(request):
     """Toggle donor availability."""
