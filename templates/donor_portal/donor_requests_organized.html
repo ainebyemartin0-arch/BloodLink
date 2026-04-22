@@ -318,6 +318,62 @@
     margin-bottom: 2rem;
 }
 
+/* Request Type Badges */
+.request-type {
+    margin-top: 0.5rem;
+}
+
+.staff-badge {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.public-badge {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+/* Urgency Badges */
+.urgency-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.urgency-badge.critical {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+}
+
+.urgency-badge.urgent {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+}
+
+.urgency-badge.normal {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: white;
+}
+
 @media (max-width: 768px) {
     .requests-container {
         margin: 1rem auto;
@@ -397,16 +453,30 @@
         <div class="requests-list">
             {% if requests %}
                 {% for request in requests %}
-                <div class="request-card {% if request.urgency_level == 'critical' %}critical{% elif request.urgency_level == 'urgent' %}urgent{% endif %}">
+                <div class="request-card {% if request.display_urgency == 'critical' %}critical{% elif request.display_urgency == 'urgent' %}urgent{% endif %}">
                     <div class="request-header">
                         <div>
                             <h3 class="request-title">
-                                {{ request.patient_name }}
+                                {% if request.is_staff_created %}
+                                    <span class="material-icons" style="color: #e74c3c; margin-right: 8px;">emergency</span>
+                                {% endif %}
+                                {{ request.display_name }}
                                 <div class="blood-type-badge">{{ request.blood_type_needed }}</div>
                             </h3>
+                            <div class="request-type">
+                                {% if request.is_staff_created %}
+                                    <span class="staff-badge">Staff Created</span>
+                                {% else %}
+                                    <span class="public-badge">Public Request</span>
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="status-badge status-{{ request.status }}">
-                            {{ request.get_status_display }}
+                            {% if request.request_type == 'emergency' %}
+                                {% if request.status == 'open' %}Open{% else %}Fulfilled{% endif %}
+                            {% else %}
+                                {{ request.get_status_display }}
+                            {% endif %}
                         </div>
                     </div>
                     
@@ -415,40 +485,30 @@
                             <div class="detail-item">
                                 <span class="detail-icon material-icons">calendar_today</span>
                                 <div class="detail-content">
-                                    <div class="detail-label">Date Submitted</div>
-                                    <div class="detail-value">{{ request.submitted_at|date:"F d, Y" }}</div>
+                                    <div class="detail-label">Date Created</div>
+                                    <div class="detail-value">
+                                        {% if request.created_at %}
+                                            {{ request.created_at|date:"F d, Y H:i" }}
+                                        {% else %}
+                                            {{ request.submitted_at|date:"F d, Y H:i" }}
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="detail-item">
-                                <span class="detail-icon material-icons">schedule</span>
+                                <span class="detail-icon material-icons">priority_high</span>
                                 <div class="detail-content">
-                                    <div class="detail-label">Time Submitted</div>
-                                    <div class="detail-value">{{ request.submitted_at|date:"h:i A" }}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-item">
-                                <span class="detail-icon material-icons">location_on</span>
-                                <div class="detail-content">
-                                    <div class="detail-label">Hospital</div>
-                                    <div class="detail-value">{{ request.requester_name }}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-item">
-                                <span class="detail-icon material-icons">phone</span>
-                                <div class="detail-content">
-                                    <div class="detail-label">Contact</div>
-                                    <div class="detail-value">{{ request.requester_phone }}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-item">
-                                <span class="detail-icon material-icons">bloodtype</span>
-                                <div class="detail-content">
-                                    <div class="detail-label">Blood Type</div>
-                                    <div class="detail-value">{{ request.blood_type_needed }}</div>
+                                    <div class="detail-label">Urgency</div>
+                                    <div class="detail-value">
+                                        {% if request.display_urgency == 'critical' %}
+                                            <span class="urgency-badge critical">Critical</span>
+                                        {% elif request.display_urgency == 'urgent' %}
+                                            <span class="urgency-badge urgent">Urgent</span>
+                                        {% else %}
+                                            <span class="urgency-badge normal">Normal</span>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             
@@ -456,9 +516,35 @@
                                 <span class="detail-icon material-icons">inventory</span>
                                 <div class="detail-content">
                                     <div class="detail-label">Units Needed</div>
-                                    <div class="detail-value">{{ request.units_needed }} unit{% if request.units_needed != 1 %}s{% endif %}</div>
+                                    <div class="detail-value">{{ request.units_needed }} unit(s)</div>
                                 </div>
                             </div>
+                            
+                            {% if request.is_staff_created %}
+                                <div class="detail-item">
+                                    <span class="detail-icon material-icons">local_hospital</span>
+                                    <div class="detail-content">
+                                        <div class="detail-label">Ward/Location</div>
+                                        <div class="detail-value">{{ request.ward|default:"Not specified" }}</div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="detail-item">
+                                    <span class="detail-icon material-icons">person</span>
+                                    <div class="detail-content">
+                                        <div class="detail-label">Requester</div>
+                                        <div class="detail-value">{{ request.requester_name }} ({{ request.requester_relationship }})</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-icon material-icons">phone</span>
+                                    <div class="detail-content">
+                                        <div class="detail-label">Contact</div>
+                                        <div class="detail-value">{{ request.requester_phone }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
                             
                             <div class="detail-item">
                                 <span class="detail-icon material-icons">priority_high</span>

@@ -13,7 +13,7 @@ from functools import wraps
 from donors.models import Donor
 from donors.choices import BLOOD_TYPE_CHOICES
 from notifications.models import SMSNotification
-from staff_portal.models import PublicBloodRequest, DonationRecord
+from staff_portal.models import EmergencyRequest, PublicBloodRequest, DonationRecord
 from .forms import (
     DonorRegistrationForm, DonorLoginForm, DonorProfileEditForm, DonorChangePasswordForm, PublicBloodRequestForm,
     GoogleLoginForm, PhoneLoginForm, PhoneRegistrationForm, GoogleRegistrationForm
@@ -405,21 +405,49 @@ def donor_requests(request):
     """Donor requests view."""
     donor = get_logged_in_donor(request)
     
-    # Get blood requests that match donor's blood type
-    requests = PublicBloodRequest.objects.filter(
+    # Get EmergencyRequest objects from staff (open/fulfilled requests)
+    emergency_requests = EmergencyRequest.objects.filter(
+        blood_type_needed=donor.blood_type,
+        status__in=['open', 'fulfilled']  # Show open and partially fulfilled requests
+    ).order_by('-created_at')
+    
+    # Get PublicBloodRequest objects (patient/family requests)
+    public_requests = PublicBloodRequest.objects.filter(
         blood_type_needed=donor.blood_type,
         status='pending'
     ).order_by('-submitted_at')
     
+    # Combine all requests and sort by creation time
+    all_requests = []
+    
+    # Add emergency requests with type marker
+    for req in emergency_requests:
+        req.request_type = 'emergency'
+        req.is_staff_created = True
+        req.display_name = f"Emergency Request - {req.patient_name or 'Unnamed Patient'}"
+        req.display_urgency = req.urgency_level
+        all_requests.append(req)
+    
+    # Add public requests with type marker
+    for req in public_requests:
+        req.request_type = 'public'
+        req.is_staff_created = False
+        req.display_name = f"Blood Request - {req.patient_name}"
+        req.display_urgency = req.urgency_level
+        all_requests.append(req)
+    
+    # Sort all requests by creation time (newest first)
+    all_requests.sort(key=lambda x: x.created_at if hasattr(x, 'created_at') else x.submitted_at, reverse=True)
+    
     # Calculate statistics
-    pending_requests = requests.count()
+    pending_requests = len(all_requests)
     confirmed_requests = 0  # This would be for requests donor has confirmed
     completed_requests = 0  # This would be for completed donations
     total_requests = pending_requests + confirmed_requests + completed_requests
     
     context = {
         'donor': donor,
-        'requests': requests,
+        'requests': all_requests,
         'pending_requests': pending_requests,
         'confirmed_requests': confirmed_requests,
         'completed_requests': completed_requests,
