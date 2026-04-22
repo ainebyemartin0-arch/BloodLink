@@ -23,7 +23,7 @@ services:
       - key: AT_USERNAME
         value: sandbox
       - key: AT_API_KEY
-        value: your-api-key-here
+        value: atsk_d7bad867730125e077fcf34902a3e45107e87d8cfd5b8336c1642fc34bccd4b0a4ed14bf
       - key: AT_SENDER_ID
         value: BloodLink
 

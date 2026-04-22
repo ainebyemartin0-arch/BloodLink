@@ -1,1 +1,1 @@
-web: gunicorn bloodlink_project.wsgi --log-file -
+web: gunicorn app:application
