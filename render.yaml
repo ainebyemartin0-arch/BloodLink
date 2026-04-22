@@ -2,6 +2,7 @@ services:
   - type: web
     name: bloodlink
     env: python
+    # BloodLink - Real-time Blood Donation Management System
     buildCommand: |
       pip install -r requirements.txt
       python manage.py makemigrations
