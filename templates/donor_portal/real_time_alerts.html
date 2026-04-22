@@ -1,0 +1,900 @@
+<!-- Real-Time Alert System -->
+<div id="realTimeAlertSystem" class="real-time-alerts">
+    <!-- Alert Notification Toast -->
+    <div id="alertToast" class="alert-toast hidden">
+        <div class="alert-content">
+            <div class="alert-icon">
+                <span class="material-icons">emergency</span>
+            </div>
+            <div class="alert-message">
+                <h4 class="alert-title">Emergency Blood Request!</h4>
+                <p class="alert-description" id="alertDescription">Your blood type is urgently needed.</p>
+            </div>
+            <div class="alert-actions">
+                <button class="alert-btn primary" onclick="respondToAlert()">
+                    <span class="material-icons">volunteer_activism</span>
+                    I Can Donate
+                </button>
+                <button class="alert-btn secondary" onclick="viewAlertDetails()">
+                    <span class="material-icons">info</span>
+                    Details
+                </button>
+                <button class="alert-btn dismiss" onclick="dismissAlert()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Banner (Top of page) -->
+    <div id="alertBanner" class="alert-banner hidden">
+        <div class="banner-content">
+            <div class="banner-icon">
+                <span class="material-icons">notifications_active</span>
+            </div>
+            <div class="banner-text">
+                <strong>URGENT:</strong> <span id="bannerText">Blood needed at St. Francis Hospital</span>
+            </div>
+            <div class="banner-actions">
+                <button class="banner-btn" onclick="respondToAlert()">Respond Now</button>
+                <button class="banner-btn close" onclick="dismissBanner()">×</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal (Full screen for detailed view) -->
+    <div id="alertModal" class="alert-modal hidden">
+        <div class="modal-overlay" onclick="closeAlertModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <span class="material-icons">emergency</span>
+                </div>
+                <h2>Emergency Blood Request</h2>
+                <button class="modal-close" onclick="closeAlertModal()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="alert-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Hospital:</span>
+                        <span class="detail-value" id="modalHospital">St. Francis Hospital</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Blood Type:</span>
+                        <span class="detail-value" id="modalBloodType">{{ donor.blood_type }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Urgency:</span>
+                        <span class="detail-value urgent">Critical</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Patient:</span>
+                        <span class="detail-value" id="modalPatient">Emergency Surgery</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Contact:</span>
+                        <span class="detail-value" id="modalContact">+256 123 456 789</span>
+                    </div>
+                </div>
+                
+                <div class="alert-message">
+                    <p id="modalMessage">Your blood type is urgently needed for a patient undergoing emergency surgery. Your donation could save up to 3 lives.</p>
+                </div>
+                
+                <div class="response-options">
+                    <h3>How would you like to respond?</h3>
+                    <div class="response-buttons">
+                        <button class="response-btn confirm" onclick="confirmDonation()">
+                            <span class="material-icons">check_circle</span>
+                            I'm Available Now
+                        </button>
+                        <button class="response-btn later" onclick="respondLater()">
+                            <span class="material-icons">schedule</span>
+                            Contact Me Later
+                        </button>
+                        <button class="response-btn unable" onclick="respondUnable()">
+                            <span class="material-icons">not_interested</span>
+                            Unable to Donate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Status Indicator -->
+    <div id="alertStatus" class="alert-status hidden">
+        <div class="status-indicator">
+            <span class="status-dot pulse"></span>
+            <span class="status-text">New Alert</span>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Real-Time Alert System Styles */
+.real-time-alerts {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.real-time-alerts > * {
+    pointer-events: auto;
+}
+
+/* Alert Toast */
+.alert-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-left: 4px solid #ef4444;
+    max-width: 400px;
+    transform: translateX(120%);
+    transition: all 0.3s ease;
+    z-index: 10000;
+}
+
+.alert-toast.show {
+    transform: translateX(0);
+}
+
+.alert-content {
+    padding: 1.5rem;
+}
+
+.alert-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.alert-icon .material-icons {
+    font-size: 1.5rem;
+}
+
+.alert-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.alert-description {
+    color: #6b7280;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.alert-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.alert-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.alert-btn.primary {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.alert-btn.secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.alert-btn.dismiss {
+    background: transparent;
+    color: #6b7280;
+    padding: 0.5rem;
+}
+
+.alert-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Alert Banner */
+.alert-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    z-index: 9998;
+    transform: translateY(-100%);
+    transition: all 0.3s ease;
+}
+
+.alert-banner.show {
+    transform: translateY(0);
+}
+
+.banner-content {
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.banner-icon {
+    animation: pulse 2s infinite;
+}
+
+.banner-icon .material-icons {
+    font-size: 1.5rem;
+}
+
+.banner-text {
+    flex: 1;
+    font-weight: 600;
+}
+
+.banner-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.banner-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.banner-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.banner-btn.close {
+    background: transparent;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    font-size: 1.2rem;
+}
+
+/* Alert Modal */
+.alert-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.alert-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    transform: scale(0.9);
+    transition: all 0.3s ease;
+}
+
+.alert-modal.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.modal-icon .material-icons {
+    font-size: 2rem;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    flex: 1;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: #f3f4f6;
+    color: #1a1a1a;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.alert-details {
+    margin-bottom: 2rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.detail-value.urgent {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.alert-message {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.alert-message p {
+    color: #991b1b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.response-options h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+.response-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.response-btn {
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+}
+
+.response-btn.confirm {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.response-btn.confirm:hover {
+    background: #10b981;
+    color: white;
+}
+
+.response-btn.later {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.response-btn.later:hover {
+    background: #3b82f6;
+    color: white;
+}
+
+.response-btn.unable {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.response-btn.unable:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Alert Status Indicator */
+.alert-status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9997;
+}
+
+.status-indicator {
+    background: white;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 2px solid #ef4444;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-text {
+    font-weight: 600;
+    color: #ef4444;
+    font-size: 0.875rem;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .alert-toast {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .banner-content {
+        padding: 0.75rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+        max-height: 90vh;
+    }
+    
+    .modal-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .response-buttons {
+        gap: 0.5rem;
+    }
+    
+    .response-btn {
+        padding: 0.75rem;
+    }
+}
+</style>
+
+<script>
+// Real-Time Alert System JavaScript
+class RealTimeAlertSystem {
+    constructor() {
+        this.currentAlert = null;
+        this.pollingInterval = null;
+        this.isConnected = false;
+        this.init();
+    }
+
+    init() {
+        this.startPolling();
+        this.setupEventListeners();
+        console.log('Real-Time Alert System initialized');
+    }
+
+    startPolling() {
+        // Poll for new alerts every 5 seconds
+        this.pollingInterval = setInterval(() => {
+            this.checkForNewAlerts();
+        }, 5000);
+        
+        // Initial check
+        this.checkForNewAlerts();
+    }
+
+    async checkForNewAlerts() {
+        try {
+            const response = await fetch('/donor/api/urgent-alerts/', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': this.getCSRFToken(),
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.has_new_alert && data.alert) {
+                    this.showAlert(data.alert);
+                }
+            }
+        } catch (error) {
+            console.error('Error checking for alerts:', error);
+        }
+    }
+
+    showAlert(alert) {
+        this.currentAlert = alert;
+        
+        // Show alert toast
+        this.showToast(alert);
+        
+        // Show alert banner
+        this.showBanner(alert);
+        
+        // Show status indicator
+        this.showStatusIndicator();
+        
+        // Play notification sound (if supported)
+        this.playNotificationSound();
+        
+        // Show browser notification (if permitted)
+        this.showBrowserNotification(alert);
+    }
+
+    showToast(alert) {
+        const toast = document.getElementById('alertToast');
+        const description = document.getElementById('alertDescription');
+        
+        description.textContent = alert.message || 'Your blood type is urgently needed.';
+        
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('show'), 100);
+        
+        // Auto-hide after 10 seconds
+        setTimeout(() => {
+            this.hideToast();
+        }, 10000);
+    }
+
+    showBanner(alert) {
+        const banner = document.getElementById('alertBanner');
+        const bannerText = document.getElementById('bannerText');
+        
+        bannerText.textContent = alert.message || 'Blood needed at St. Francis Hospital';
+        
+        banner.classList.remove('hidden');
+        setTimeout(() => banner.classList.add('show'), 100);
+        
+        // Auto-hide after 15 seconds
+        setTimeout(() => {
+            this.hideBanner();
+        }, 15000);
+    }
+
+    showStatusIndicator() {
+        const status = document.getElementById('alertStatus');
+        status.classList.remove('hidden');
+        
+        // Hide after 30 seconds
+        setTimeout(() => {
+            status.classList.add('hidden');
+        }, 30000);
+    }
+
+    hideToast() {
+        const toast = document.getElementById('alertToast');
+        toast.classList.remove('show');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+    }
+
+    hideBanner() {
+        const banner = document.getElementById('alertBanner');
+        banner.classList.remove('show');
+        setTimeout(() => banner.classList.add('hidden'), 300);
+    }
+
+    showModal(alert) {
+        const modal = document.getElementById('alertModal');
+        
+        // Update modal content
+        document.getElementById('modalHospital').textContent = alert.hospital || 'St. Francis Hospital';
+        document.getElementById('modalBloodType').textContent = alert.blood_type || '{{ donor.blood_type }}';
+        document.getElementById('modalPatient').textContent = alert.patient_type || 'Emergency Surgery';
+        document.getElementById('modalContact').textContent = alert.contact || '+256 123 456 789';
+        document.getElementById('modalMessage').textContent = alert.full_message || 'Your blood type is urgently needed for a patient undergoing emergency surgery. Your donation could save up to 3 lives.';
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.add('show'), 100);
+    }
+
+    closeModal() {
+        const modal = document.getElementById('alertModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    playNotificationSound() {
+        try {
+            const audio = new Audio('/static/sounds/alert-notification.mp3');
+            audio.play().catch(e => console.log('Audio play failed:', e));
+        } catch (error) {
+            console.log('Audio not supported:', error);
+        }
+    }
+
+    showBrowserNotification(alert) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Emergency Blood Request - BloodLink', {
+                body: alert.message || 'Your blood type is urgently needed.',
+                icon: '/static/images/bloodlink-icon.png',
+                tag: 'blood-alert',
+                requireInteraction: true
+            });
+        } else if ('Notification' in window && Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    this.showBrowserNotification(alert);
+                }
+            });
+        }
+    }
+
+    async respondToAlert(responseType) {
+        if (!this.currentAlert) return;
+
+        try {
+            const response = await fetch(`/donor/api/alerts/${this.currentAlert.id}/respond/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': this.getCSRFToken(),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    response: responseType,
+                    timestamp: new Date().toISOString()
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.handleResponseSuccess(data, responseType);
+            } else {
+                console.error('Response failed:', response.status);
+            }
+        } catch (error) {
+            console.error('Error responding to alert:', error);
+        }
+    }
+
+    handleResponseSuccess(data, responseType) {
+        // Hide all alerts
+        this.hideToast();
+        this.hideBanner();
+        this.closeModal();
+        
+        // Show confirmation message
+        this.showConfirmationMessage(responseType);
+        
+        // Clear current alert
+        this.currentAlert = null;
+    }
+
+    showConfirmationMessage(responseType) {
+        const messages = {
+            'available': 'Thank you for your response! We will contact you shortly.',
+            'later': 'We will contact you later. Thank you for considering.',
+            'unable': 'Thank you for letting us know. We understand.'
+        };
+        
+        const message = messages[responseType] || 'Your response has been recorded.';
+        
+        // Show success notification
+        this.showSuccessNotification(message);
+    }
+
+    showSuccessNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'success-notification';
+        notification.innerHTML = `
+            <div class="success-content">
+                <span class="success-icon">check_circle</span>
+                <span class="success-message">${message}</span>
+            </div>
+        `;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            z-index: 10002;
+            transform: translateX(120%);
+            transition: all 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        setTimeout(() => {
+            notification.style.transform = 'translateX(120%)';
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+    }
+
+    getCSRFToken() {
+        const token = document.querySelector('[name=csrfmiddlewaretoken]');
+        return token ? token.value : '';
+    }
+
+    setupEventListeners() {
+        // Request notification permission on page load
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }
+
+    destroy() {
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+        }
+    }
+}
+
+// Global functions for button clicks
+function respondToAlert() {
+    window.alertSystem.showModal(window.alertSystem.currentAlert);
+}
+
+function viewAlertDetails() {
+    window.alertSystem.showModal(window.alertSystem.currentAlert);
+}
+
+function dismissAlert() {
+    window.alertSystem.hideToast();
+}
+
+function dismissBanner() {
+    window.alertSystem.hideBanner();
+}
+
+function closeAlertModal() {
+    window.alertSystem.closeModal();
+}
+
+function confirmDonation() {
+    window.alertSystem.respondToAlert('available');
+}
+
+function respondLater() {
+    window.alertSystem.respondToAlert('later');
+}
+
+function respondUnable() {
+    window.realTimeAlertSystem.respondToAlert('unable');
+}
+
+// Initialize real-time alert system when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.realTimeAlertSystem = new RealTimeAlertSystem();
+    
+    // Connect to message center if available
+    setTimeout(() => {
+        if (window.messageCenter) {
+            window.realTimeAlertSystem.onNewAlert = function(alert) {
+                window.messageCenter.addMessage(alert);
+            };
+        }
+    }, 1000);
+});
+
+// Clean up on page unload
+window.addEventListener('beforeunload', function() {
+    if (window.realTimeAlertSystem) {
+        window.realTimeAlertSystem.destroy();
+    }
+});
+</script>

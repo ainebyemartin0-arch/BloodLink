@@ -4,7 +4,38 @@
 {% block title %}Donor Dashboard - BloodLink{% endblock %}
 
 {% block extra_css %}
+<!-- Include real-time alerts styles -->
 <style>
+/* Additional dashboard-specific alert styles */
+.alert-indicator-dashboard {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9997;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid #ef4444;
+    max-width: 300px;
+}
+
+.alert-indicator-dashboard.show {
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Dashboard-specific styles */
 .donor-dashboard {
     max-width: 1400px;
     margin: 0 auto;
@@ -13,7 +44,7 @@
 
 /* Enhanced Hero Section */
 .dashboard-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ea6666e5 0%, #dc2626 100%);
     border-radius: 20px;
     padding: 3rem 2rem;
     margin-bottom: 2rem;
@@ -205,7 +236,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, #ea6666e5 0%, #dc2626 100%);
     transform: scaleX(0);
     transition: transform 0.3s ease;
 }
@@ -229,7 +260,7 @@
 .stat-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ea6666e5 0%, #dc2626 100%);
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -318,7 +349,8 @@
 .action-icon {
     width: 70px;
     height: 70px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ea6666e5 0%, #dc2626 100%);
+    
     border-radius: 20px;
     display: flex;
     align-items: center;
@@ -565,7 +597,8 @@
 }
 
 .message-item.request .message-icon {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    
+    background: linear-gradient(135deg, #ea6666e5 0%, #dc2626 100%);
     color: white;
 }
 
@@ -635,7 +668,7 @@
 }
 
 .action-btn.primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ea6666e5 0%, #dc2626 100%);
     color: white;
     box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
 }
@@ -679,7 +712,7 @@
 }
 
 .status-dot.new {
-    background: #3b82f6;
+    background: #f63b3bfb;
     animation: pulse 2s infinite;
 }
 
@@ -768,10 +801,926 @@
         padding: 1.5rem;
     }
 }
+
+/* Message Center Styles */
+.message-center-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.message-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.notification-count {
+    background: #dc2626;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: none; /* Hidden when count is 0 */
+}
+
+.message-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #f3f4f6;
+    padding-bottom: 0;
+}
+
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tab-button:hover {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+.tab-button.active {
+    color: #dc2626;
+    background: #fef2f2;
+    border-bottom: 2px solid #dc2626;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.message-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.message-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    background: #f9fafb;
+    border-left: 4px solid #e5e7eb;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.message-item:hover {
+    background: #f3f4f6;
+    transform: translateX(4px);
+}
+
+.message-item.urgent {
+    border-left-color: #dc2626;
+    background: #fef2f2;
+}
+
+.message-item.urgent:hover {
+    background: #fee2e2;
+}
+
+.message-item.unread {
+    background: #eff6ff;
+    border-left-color: #3b82f6;
+}
+
+.message-item.unread:hover {
+    background: #dbeafe;
+}
+
+.message-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    color: #dc2626;
+    font-size: 1.5rem;
+}
+
+.message-item.normal .message-icon {
+    color: #3b82f6;
+}
+
+.message-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.message-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.message-time {
+    font-size: 0.875rem;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.message-text {
+    color: #4b5563;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.message-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.detail-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.detail-badge.blood-type {
+    background: #dc2626;
+    color: white;
+}
+
+.detail-badge.hospital {
+    background: #3b82f6;
+    color: white;
+}
+
+.detail-badge.urgent {
+    background: #f59e0b;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.message-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn.primary {
+    background: #dc2626;
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+}
+
+.action-btn.secondary {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.action-btn.secondary:hover {
+    background: #e5e7eb;
+}
+
+.message-status {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e5e7eb;
+}
+
+.status-dot.urgent {
+    background: #dc2626;
+}
+
+.status-dot.unread {
+    background: #3b82f6;
+    animation: pulse 2s infinite;
+}
+
+.no-messages {
+    padding: 3rem;
+    text-align: center;
+}
+
+.empty-state {
+    color: #6b7280;
+}
+
+.empty-state .material-symbols-outlined {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #d1d5db;
+}
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #4b5563;
+}
+
+.empty-state p {
+    color: #6b7280;
+}
+
+/* Message Detail Modal */
+.message-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.close-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: #e5e7eb;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.detail-section {
+    margin-bottom: 1.5rem;
+}
+
+.detail-section h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.detail-section p {
+    font-size: 1rem;
+    color: #111827;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.modal-actions {
+    padding: 1rem 2rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Message Toast */
+.message-toast {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 1001;
+    animation: slideInRight 0.3s ease;
+}
+
+.message-toast.success {
+    border-left: 4px solid #10b981;
+    color: #10b981;
+}
+
+.message-toast.error {
+    border-left: 4px solid #dc2626;
+    color: #dc2626;
+}
+
+.message-toast.urgent {
+    border-left: 4px solid #f59e0b;
+    color: #f59e0b;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .message-center-section {
+        padding: 1rem;
+    }
+    
+    .message-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .tab-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .message-item {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .message-header {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .message-actions {
+        justify-content: stretch;
+    }
+    
+    .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        max-height: 90vh;
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-actions {
+        padding: 1rem;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .message-toast {
+        right: 1rem;
+        left: 1rem;
+    }
+}
 </style>
+
+<!-- Message Center JavaScript -->
+<script>
+class MessageCenter {
+    constructor() {
+        this.messages = {
+            urgent: [],
+            requests: [],
+            general: [],
+            all: []
+        };
+        this.unreadCount = 0;
+        this.currentTab = 'urgent';
+        this.init();
+    }
+
+    init() {
+        this.setupTabListeners();
+        this.loadMessages();
+        this.startRealTimeUpdates();
+    }
+
+    setupTabListeners() {
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                this.switchTab(e.target.dataset.tab);
+            });
+        });
+    }
+
+    switchTab(tabName) {
+        // Update active button
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+        // Update active content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+
+        this.currentTab = tabName;
+        this.renderMessages(tabName);
+    }
+
+    async loadMessages() {
+        try {
+            const response = await fetch('/donor/api/alerts/history/');
+            const data = await response.json();
+            
+            if (data.success) {
+                this.processMessages(data.messages);
+                this.renderMessages(this.currentTab);
+                this.updateUnreadCount();
+            }
+        } catch (error) {
+            console.error('Error loading messages:', error);
+        }
+    }
+
+    processMessages(messages) {
+        // Clear existing messages
+        this.messages = {
+            urgent: [],
+            requests: [],
+            general: [],
+            all: []
+        };
+
+        messages.forEach(message => {
+            const messageObj = this.formatMessage(message);
+            
+            // Categorize messages
+            if (message.type === 'blood_request' && message.urgency === 'critical') {
+                this.messages.urgent.push(messageObj);
+            } else if (message.type === 'blood_request') {
+                this.messages.requests.push(messageObj);
+            } else {
+                this.messages.general.push(messageObj);
+            }
+            
+            // Add to all messages
+            this.messages.all.push(messageObj);
+        });
+
+        // Sort by timestamp (newest first)
+        Object.keys(this.messages).forEach(key => {
+            this.messages[key].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        });
+    }
+
+    formatMessage(message) {
+        return {
+            id: message.id,
+            type: message.type,
+            title: message.title || this.generateTitle(message),
+            content: message.message || message.full_message,
+            timestamp: message.created_at,
+            urgency: message.urgency,
+            bloodType: message.blood_type,
+            hospital: message.hospital,
+            patientType: message.patient_type,
+            contact: message.contact,
+            read: message.read || false,
+            actions: this.generateActions(message)
+        };
+    }
+
+    generateTitle(message) {
+        if (message.type === 'blood_request') {
+            return `${message.urgency?.toUpperCase()}: ${message.blood_type} Blood Needed`;
+        }
+        return 'Notification';
+    }
+
+    generateActions(message) {
+        const actions = [];
+        
+        if (message.type === 'blood_request') {
+            actions.push({
+                id: 'donate',
+                label: 'I Can Donate',
+                icon: 'volunteer_activism',
+                type: 'primary',
+                action: () => this.respondToAlert(message.id, 'confirmed')
+            });
+            
+            actions.push({
+                id: 'details',
+                label: 'View Details',
+                icon: 'info',
+                type: 'secondary',
+                action: () => this.showDetails(message)
+            });
+            
+            actions.push({
+                id: 'decline',
+                label: 'Unable to Donate',
+                icon: 'close',
+                type: 'secondary',
+                action: () => this.respondToAlert(message.id, 'declined')
+            });
+        }
+        
+        return actions;
+    }
+
+    renderMessages(tabName) {
+        const container = document.getElementById(`${tabName}MessagesList`);
+        const messages = this.messages[tabName];
+        
+        if (messages.length === 0) {
+            container.innerHTML = `
+                <div class="no-messages" id="no${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Messages">
+                    <div class="empty-state">
+                        <span class="material-symbols-outlined">${this.getEmptyIcon(tabName)}</span>
+                        <h3>No ${tabName.charAt(0).toUpperCase() + tabName.slice(1)} Messages</h3>
+                        <p>${this.getEmptyMessage(tabName)}</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = messages.map(message => this.createMessageHTML(message)).join('');
+    }
+
+    createMessageHTML(message) {
+        const urgencyClass = message.urgency === 'critical' ? 'urgent' : 'normal';
+        const readClass = message.read ? 'read' : 'unread';
+        
+        return `
+            <div class="message-item ${urgencyClass} ${readClass}" data-message-id="${message.id}">
+                <div class="message-icon">
+                    <span class="material-symbols-outlined">${this.getMessageIcon(message)}</span>
+                </div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <h4 class="message-title">${message.title}</h4>
+                        <span class="message-time">${this.formatTime(message.timestamp)}</span>
+                    </div>
+                    <p class="message-text">${message.content}</p>
+                    ${message.bloodType ? `<div class="message-details">
+                        <span class="detail-badge blood-type">${message.bloodType}</span>
+                        <span class="detail-badge hospital">${message.hospital}</span>
+                        ${message.urgency === 'critical' ? '<span class="detail-badge urgent">URGENT</span>' : ''}
+                    </div>` : ''}
+                    <div class="message-actions">
+                        ${message.actions.map(action => `
+                            <button class="action-btn ${action.type}" onclick="messageCenter.executeAction('${message.id}', '${action.id}')">
+                                <span class="material-symbols-outlined">${action.icon}</span>
+                                ${action.label}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="message-status">
+                    <span class="status-dot ${urgencyClass} ${!message.read ? 'unread' : ''}"></span>
+                </div>
+            </div>
+        `;
+    }
+
+    getMessageIcon(message) {
+        if (message.type === 'blood_request') {
+            return message.urgency === 'critical' ? 'emergency' : 'bloodtype';
+        }
+        return 'notifications';
+    }
+
+    getEmptyIcon(tabName) {
+        const icons = {
+            urgent: 'emergency',
+            requests: 'bloodtype',
+            general: 'notifications',
+            all: 'inbox'
+        };
+        return icons[tabName] || 'notifications';
+    }
+
+    getEmptyMessage(tabName) {
+        const messages = {
+            urgent: "You'll see urgent blood requests here when they're sent by staff.",
+            requests: "Blood requests matching your type will appear here.",
+            general: "General notifications and updates will appear here.",
+            all: "All your messages will appear here."
+        };
+        return messages[tabName] || "Messages will appear here.";
+    }
+
+    formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} minutes ago`;
+        if (diffHours < 24) return `${diffHours} hours ago`;
+        if (diffDays < 7) return `${diffDays} days ago`;
+        return date.toLocaleDateString();
+    }
+
+    executeAction(messageId, actionId) {
+        const message = this.findMessage(messageId);
+        if (message && message.actions) {
+            const action = message.actions.find(a => a.id === actionId);
+            if (action) {
+                action.action();
+            }
+        }
+    }
+
+    findMessage(messageId) {
+        for (let category in this.messages) {
+            const message = this.messages[category].find(m => m.id == messageId);
+            if (message) return message;
+        }
+        return null;
+    }
+
+    async respondToAlert(messageId, response) {
+        try {
+            const formData = new FormData();
+            formData.append('response', response);
+            
+            const response_data = await fetch(`/donor/api/alerts/${messageId}/respond/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+
+            const result = await response_data.json();
+            
+            if (result.success) {
+                this.showMessage('Response submitted successfully!', 'success');
+                // Mark message as read
+                this.markAsRead(messageId);
+                // Refresh messages
+                this.loadMessages();
+            } else {
+                this.showMessage('Error submitting response', 'error');
+            }
+        } catch (error) {
+            console.error('Error responding to alert:', error);
+            this.showMessage('Error submitting response', 'error');
+        }
+    }
+
+    showDetails(message) {
+        // Create modal with detailed information
+        const modal = document.createElement('div');
+        modal.className = 'message-detail-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>${message.title}</h3>
+                    <button class="close-btn" onclick="this.closest('.message-detail-modal').remove()">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="detail-section">
+                        <h4>Blood Type</h4>
+                        <p>${message.bloodType || 'N/A'}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Hospital</h4>
+                        <p>${message.hospital || 'N/A'}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Patient</h4>
+                        <p>${message.patientType || 'N/A'}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Contact</h4>
+                        <p>${message.contact || 'N/A'}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Message</h4>
+                        <p>${message.content}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Time</h4>
+                        <p>${new Date(message.timestamp).toLocaleString()}</p>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    ${message.actions.map(action => `
+                        <button class="action-btn ${action.type}" onclick="messageCenter.executeAction('${message.id}', '${action.id}'); this.closest('.message-detail-modal').remove();">
+                            <span class="material-symbols-outlined">${action.icon}</span>
+                            ${action.label}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    async markAsRead(messageId) {
+        try {
+            await fetch(`/donor/api/alerts/${messageId}/mark-read/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': this.getCSRFToken()
+                }
+            });
+        } catch (error) {
+            console.error('Error marking message as read:', error);
+        }
+    }
+
+    updateUnreadCount() {
+        this.unreadCount = 0;
+        Object.keys(this.messages).forEach(category => {
+            this.messages[category].forEach(message => {
+                if (!message.read) this.unreadCount++;
+            });
+        });
+        
+        const countElement = document.getElementById('unreadCount');
+        if (countElement) {
+            countElement.textContent = this.unreadCount;
+            countElement.style.display = this.unreadCount > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    startRealTimeUpdates() {
+        // Check for new messages every 10 seconds
+        setInterval(() => {
+            this.loadMessages();
+        }, 10000);
+    }
+
+    showMessage(text, type = 'info') {
+        // Create toast notification
+        const toast = document.createElement('div');
+        toast.className = `message-toast ${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : 'error'}</span>
+                <span>${text}</span>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    getCSRFToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        return cookieValue || '';
+    }
+
+    // Method to add new messages from real-time alerts
+    addMessage(message) {
+        const messageObj = this.formatMessage(message);
+        
+        // Add to appropriate category
+        if (message.type === 'blood_request' && message.urgency === 'critical') {
+            this.messages.urgent.unshift(messageObj);
+        } else if (message.type === 'blood_request') {
+            this.messages.requests.unshift(messageObj);
+        } else {
+            this.messages.general.unshift(messageObj);
+        }
+        
+        // Add to all messages
+        this.messages.all.unshift(messageObj);
+        
+        // Update display
+        this.renderMessages(this.currentTab);
+        this.updateUnreadCount();
+        
+        // Show notification for new urgent messages
+        if (message.type === 'blood_request' && message.urgency === 'critical') {
+            this.showMessage('New urgent blood request received!', 'urgent');
+        }
+    }
+}
+
+// Initialize message center when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.messageCenter = new MessageCenter();
+    
+    // Connect to real-time alert system
+    if (window.realTimeAlertSystem) {
+        window.realTimeAlertSystem.onNewAlert = function(alert) {
+            window.messageCenter.addMessage(alert);
+        };
+    }
+});
+</script>
+
 {% endblock %}
 
 {% block content %}
+<!-- Include Real-Time Alert System -->
+{% include 'donor_portal/real_time_alerts.html' %}
+
 <div class="donor-dashboard">
     <!-- Enhanced Hero Section -->
     <div class="dashboard-hero">
@@ -914,7 +1863,7 @@
                 <p class="section-subtitle">Stay updated with important notifications</p>
             </div>
             <div class="message-indicator">
-                <span class="notification-count" id="unreadCount">3</span>
+                <span class="notification-count" id="unreadCount">0</span>
                 <span class="notification-label">New Messages</span>
             </div>
         </div>
@@ -929,32 +1878,61 @@
         <div class="message-content">
             <!-- Urgent Messages Tab -->
             <div class="tab-content active" id="urgent-tab">
-                <div class="message-list">
-                    <div class="message-item urgent">
-                        <div class="message-icon">
+                <div class="message-list" id="urgentMessagesList">
+                    <!-- Dynamic urgent messages will be loaded here -->
+                    <div class="no-messages" id="noUrgentMessages">
+                        <div class="empty-state">
                             <span class="material-symbols-outlined">emergency</span>
-                        </div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <h4 class="message-title">URGENT: Blood Needed - O+ Type</h4>
-                                <span class="message-time">2 hours ago</span>
-                            </div>
-                            <p class="message-text">St. Francis Hospital urgently needs O+ blood for emergency surgery. Your blood type matches perfectly.</p>
-                            <div class="message-actions">
-                                <button class="action-btn primary" onclick="respondToRequest('urgent-001')">
-                                    <span class="material-symbols-outlined">volunteer_activism</span>
-                                    I Can Donate
-                                </button>
-                                <button class="action-btn secondary" onclick="viewDetails('urgent-001')">
-                                    <span class="material-symbols-outlined">info</span>
-                                    Details
-                                </button>
-                            </div>
-                        </div>
-                        <div class="message-status">
-                            <span class="status-dot urgent"></span>
+                            <h3>No Urgent Messages</h3>
+                            <p>You'll see urgent blood requests here when they're sent by staff.</p>
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Blood Requests Tab -->
+            <div class="tab-content" id="requests-tab">
+                <div class="message-list" id="bloodRequestsList">
+                    <!-- Dynamic blood requests will be loaded here -->
+                    <div class="no-messages" id="noBloodRequests">
+                        <div class="empty-state">
+                            <span class="material-symbols-outlined">bloodtype</span>
+                            <h3>No Blood Requests</h3>
+                            <p>Blood requests matching your type will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- General Messages Tab -->
+            <div class="tab-content" id="general-tab">
+                <div class="message-list" id="generalMessagesList">
+                    <!-- Dynamic general messages will be loaded here -->
+                    <div class="no-messages" id="noGeneralMessages">
+                        <div class="empty-state">
+                            <span class="material-symbols-outlined">notifications</span>
+                            <h3>No General Messages</h3>
+                            <p>General notifications and updates will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- All Messages Tab -->
+            <div class="tab-content" id="all-tab">
+                <div class="message-list" id="allMessagesList">
+                    <!-- All messages combined will be loaded here -->
+                    <div class="no-messages" id="noAllMessages">
+                        <div class="empty-state">
+                            <span class="material-symbols-outlined">inbox</span>
+                            <h3>No Messages</h3>
+                            <p>All your messages will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
                     
                     <div class="message-item urgent">
                         <div class="message-icon">

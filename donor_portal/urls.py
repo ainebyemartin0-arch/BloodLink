@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from . import api_views
+from . import api_views_realtime
 
 app_name = 'donor'
 
@@ -34,6 +35,13 @@ urlpatterns = [
     path('api/toggle-availability/', api_views.toggle_availability, name='api_toggle_availability'),
     path('api/alerts/', api_views.get_alerts_list, name='api_alerts'),
     path('api/alerts/<int:alert_id>/respond/', api_views.respond_to_alert, name='api_respond_alert'),
+    
+    # Real-time alert API endpoints
+    path('api/urgent-alerts/', api_views_realtime.urgent_alerts, name='api_realtime_urgent_alerts'),
+    path('api/alerts/<int:alert_id>/respond/', api_views_realtime.respond_to_alert, name='api_realtime_respond_alert'),
+    path('api/alerts/history/', api_views_realtime.alert_history, name='api_alert_history'),
+    path('api/alerts/<int:alert_id>/mark-read/', api_views_realtime.mark_alert_read, name='api_mark_alert_read'),
+    path('api/notification-stats/', api_views_realtime.notification_stats, name='api_realtime_notification_stats'),
     
     # Test page
     path('test/', views.test_page, name='test_page'),

@@ -111,13 +111,29 @@ def donor_login(request):
             try:
                 donor = Donor.objects.get(email=email, is_active=True)
                 if donor.check_password(password):
+                    # Clear any existing session data
+                    request.session.flush()
+                    
+                    # Set new session
                     request.session['donor_id'] = donor.pk
+                    request.session['last_activity'] = timezone.now().isoformat()
+                    
+                    # Set session timeout (30 days if remember me is checked)
+                    remember_me = request.POST.get('remember', False)
+                    if remember_me:
+                        request.session.set_expiry(30 * 24 * 60 * 60)  # 30 days
+                    else:
+                        request.session.set_expiry(24 * 60 * 60)  # 24 hours
+                    
                     messages.success(request, f"Welcome back, {donor.full_name}!")
                     return redirect('donor:dashboard')
                 else:
                     messages.error(request, "Invalid email or password.")
             except Donor.DoesNotExist:
                 messages.error(request, "Invalid email or password.")
+        else:
+            # Form validation errors
+            messages.error(request, "Please correct the errors below.")
     else:
         form = DonorLoginForm()
     

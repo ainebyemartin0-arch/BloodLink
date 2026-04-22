@@ -21,7 +21,7 @@
             </div>
         </div>
         <div style="text-align: center;">
-            <div style="width: 120px; height: 120px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+            <div style="width: 120px; height: 120px; background: rgba(224, 76, 76, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
                 <i class="material-icons" style="font-size: 3rem; color: white;">bloodtype</i>
             </div>
             <div style="margin-top: 1rem; font-weight: 600; font-size: 1.25rem;">{{ donor.blood_type }}</div>
@@ -162,7 +162,7 @@
                     </table>
                 </div>
                 {% else %}
-                <div style="text-align: center; padding: 3rem; color: #6b7280;">
+                <div style="text-align: center; padding: 3rem; color: #dc2626;">
                     <i class="material-icons" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">history</i>
                     <p>No donation history yet. Start saving lives today!</p>
                     <a href="{% url 'donor:request_blood' %}" style="background: #dc2626; color: white; text-decoration: none; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; display: inline-block; margin-top: 1rem;">
