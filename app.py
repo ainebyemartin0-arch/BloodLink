@@ -10,3 +10,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bloodlink_project.settings')
 
 # Get Django WSGI application
 application = get_wsgi_application()
+
+# Add alias for compatibility
+app = application
