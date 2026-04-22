@@ -9,10 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.getenv(
-    'ALLOWED_HOSTS', 
-    'localhost 127.0.0.1'
-).split(' ')
+# Handle ALLOWED_HOSTS for production (Render.com) and development
+allowed_hosts_env = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1')
+ALLOWED_HOSTS = allowed_hosts_env.split(' ')
+
+# Always allow Render.com domains
+if '.onrender.com' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.onrender.com')
 
 INSTALLED_APPS = [
     'django.contrib.auth',
