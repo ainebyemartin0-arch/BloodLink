@@ -204,6 +204,126 @@ class PublicBloodRequest(models.Model):
         verbose_name_plural = 'Public Blood Requests'
 
 
+class BloodStock(models.Model):
+    """
+    Monitors blood inventory levels and triggers alerts when stocks are low.
+    Tracks each blood type's current stock level and optimal levels.
+    """
+    BLOOD_TYPES = [
+        ('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'),
+        ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-'),
+    ]
+    
+    blood_type = models.CharField(max_length=3, choices=BLOOD_TYPES, unique=True)
+    current_units = models.PositiveIntegerField(default=0)
+    optimal_level = models.PositiveIntegerField(
+        default=50,
+        help_text="Optimal stock level for this blood type"
+    )
+    minimum_level = models.PositiveIntegerField(
+        default=10,
+        help_text="Minimum acceptable stock level"
+    )
+    critical_level = models.PositiveIntegerField(
+        default=5,
+        help_text="Critical stock level - immediate alert"
+    )
+    last_updated = models.DateTimeField(auto_now=True)
+    last_alert_sent = models.DateTimeField(null=True, blank=True)
+    
+    def get_stock_status(self):
+        """Returns current stock status based on levels"""
+        if self.current_units <= self.critical_level:
+            return 'critical'
+        elif self.current_units <= self.minimum_level:
+            return 'low'
+        elif self.current_units < self.optimal_level:
+            return 'moderate'
+        else:
+            return 'adequate'
+    
+    def get_stock_status_display(self):
+        """Human-readable stock status"""
+        status = self.get_stock_status()
+        return {
+            'critical': 'Critical Shortage',
+            'low': 'Low Stock',
+            'moderate': 'Moderate Stock',
+            'adequate': 'Adequate Stock'
+        }[status]
+    
+    def should_send_alert(self):
+        """Check if alert should be sent based on stock level and timing"""
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        status = self.get_stock_status()
+        if status in ['critical', 'low']:
+            # Only send alert if none sent in last 6 hours
+            if not self.last_alert_sent or (timezone.now() - self.last_alert_sent) > timedelta(hours=6):
+                return True
+        return False
+    
+    def update_stock(self, units_change, operation='add'):
+        """Update stock levels and create donation record if applicable"""
+        if operation == 'add':
+            self.current_units += units_change
+        elif operation == 'remove':
+            if self.current_units >= units_change:
+                self.current_units -= units_change
+            else:
+                raise ValueError("Insufficient stock units")
+        self.save()
+    
+    def __str__(self):
+        return f"{self.blood_type}: {self.current_units} units ({self.get_stock_status_display()})"
+    
+    class Meta:
+        ordering = ['blood_type']
+        verbose_name = 'Blood Stock'
+        verbose_name_plural = 'Blood Stocks'
+
+
+class StockAlert(models.Model):
+    """
+    Records all stock alerts sent to staff for monitoring and audit purposes.
+    """
+    ALERT_TYPES = [
+        ('critical', 'Critical Shortage Alert'),
+        ('low', 'Low Stock Alert'),
+        ('restock', 'Restock Notification'),
+    ]
+    
+    blood_stock = models.ForeignKey(BloodStock, on_delete=models.CASCADE, related_name='alerts')
+    alert_type = models.CharField(max_length=20, choices=ALERT_TYPES)
+    current_units = models.PositiveIntegerField()
+    message = models.TextField()
+    sent_at = models.DateTimeField(auto_now_add=True)
+    acknowledged = models.BooleanField(default=False)
+    acknowledged_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='acknowledged_alerts'
+    )
+    acknowledged_at = models.DateTimeField(null=True, blank=True)
+    
+    def acknowledge_alert(self, staff_user):
+        """Mark alert as acknowledged by staff"""
+        self.acknowledged = True
+        self.acknowledged_by = staff_user
+        self.acknowledged_at = timezone.now()
+        self.save()
+    
+    def __str__(self):
+        return f"{self.alert_type.upper()} - {self.blood_stock.blood_type} ({self.sent_at.date()})"
+    
+    class Meta:
+        ordering = ['-sent_at']
+        verbose_name = 'Stock Alert'
+        verbose_name_plural = 'Stock Alerts'
+
+
 class ActivityLog(models.Model):
     """
     Records every important action performed by staff.

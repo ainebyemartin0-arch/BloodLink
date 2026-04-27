@@ -374,6 +374,116 @@
     color: white;
 }
 
+/* Ineligible Donor Notice */
+.ineligible-notice {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #f39c12;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.ineligible-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2.5rem;
+}
+
+.ineligible-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #e67e22;
+    margin-bottom: 1rem;
+}
+
+.ineligible-message {
+    font-size: 1.125rem;
+    color: #7f6000;
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.eligibility-timer {
+    margin: 2rem 0;
+}
+
+.timer-circle {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+}
+
+.timer-days {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.timer-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.25rem;
+}
+
+.ineligible-info {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.ineligible-info h4 {
+    color: #e67e22;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.ineligible-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.ineligible-info li {
+    padding: 0.5rem 0;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+
+.ineligible-info li:before {
+    content: "✓";
+    color: #27ae60;
+    font-weight: bold;
+    margin-right: 0.75rem;
+    font-size: 1.125rem;
+}
+
+.eligibility-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
 @media (max-width: 768px) {
     .requests-container {
         margin: 1rem auto;
@@ -451,7 +561,47 @@
         </div>
         
         <div class="requests-list">
-            {% if requests %}
+            {% if ineligible_message %}
+                <!-- Ineligible Donor Message -->
+                <div class="ineligible-notice">
+                    <div class="ineligible-icon">
+                        <span class="material-icons">schedule</span>
+                    </div>
+                    <div class="ineligible-content">
+                        <h3 class="ineligible-title">Donation Waiting Period</h3>
+                        <p class="ineligible-message">
+                            {{ eligibility_reason }}
+                        </p>
+                        {% if days_until_eligible > 0 %}
+                            <div class="eligibility-timer">
+                                <div class="timer-circle">
+                                    <span class="timer-days">{{ days_until_eligible }}</span>
+                                    <span class="timer-label">days remaining</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="ineligible-info">
+                            <h4>Why the waiting period?</h4>
+                            <ul>
+                                <li>Allows your body to replenish red blood cells</li>
+                                <li>Ensures your safety and well-being</li>
+                                <li>Maintains quality of donated blood</li>
+                                <li>Follows medical guidelines for blood donation</li>
+                            </ul>
+                        </div>
+                        <div class="eligibility-actions">
+                            <a href="{% url 'donor:dashboard' %}" class="btn-action btn-secondary">
+                                <span class="material-icons">dashboard</span>
+                                Back to Dashboard
+                            </a>
+                            <a href="{% url 'donor:profile' %}" class="btn-action btn-primary">
+                                <span class="material-icons">person</span>
+                                View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% elif requests %}
                 {% for request in requests %}
                 <div class="request-card {% if request.display_urgency == 'critical' %}critical{% elif request.display_urgency == 'urgent' %}urgent{% endif %}">
                     <div class="request-header">

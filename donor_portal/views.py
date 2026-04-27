@@ -13,7 +13,7 @@ from functools import wraps
 from donors.models import Donor
 from donors.choices import BLOOD_TYPE_CHOICES
 from notifications.models import SMSNotification
-from staff_portal.models import EmergencyRequest, PublicBloodRequest, DonationRecord
+from staff_portal.models import EmergencyRequest, PublicBloodRequest, DonationRecord, BloodStock, StockAlert
 from .forms import (
     DonorRegistrationForm, DonorLoginForm, DonorProfileEditForm, DonorChangePasswordForm, PublicBloodRequestForm,
     GoogleLoginForm, PhoneLoginForm, PhoneRegistrationForm, GoogleRegistrationForm
@@ -404,6 +404,24 @@ def donor_donations(request):
 def donor_requests(request):
     """Donor requests view."""
     donor = get_logged_in_donor(request)
+    
+    # Check if donor is eligible to receive requests
+    if not donor.is_eligible_to_donate:
+        # Donor not eligible - show message about eligibility period
+        context = {
+            'donor': donor,
+            'requests': [],  # No requests shown
+            'pending_requests': 0,
+            'confirmed_requests': 0,
+            'completed_requests': 0,
+            'total_requests': 0,
+            'pending_count': 0,
+            'ineligible_message': True,
+            'eligibility_status': donor.eligibility_status_display,
+            'eligibility_reason': donor.eligibility_reason,
+            'days_until_eligible': donor.days_until_eligible,
+        }
+        return render(request, 'donor_portal/donor_requests_organized.html', context)
     
     # Get EmergencyRequest objects from staff (open/fulfilled requests)
     emergency_requests = EmergencyRequest.objects.filter(

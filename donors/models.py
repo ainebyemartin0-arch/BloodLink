@@ -1,7 +1,13 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
-from datetime import date
-from dateutil.relativedelta import relativedelta
+from datetime import date, datetime
+try:
+    from dateutil.relativedelta import relativedelta
+except ImportError:
+    # Fallback if dateutil is not available
+    def relativedelta(start_date, end_date):
+        delta = end_date - start_date
+        return type('Delta', (), {'years': delta.days // 365, 'months': delta.days // 30, 'days': delta.days % 30})()
 from .choices import BLOOD_TYPE_CHOICES, LOCATION_CHOICES, GENDER_CHOICES
 
 class Donor(models.Model):
@@ -31,6 +37,9 @@ class Donor(models.Model):
     is_available = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     last_donation_date = models.DateField(null=True, blank=True)
+    next_eligible_date = models.DateField(null=True, blank=True, help_text="Date when donor can donate again")
+    total_donations = models.PositiveIntegerField(default=0, help_text="Total number of donations made")
+    donation_count_12_months = models.PositiveIntegerField(default=0, help_text="Donations in last 12 months")
     date_registered = models.DateTimeField(auto_now_add=True)
     profile_notes = models.TextField(blank=True)
     
@@ -104,21 +113,31 @@ class Donor(models.Model):
     @property
     def is_eligible_to_donate(self):
         """
-        Auto-calculate eligibility:
+        Professional eligibility calculation following medical guidelines:
         - Must be between 18 and 65 years old
-        - Must be marked as available
-        - Must be active
-        - Last donation must be at least 90 days ago (3 months)
+        - Must be marked as available and active
+        - Must have completed waiting period since last donation
+        - Must not exceed donation frequency limits
         """
+        from datetime import date, timedelta
+        
         if not self.is_active or not self.is_available:
             return False
+        
+        # Age eligibility
         if self.age is not None:
             if self.age < 18 or self.age > 65:
                 return False
-        if self.last_donation_date:
-            days_since = (date.today() - self.last_donation_date).days
-            if days_since < 90:
+        
+        # Check if within eligible period
+        if self.next_eligible_date:
+            if date.today() < self.next_eligible_date:
                 return False
+        
+        # Check donation frequency (max 6 donations per year)
+        if self.donation_count_12_months >= 6:
+            return False
+        
         return True
 
     @property
@@ -127,15 +146,116 @@ class Donor(models.Model):
         Returns how many days until donor can donate again.
         Returns 0 if already eligible.
         """
-        if self.last_donation_date:
-            days_since = (date.today() - self.last_donation_date).days
-            remaining = 90 - days_since
-            return max(0, remaining)
+        from datetime import date
+        
+        if self.next_eligible_date:
+            if date.today() >= self.next_eligible_date:
+                return 0
+            else:
+                return (self.next_eligible_date - date.today()).days
         return 0
+
+    @property
+    def eligibility_status_display(self):
+        """Human-readable eligibility status"""
+        if not self.is_active:
+            return "Inactive Account"
+        elif not self.is_available:
+            return "Unavailable"
+        elif not self.is_eligible_to_donate:
+            days = self.days_until_eligible
+            if days > 0:
+                return f"Eligible in {days} days"
+            else:
+                return "Not Eligible"
+        else:
+            return "Eligible to Donate"
+
+    def record_donation(self, units_donated=1):
+        """
+        Professional donation recording with automatic eligibility calculation.
+        Updates donation history and calculates next eligible date.
+        """
+        from datetime import date, timedelta
+        from django.utils import timezone
+        
+        # Update donation counts
+        self.total_donations += 1
+        self.last_donation_date = date.today()
+        
+        # Calculate next eligible date (90 days for whole blood, 56 for plasma)
+        # Using 90 days as standard for whole blood donation
+        self.next_eligible_date = date.today() + timedelta(days=90)
+        
+        # Update 12-month donation count
+        one_year_ago = date.today() - timedelta(days=365)
+        # Defer import to avoid circular dependency
+        from staff_portal.models import DonationRecord
+        recent_donations = DonationRecord.objects.filter(
+            donor=self,
+            donation_date__gte=one_year_ago
+        ).count()
+        self.donation_count_12_months = recent_donations + 1  # Include current donation
+        
+        self.save()
+        
+        # Create donation record - defer import to avoid circular dependency
+        from staff_portal.models import DonationRecord
+        return DonationRecord.objects.create(
+            donor=self,
+            donation_date=date.today(),
+            units_donated=units_donated,
+            notes=f"Donation #{self.total_donations} recorded automatically"
+        )
+
+    def update_eligibility_status(self):
+        """
+        Update eligibility status based on current date and donation history.
+        This method should be called periodically to ensure eligibility is up-to-date.
+        """
+        from datetime import date, timedelta
+        from django.db.models import Count
+        
+        # Update 12-month donation count
+        one_year_ago = date.today() - timedelta(days=365)
+        # Defer import to avoid circular dependency
+        from staff_portal.models import DonationRecord
+        recent_count = DonationRecord.objects.filter(
+            donor=self,
+            donation_date__gte=one_year_ago
+        ).count()
+        self.donation_count_12_months = recent_count
+        
+        # Update next eligible date if needed
+        if self.last_donation_date:
+            expected_next_date = self.last_donation_date + timedelta(days=90)
+            if self.next_eligible_date != expected_next_date:
+                self.next_eligible_date = expected_next_date
+        
+        self.save()
+
+    @classmethod
+    def get_eligible_donors_for_blood_type(cls, blood_type):
+        """
+        Get all eligible donors for a specific blood type.
+        Excludes donors who are not eligible due to waiting period or other restrictions.
+        """
+        return cls.objects.filter(
+            blood_type=blood_type,
+            is_active=True,
+            is_available=True
+        ).filter(
+            models.Q(next_eligible_date__lte=date.today()) | 
+            models.Q(next_eligible_date__isnull=True)
+        ).filter(
+            donation_count_12_months__lt=6
+        )
 
     @property
     def eligibility_reason(self):
         """Returns human-readable reason if donor is NOT eligible."""
+        from datetime import date
+        
         if not self.is_active:
             return "Account is inactive"
         if not self.is_available:
@@ -145,11 +265,16 @@ class Donor(models.Model):
                 return f"Too young (age {self.age}, minimum 18)"
             if self.age > 65:
                 return f"Exceeds age limit (age {self.age}, maximum 65)"
-        if self.last_donation_date:
-            days_since = (date.today() - self.last_donation_date).days
-            if days_since < 90:
-                remaining = 90 - days_since
-                return f"Must wait {remaining} more days before donating again"
+        
+        # Check waiting period
+        if self.next_eligible_date and date.today() < self.next_eligible_date:
+            days = self.days_until_eligible
+            return f"Waiting period: {days} days remaining"
+        
+        # Check donation frequency
+        if self.donation_count_12_months >= 6:
+            return "Annual donation limit reached (6 donations per year)"
+        
         return "Eligible to donate"
 
     @property

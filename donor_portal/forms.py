@@ -84,10 +84,18 @@ class DonorRegistrationForm(forms.Form):
 
 class DonorLoginForm(forms.Form):
     email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'your.email@example.com'})
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'your.email@example.com',
+            'id': 'id_email'
+        })
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password'})
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Enter your password',
+            'id': 'id_password'
+        })
     )
 
 class DonorProfileEditForm(forms.ModelForm):

@@ -1,0 +1,583 @@
+{% extends 'base_staff_modern.html' %}
+{% load static %}
+
+{% block title %}Blood Stock Monitoring - BloodLink{% endblock %}
+
+{% block extra_css %}
+<style>
+.stock-monitoring-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.alert-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.alert-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid;
+}
+
+.alert-card.critical {
+    border-left-color: #e74c3c;
+}
+
+.alert-card.low {
+    border-left-color: #f39c12;
+}
+
+.alert-card.adequate {
+    border-left-color: #27ae60;
+}
+
+.alert-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.alert-card.critical .alert-number {
+    color: #e74c3c;
+}
+
+.alert-card.low .alert-number {
+    color: #f39c12;
+}
+
+.alert-card.adequate .alert-number {
+    color: #27ae60;
+}
+
+.alert-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stock-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border-top: 4px solid;
+}
+
+.stock-card.critical {
+    border-top-color: #e74c3c;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+}
+
+.stock-card.low {
+    border-top-color: #f39c12;
+    background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+}
+
+.stock-card.adequate {
+    border-top-color: #27ae60;
+    background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+}
+
+.stock-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.eligibility-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.stock-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.update-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.update-form input {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.update-buttons {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.btn-action {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-success {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #229954;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.blood-type-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.blood-type {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stock-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.stock-status.critical {
+    background: #e74c3c;
+    color: white;
+}
+
+.stock-status.low {
+    background: #f39c12;
+    color: white;
+}
+
+.stock-status.adequate {
+    background: #27ae60;
+    color: white;
+}
+
+.stock-levels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.level-item {
+    text-align: center;
+}
+
+.level-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.level-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.current-stock {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.stock-progress {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress-bar.critical {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+.progress-bar.low {
+    background: linear-gradient(90deg, #f39c12, #e67e22);
+}
+
+.progress-bar.adequate {
+    background: linear-gradient(90deg, #27ae60, #229954);
+}
+
+.alerts-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alert-item {
+    padding: 1rem;
+    border-left: 4px solid;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+    border-radius: 0 8px 8px 0;
+}
+
+.alert-item.critical {
+    border-left-color: #e74c3c;
+    background: #fff5f5;
+}
+
+.alert-item.low {
+    border-left-color: #f39c12;
+    background: #fffbf0;
+}
+
+.alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.alert-title {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.alert-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.alert-message {
+    color: #555;
+    line-height: 1.5;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.btn-action {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-acknowledge {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-acknowledge:hover {
+    background: #229954;
+}
+
+.btn-details {
+    background: #3498db;
+    color: white;
+}
+
+.btn-details:hover {
+    background: #2980b9;
+}
+
+@media (max-width: 768px) {
+    .stock-monitoring-container {
+        padding: 0 0.5rem;
+    }
+    
+    .stocks-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stock-levels {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stock-monitoring-container">
+    <div class="stock-header">
+        <div>
+            <h1 class="page-title">Blood Stock Monitoring</h1>
+            <p class="page-subtitle">Real-time blood inventory levels and alerts</p>
+        </div>
+        <div class="action-buttons">
+            <button onclick="location.reload()" class="btn-action btn-details">
+                <span class="material-icons">refresh</span>
+                Refresh
+            </button>
+            <button onclick="monitorStocks()" class="btn-action btn-primary">
+                <span class="material-icons">search</span>
+                Monitor Now
+            </button>
+        </div>
+    </div>
+
+    <!-- Alert Summary -->
+    <div class="alert-summary">
+        <div class="alert-card critical">
+            <div class="alert-number">{{ critical_stocks.count }}</div>
+            <div class="alert-label">Critical Stocks</div>
+        </div>
+        <div class="alert-card low">
+            <div class="alert-number">{{ low_stocks.count }}</div>
+            <div class="alert-label">Low Stocks</div>
+        </div>
+        <div class="alert-card adequate">
+            <div class="alert-number">{{ adequate_stocks.count }}</div>
+            <div class="alert-label">Adequate Stocks</div>
+        </div>
+        <div class="alert-card">
+            <div class="alert-number">{{ stock_alerts.count }}</div>
+            <div class="alert-label">Active Alerts</div>
+        </div>
+    </div>
+
+    <!-- Blood Stocks Grid -->
+    <div class="stocks-grid">
+        {% for stock in blood_stocks %}
+        <div class="stock-card {{ stock.get_stock_status }}">
+            <div class="blood-type-header">
+                <div class="blood-type">{{ stock.blood_type }}</div>
+                <div class="stock-status {{ stock.get_stock_status }}">
+                    {{ stock.get_stock_status_display }}
+                </div>
+            </div>
+            
+            <div class="current-stock">{{ stock.current_units }} units</div>
+            
+            <div class="stock-levels">
+                <div class="level-item">
+                    <div class="level-value">{{ stock.critical_level }}</div>
+                    <div class="level-label">Critical</div>
+                </div>
+                <div class="level-item">
+                    <div class="level-value">{{ stock.minimum_level }}</div>
+                    <div class="level-label">Minimum</div>
+                </div>
+                <div class="level-item">
+                    <div class="level-value">{{ stock.optimal_level }}</div>
+                    <div class="level-label">Optimal</div>
+                </div>
+            </div>
+            
+            <div class="stock-progress">
+                <div class="progress-bar {{ stock.get_stock_status }}" 
+                     style="width: {% widthratio stock.current_units stock.optimal_level 100 %}%"></div>
+            </div>
+            
+            <div class="stock-info">
+                <small class="text-muted">
+                    Last updated: {{ stock.last_updated|date:"H:i, d M Y" }}
+                    {% if stock.last_alert_sent %}
+                        | Last alert: {{ stock.last_alert_sent|date:"H:i, d M Y" }}
+                    {% endif %}
+                </small>
+            </div>
+            
+            <!-- Stock Update Form -->
+            <div class="stock-actions">
+                <form method="post" action="{% url 'staff:update_blood_stock' stock.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <div class="update-form">
+                        <input type="number" name="current_units" min="1" max="100" placeholder="Units" required>
+                        <div class="update-buttons">
+                            <button type="submit" name="operation" value="add" class="btn-action btn-success">
+                                <span class="material-icons">add</span>
+                                Add
+                            </button>
+                            <button type="submit" name="operation" value="remove" class="btn-action btn-danger">
+                                <span class="material-icons">remove</span>
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Recent Alerts -->
+    {% if stock_alerts %}
+    <div class="alerts-section">
+        <h2 class="section-title">Recent Stock Alerts</h2>
+        
+        {% for alert in stock_alerts %}
+        <div class="alert-item {{ alert.alert_type }}">
+            <div class="alert-header">
+                <div class="alert-title">
+                    {{ alert.get_alert_type_display }} - {{ alert.blood_stock.blood_type }}
+                </div>
+                <div class="alert-time">
+                    {{ alert.sent_at|date:"H:i, d M Y" }}
+                </div>
+            </div>
+            <div class="alert-message">
+                {{ alert.message|linebreaks }}
+            </div>
+            {% if not alert.acknowledged %}
+            <div class="action-buttons">
+                <form method="post" action="{% url 'staff:acknowledge_alert' alert.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action btn-acknowledge">
+                        <span class="material-icons">check</span>
+                        Acknowledge
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function monitorStocks() {
+    fetch('/staff/api/monitor-stocks/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('Stock monitoring completed successfully', 'success');
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            showMessage('Error monitoring stocks: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('Error monitoring stocks', 'error');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showMessage(message, type) {
+    // Simple message display - you can replace with a proper notification system
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `alert alert-${type}`;
+    messageDiv.textContent = message;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        z-index: 9999;
+        background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
+        color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    `;
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 3000);
+}
+
+// Auto-refresh every 5 minutes for critical stocks
+{% if critical_stocks %}
+setTimeout(() => {
+    location.reload();
+}, 300000); // 5 minutes
+{% endif %}
+</script>
+{% endblock %}

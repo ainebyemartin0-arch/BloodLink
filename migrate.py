@@ -27,6 +27,10 @@ def run_migrations():
         print("Setting up initial data...")
         execute_from_command_line(['manage.py', 'setup_initial_data'])
         
+        # Initialize blood stocks
+        print("Initializing blood stock records...")
+        execute_from_command_line(['manage.py', 'init_blood_stocks'])
+        
         # Collect static files
         print("Collecting static files...")
         execute_from_command_line(['manage.py', 'collectstatic', '--noinput'])
