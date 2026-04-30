@@ -68,7 +68,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'bloodlink_project.wsgi.application'
 
 # Database configuration
-# Supports SQLite (local) and PostgreSQL (Render.com)
+# Always use PostgreSQL on Render.com
 DATABASE_URL = os.getenv('DATABASE_URL', '')
 
 if DATABASE_URL:
@@ -81,13 +81,24 @@ if DATABASE_URL:
         )
     }
 else:
-    # Local SQLite development (no setup required)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+    # Fallback to SQLite only for local development
+    # On Render, DATABASE_URL should always be set
+    if 'RENDER' in os.environ:
+        # We're on Render but no DATABASE_URL - create a default one
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
         }
-    }
+    else:
+        # Local development
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 AUTH_USER_MODEL = 'accounts.StaffUser'
 
