@@ -832,32 +832,24 @@ def donation_create(request):
 
 @login_required
 def blood_stock(request):
-    """View and manage blood stock levels."""
-    stocks = BloodStock.objects.all().order_by('blood_type')
+    """Blood stock monitoring and management page."""
+    # Get all blood stocks
+    blood_stocks = BloodStock.objects.all().order_by("blood_type")
     
-    # Auto-create missing stock records
-    existing_types = stocks.values_list('blood_type', flat=True)
-    blood_types = ['A+','A-','B+','B-','AB+','AB-','O+','O-']
-    for bt in blood_types:
-        if bt not in existing_types:
-            BloodStock.objects.create(
-                blood_type=bt,
-                units_available=0,
-                minimum_threshold=3
-            )
-    stocks = BloodStock.objects.all().order_by('blood_type')
-    
-    critical_stocks = stocks.filter(
-        units_available__lte=F('minimum_threshold')
-    )
+    # Calculate statistics
+    total_units = blood_stocks.aggregate(total=Sum("current_units"))["total"] or 0
+    critical_count = blood_stocks.filter(current_units__lte=F("critical_level")).count()
+    empty_types = blood_stocks.filter(current_units=0).count()
     
     context = {
-        'stocks': stocks,
-        'critical_count': critical_stocks.count(),
-        'total_units': sum(s.units_available for s in stocks),
-        'empty_types': stocks.filter(units_available=0).count(),
+        "blood_stocks": blood_stocks,
+        "total_units": total_units,
+        "critical_count": critical_count,
+        "empty_types": empty_types,
     }
-    return render(request, 'staff_portal/blood_stock.html', context)
+    
+    return render(request, "staff_portal/blood_stock.html", context)
+
 
 
 @login_required
@@ -1308,29 +1300,22 @@ def request_escalate(request, pk):
 def blood_stock(request):
     """Blood stock monitoring and management page."""
     # Get all blood stocks
-    blood_stocks = BloodStock.objects.all().order_by('blood_type')
+    blood_stocks = BloodStock.objects.all().order_by("blood_type")
     
-    # Categorize stocks by status
-    critical_stocks = blood_stocks.filter(current_units__lte=F('critical_level'))
-    low_stocks = blood_stocks.filter(current_units__gt=F('critical_level'), current_units__lte=F('minimum_level'))
-    adequate_stocks = blood_stocks.filter(current_units__gt=F('minimum_level'))
-    
-    # Get recent alerts
-    stock_alerts = StockAlert.objects.filter(acknowledged=False).order_by('-sent_at')
-    critical_stock_alerts = stock_alerts.filter(alert_type='critical')
-    low_stock_alerts = stock_alerts.filter(alert_type='low')
+    # Calculate statistics
+    total_units = blood_stocks.aggregate(total=Sum("current_units"))["total"] or 0
+    critical_count = blood_stocks.filter(current_units__lte=F("critical_level")).count()
+    empty_types = blood_stocks.filter(current_units=0).count()
     
     context = {
-        'blood_stocks': blood_stocks,
-        'critical_stocks': critical_stocks,
-        'low_stocks': low_stocks,
-        'adequate_stocks': adequate_stocks,
-        'stock_alerts': stock_alerts,
-        'critical_stock_alerts': critical_stock_alerts,
-        'low_stock_alerts': low_stock_alerts,
+        "blood_stocks": blood_stocks,
+        "total_units": total_units,
+        "critical_count": critical_count,
+        "empty_types": empty_types,
     }
     
-    return render(request, 'staff_portal/blood_stock.html', context)
+    return render(request, "staff_portal/blood_stock.html", context)
+
 
 @login_required
 def update_blood_stock(request, pk):
@@ -1375,26 +1360,19 @@ def update_blood_stock(request, pk):
 def blood_stock(request):
     """Blood stock monitoring and management page."""
     # Get all blood stocks
-    blood_stocks = BloodStock.objects.all().order_by('blood_type')
+    blood_stocks = BloodStock.objects.all().order_by("blood_type")
     
-    # Categorize stocks by status
-    critical_stocks = blood_stocks.filter(current_units__lte=F('critical_level'))
-    low_stocks = blood_stocks.filter(current_units__gt=F('critical_level'), current_units__lte=F('minimum_level'))
-    adequate_stocks = blood_stocks.filter(current_units__gt=F('minimum_level'))
-    
-    # Get recent alerts
-    stock_alerts = StockAlert.objects.filter(acknowledged=False).order_by('-sent_at')
-    critical_stock_alerts = stock_alerts.filter(alert_type='critical')
-    low_stock_alerts = stock_alerts.filter(alert_type='low')
+    # Calculate statistics
+    total_units = blood_stocks.aggregate(total=Sum("current_units"))["total"] or 0
+    critical_count = blood_stocks.filter(current_units__lte=F("critical_level")).count()
+    empty_types = blood_stocks.filter(current_units=0).count()
     
     context = {
-        'blood_stocks': blood_stocks,
-        'critical_stocks': critical_stocks,
-        'low_stocks': low_stocks,
-        'adequate_stocks': adequate_stocks,
-        'stock_alerts': stock_alerts,
-        'critical_stock_alerts': critical_stock_alerts,
-        'low_stock_alerts': low_stock_alerts,
+        "blood_stocks": blood_stocks,
+        "total_units": total_units,
+        "critical_count": critical_count,
+        "empty_types": empty_types,
     }
     
-    return render(request, 'staff_portal/blood_stock.html', context)
+    return render(request, "staff_portal/blood_stock.html", context)
+

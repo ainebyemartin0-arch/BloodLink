@@ -658,6 +658,82 @@ def terms(request):
     """Terms of service page."""
     return render(request, 'donor_portal/terms.html')
 
+@donor_login_required
+def donor_request_detail(request, pk):
+    """Donor request detail view - handles both EmergencyRequest and PublicBloodRequest."""
+    donor = get_logged_in_donor(request)
+    
+    # Try to find the request in both EmergencyRequest and PublicBloodRequest models
+    request_obj = None
+    request_type = None
+    
+    # Check if it's an EmergencyRequest
+    try:
+        request_obj = EmergencyRequest.objects.get(pk=pk)
+        request_type = 'emergency'
+        
+        # Verify this request is for the donor's blood type
+        if request_obj.blood_type_needed != donor.blood_type:
+            messages.error(request, f"This request is for blood type {request_obj.blood_type_needed}, but your blood type is {donor.blood_type}.")
+            return redirect('donor:donor_requests')
+            
+    except EmergencyRequest.DoesNotExist:
+        pass
+    
+    # If not found, check if it's a PublicBloodRequest
+    if not request_obj:
+        try:
+            request_obj = PublicBloodRequest.objects.get(pk=pk)
+            request_type = 'public'
+            
+            # Verify this request is for the donor's blood type
+            if request_obj.blood_type_needed != donor.blood_type:
+                messages.error(request, f"This request is for blood type {request_obj.blood_type_needed}, but your blood type is {donor.blood_type}.")
+                return redirect('donor:donor_requests')
+                
+        except PublicBloodRequest.DoesNotExist:
+            messages.error(request, f"Request with ID {pk} not found.")
+            return redirect('donor:donor_requests')
+    
+    # Prepare context based on request type
+    if request_type == 'emergency':
+        context = {
+            'request': request_obj,
+            'request_type': 'emergency',
+            'donor': donor,
+            'title': 'Emergency Blood Request Details',
+            'hospital_name': getattr(request_obj, 'hospital_name', ''),
+            'patient_name': getattr(request_obj, 'patient_name', 'Unknown'),
+            'blood_type': getattr(request_obj, 'blood_type_needed', ''),
+            'units_needed': getattr(request_obj, 'units_needed', 0),
+            'urgency_level': getattr(request_obj, 'urgency_level', 'unknown'),
+            'contact_person': getattr(request_obj, 'contact_person', ''),
+            'contact_phone': getattr(request_obj, 'contact_phone', ''),
+            'created_at': getattr(request_obj, 'created_at', None),
+            'status': getattr(request_obj, 'status', 'unknown'),
+            'medical_notes': getattr(request_obj, 'medical_notes', ''),
+            'location': getattr(request_obj, 'hospital_location', ''),
+        }
+    else:  # public request
+        context = {
+            'request': request_obj,
+            'request_type': 'public',
+            'donor': donor,
+            'title': 'Blood Request Details',
+            'patient_name': getattr(request_obj, 'patient_name', 'Unknown'),
+            'blood_type': getattr(request_obj, 'blood_type_needed', ''),
+            'units_needed': getattr(request_obj, 'units_needed', 0),
+            'urgency_level': getattr(request_obj, 'urgency_level', 'unknown'),
+            'contact_person': getattr(request_obj, 'contact_person', ''),
+            'contact_phone': getattr(request_obj, 'contact_phone', ''),
+            'submitted_at': getattr(request_obj, 'submitted_at', None),
+            'status': getattr(request_obj, 'status', 'unknown'),
+            'medical_notes': getattr(request_obj, 'medical_notes', ''),
+            'location': getattr(request_obj, 'hospital_location', ''),
+        }
+    
+    return render(request, 'donor_portal/request_detail.html', context)
+
 def password_reset(request):
     """Password reset page."""
     return render(request, 'donor_portal/password_reset.html')

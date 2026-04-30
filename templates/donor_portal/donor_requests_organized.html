@@ -773,8 +773,8 @@
 
 <script>
 function showRequestDetails(requestId) {
-    // Show request details in a modal or navigate to detail page
-    window.open(`/donor/requests/${requestId}/`, '_blank');
+    // Navigate to request detail page
+    window.location.href = `{% url 'donor:donor_request_detail' 0 %}`.replace('0', requestId);
 }
 
 function printRequest(requestId) {

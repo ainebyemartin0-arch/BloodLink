@@ -559,6 +559,108 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
+        /* Carousel Styles */
+        .hero-carousel {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            transform: translateX(100%);
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1rem;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .indicator.active {
+            background: #dc2626;
+            border-color: #dc2626;
+            transform: scale(1.2);
+        }
+
+        .indicator:hover {
+            background: rgba(220, 38, 38, 0.8);
+            border-color: #dc2626;
+        }
+
+        /* Responsive Carousel */
+        @media (max-width: 768px) {
+            .hero-carousel {
+                height: 400px;
+            }
+
+            .carousel-indicators {
+                bottom: 15px;
+                gap: 8px;
+            }
+
+            .indicator {
+                width: 10px;
+                height: 10px;
+                border-width: 1px;
+            }
+
+            .indicator.active {
+                transform: scale(1.1);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-carousel {
+                height: 300px;
+            }
+
+            .carousel-indicators {
+                bottom: 10px;
+                gap: 6px;
+            }
+
+            .indicator {
+                width: 8px;
+                height: 8px;
+            }
+        }
+
         /* Advanced Animations */
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -1217,8 +1319,39 @@
                 <div class="floating-orb orb-1"></div>
                 <div class="floating-orb orb-2"></div>
                 <div class="floating-orb orb-3"></div>
-                <img src="{% static 'images/lab-staff.png' %}" alt="Medical Professional" 
-                     onerror="this.src='https://via.placeholder.com/500x600/f8f9fa/1a1a1a?text=Medical+Professional'">
+                
+                <!-- Image Carousel -->
+                <div class="hero-carousel">
+                    <div class="carousel-slide active">
+                        <img src="{% static 'images/donor-smiling.png' %}" alt="Blood Donor" 
+                             onerror="this.src='https://via.placeholder.com/500x600/f8f9fa/1a1a1a?text=Blood+Donor'">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="{% static 'images/hero-donation.png' %}" alt="Blood Donation" 
+                             onerror="this.src='https://via.placeholder.com/500x600/f8f9fa/1a1a1a?text=Blood+Donation'">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="{% static 'images/lab-staff.png' %}" alt="Medical Staff" 
+                             onerror="this.src='https://via.placeholder.com/500x600/f8f9fa/1a1a1a?text=Medical+Staff'">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="{% static 'images/hero-donation1.jpg' %}" alt="Donation Process" 
+                             onerror="this.src='https://via.placeholder.com/500x600/f8f9fa/1a1a1a?text=Donation+Process'">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="{% static 'images/lab-staff1.jpg' %}" alt="Healthcare Professional" 
+                             onerror="this.src='https://via.placeholder.com/500x600/f8f9fa/1a1a1a?text=Healthcare+Professional'">
+                    </div>
+                </div>
+                
+                <!-- Carousel Indicators -->
+                <div class="carousel-indicators">
+                    <span class="indicator active" data-slide="0"></span>
+                    <span class="indicator" data-slide="1"></span>
+                    <span class="indicator" data-slide="2"></span>
+                    <span class="indicator" data-slide="3"></span>
+                    <span class="indicator" data-slide="4"></span>
+                </div>
             </div>
         </div>
     </section>
@@ -1353,7 +1486,7 @@
         </div>
         
         <div class="footer-bottom">
-            <p>&copy; 2024 BloodLink. All rights reserved. The Clinical Curator Editorial.</p>
+            <p>&copy; 2026 BloodLink. All rights reserved. The Clinical Curator Editorial.</p>
         </div>
     </footer>
 
@@ -1382,6 +1515,58 @@
                     element.style.transform = 'translate(0, 0) scale(1)';
                 });
             });
+
+            // Hero Carousel Functionality
+            const slides = document.querySelectorAll('.carousel-slide');
+            const indicators = document.querySelectorAll('.indicator');
+            let currentSlide = 0;
+            let slideInterval;
+
+            function showSlide(index) {
+                // Hide all slides
+                slides.forEach(slide => slide.classList.remove('active'));
+                indicators.forEach(indicator => indicator.classList.remove('active'));
+                
+                // Show current slide
+                slides[index].classList.add('active');
+                indicators[index].classList.add('active');
+                currentSlide = index;
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }
+
+            function startSlideshow() {
+                slideInterval = setInterval(nextSlide, 4000); // Change slide every 4 seconds
+            }
+
+            function stopSlideshow() {
+                clearInterval(slideInterval);
+            }
+
+            // Initialize carousel
+            if (slides.length > 0) {
+                showSlide(0);
+                startSlideshow();
+
+                // Add click events to indicators
+                indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        stopSlideshow();
+                        showSlide(index);
+                        startSlideshow();
+                    });
+                });
+
+                // Pause on hover
+                const carousel = document.querySelector('.hero-carousel');
+                if (carousel) {
+                    carousel.addEventListener('mouseenter', stopSlideshow);
+                    carousel.addEventListener('mouseleave', startSlideshow);
+                }
+            }
 
             // Parallax Effect on Scroll
             window.addEventListener('scroll', function() {

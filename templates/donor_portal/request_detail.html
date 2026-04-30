@@ -1,0 +1,417 @@
+{% extends 'donor_portal/base_donor_enhanced.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - BloodLink{% endblock %}
+
+{% block extra_css %}
+<style>
+.request-detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.detail-header {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px 16px 0 0;
+    text-align: center;
+}
+
+.detail-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.detail-subtitle {
+    font-size: 1.125rem;
+    opacity: 0.9;
+}
+
+.request-type-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 1rem;
+}
+
+.request-type-badge.emergency {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+}
+
+.request-type-badge.public {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+}
+
+.detail-content {
+    background: white;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.detail-section {
+    padding: 2rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title .material-symbols-outlined {
+    color: #dc2626;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.urgency-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.urgency-badge.critical {
+    background: #dc2626;
+    color: white;
+}
+
+.urgency-badge.high {
+    background: #f59e0b;
+    color: white;
+}
+
+.urgency-badge.medium {
+    background: #3b82f6;
+    color: white;
+}
+
+.urgency-badge.low {
+    background: #10b981;
+    color: white;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.open {
+    background: #dc2626;
+    color: white;
+}
+
+.status-badge.pending {
+    background: #f59e0b;
+    color: white;
+}
+
+.status-badge.fulfilled {
+    background: #10b981;
+    color: white;
+}
+
+.status-badge.closed {
+    background: #6b7280;
+    color: white;
+}
+
+.medical-notes {
+    background: #f9fafb;
+    border-left: 4px solid #dc2626;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.medical-notes p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.btn-action {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #b91c1c;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .request-detail-container {
+        padding: 0 0.5rem;
+    }
+    
+    .detail-header {
+        padding: 1.5rem;
+    }
+    
+    .detail-title {
+        font-size: 1.5rem;
+    }
+    
+    .detail-section {
+        padding: 1.5rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="request-detail-container">
+    <!-- Header Section -->
+    <div class="detail-header">
+        <h1 class="detail-title">{{ title }}</h1>
+        <p class="detail-subtitle">
+            {% if request_type == 'emergency' %}
+                Emergency blood request from {{ hospital_name }}
+            {% else %}
+                Blood request submitted by {{ contact_person }}
+            {% endif %}
+        </p>
+        <div class="request-type-badge {{ request_type }}">
+            {% if request_type == 'emergency' %}
+                <span class="material-symbols-outlined">emergency</span>
+                Emergency Request
+            {% else %}
+                <span class="material-symbols-outlined">bloodtype</span>
+                Public Request
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="detail-content">
+        <!-- Patient Information -->
+        <div class="detail-section">
+            <h2 class="section-title">
+                <span class="material-symbols-outlined">person</span>
+                Patient Information
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Patient Name</span>
+                    <span class="info-value">{{ patient_name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Blood Type Needed</span>
+                    <span class="info-value">{{ blood_type }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Units Required</span>
+                    <span class="info-value">{{ units_needed }} units</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Urgency Level</span>
+                    <span class="urgency-badge {{ urgency_level }}">{{ urgency_level|title }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="detail-section">
+            <h2 class="section-title">
+                <span class="material-symbols-outlined">contact_phone</span>
+                Contact Information
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Contact Person</span>
+                    <span class="info-value">{{ contact_person }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Phone Number</span>
+                    <span class="info-value">{{ contact_phone }}</span>
+                </div>
+                {% if hospital_name %}
+                <div class="info-item">
+                    <span class="info-label">Hospital/Facility</span>
+                    <span class="info-value">{{ hospital_name }}</span>
+                </div>
+                {% endif %}
+                {% if location %}
+                <div class="info-item">
+                    <span class="info-label">Location</span>
+                    <span class="info-value">{{ location }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Request Details -->
+        <div class="detail-section">
+            <h2 class="section-title">
+                <span class="material-symbols-outlined">info</span>
+                Request Details
+            </h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Request Status</span>
+                    <span class="status-badge {{ status }}">{{ status|title }}</span>
+                </div>
+                {% if created_at %}
+                <div class="info-item">
+                    <span class="info-label">Date Created</span>
+                    <span class="info-value">{{ created_at|date:"F d, Y H:i" }}</span>
+                </div>
+                {% endif %}
+                {% if submitted_at %}
+                <div class="info-item">
+                    <span class="info-label">Date Submitted</span>
+                    <span class="info-value">{{ submitted_at|date:"F d, Y H:i" }}</span>
+                </div>
+                {% endif %}
+                <div class="info-item">
+                    <span class="info-label">Your Blood Type</span>
+                    <span class="info-value">{{ donor.blood_type }}</span>
+                </div>
+            </div>
+            
+            {% if medical_notes %}
+            <div class="medical-notes">
+                <h3 style="margin-bottom: 0.5rem; color: #1f2937;">Medical Notes</h3>
+                <p>{{ medical_notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="detail-section">
+            <div class="action-buttons">
+                {% if request_type == 'emergency' and status == 'open' %}
+                    <a href="{% url 'donor:respond_to_alert' request.id %}" class="btn-action btn-primary">
+                        <span class="material-symbols-outlined">volunteer_activism</span>
+                        Respond to Request
+                    </a>
+                {% endif %}
+                
+                {% if request_type == 'public' and status == 'pending' %}
+                    <a href="{% url 'donor:respond_to_alert' request.id %}" class="btn-action btn-primary">
+                        <span class="material-symbols-outlined">volunteer_activism</span>
+                        Offer to Donate
+                    </a>
+                {% endif %}
+                
+                <a href="{% url 'donor:donor_requests' %}" class="btn-action btn-secondary">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Back to Requests
+                </a>
+                
+                <button onclick="window.print()" class="btn-action btn-success">
+                    <span class="material-symbols-outlined">print</span>
+                    Print Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
