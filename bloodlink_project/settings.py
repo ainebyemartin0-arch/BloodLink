@@ -5,6 +5,13 @@ import dj_database_url
 
 load_dotenv()
 
+# Load Render-specific settings if we're on Render
+if os.getenv('RENDER') == 'true':
+    try:
+        from .render_settings import *
+    except ImportError:
+        pass  # Fall back to default settings
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key')

@@ -32,23 +32,13 @@ else
     echo "💻 Running locally"
 fi
 
-# Run migrations with error handling
-echo "🔄 Running database migrations..."
-if python manage.py migrate --noinput; then
-    echo "✅ Migrations completed successfully"
-else
-    echo "❌ Migrations failed, trying to reset..."
-    python manage.py migrate --fake-initial --noinput || true
-fi
+# Run emergency fix and diagnostics
+echo "� Running emergency diagnostics and fix..."
+python emergency_fix.py
 
 # Collect static files
 echo "📦 Collecting static files..."
 python manage.py collectstatic --noinput --clear
-
-# Create initial data if needed
-echo "🔧 Setting up initial data..."
-python manage.py init_blood_stocks --noinput || echo "Blood stocks already initialized"
-python manage.py setup_initial_data --noinput || echo "Initial data already set up"
 
 # Start the application
 echo "🌐 Starting Gunicorn on port $PORT..."
