@@ -7,7 +7,7 @@ services:
       pip install -r requirements.txt
       python manage.py collectstatic --noinput
       python manage.py migrate
-    startCommand: gunicorn bloodlink_project.wsgi:application --log-file -
+    startCommand: bash start.sh
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
@@ -32,3 +32,4 @@ databases:
   - name: bloodlink-db
     databaseName: bloodlink_db
     user: bloodlink_user
+    plan: free
