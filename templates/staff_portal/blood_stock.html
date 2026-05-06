@@ -1,185 +1,1363 @@
 {% extends 'base_staff_modern.html' %}
 {% load static %}
 
-{% block title %}Blood Stock{% endblock %}
+{% block title %}Blood Stock Management{% endblock %}
 {% block page_title %}Blood Stock Management{% endblock %}
 {% block breadcrumb %}
     <a href="{% url 'staff:dashboard' %}">Home</a> / Blood Stock
 {% endblock %}
 
 {% block content %}
-<!-- Stats Row -->
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="stat-card sc-blue reveal">
-            <div class="sc-bg-shape"></div>
-            <div class="sc-icon"><i class="bi bi-droplet-fill"></i></div>
-            <span class="sc-number">{{ total_units }}</span>
-            <span class="sc-label">Total Units In Stock</span>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card sc-red {% if critical_count > 0 %}sc-pulse{% endif %} reveal reveal-delay-1">
-            <div class="sc-bg-shape"></div>
-            <div class="sc-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
-            <span class="sc-number">{{ critical_count }}</span>
-            <span class="sc-label">Critical Blood Types</span>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card sc-amber reveal reveal-delay-2">
-            <div class="sc-bg-shape"></div>
-            <div class="sc-icon"><i class="bi bi-x-circle-fill"></i></div>
-            <span class="sc-number">{{ empty_types }}</span>
-            <span class="sc-label">Empty Blood Types</span>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card sc-green reveal reveal-delay-3">
-            <div class="sc-bg-shape"></div>
-            <div class="sc-icon"><i class="bi bi-check-circle-fill"></i></div>
-            <span class="sc-number">8</span>
-            <span class="sc-label">Blood Types Tracked</span>
+<!-- Stock Overview Summary -->
+<div class="stock-overview-summary mb-4">
+    <div class="overview-header">
+        <h3 class="overview-title">
+            <i class="bi bi-activity"></i>
+            Blood Stock Overview
+        </h3>
+        <div class="overview-stats">
+            <div class="stat-item critical">
+                <span class="stat-number">{{ critical_count }}</span>
+                <span class="stat-label">Critical</span>
+            </div>
+            <div class="stat-item low">
+                <span class="stat-number low">{{ empty_types }}</span>
+                <span class="stat-label">Empty</span>
+            </div>
+            <div class="stat-item total">
+                <span class="stat-number">{{ total_units }}</span>
+                <span class="stat-label">Total Units</span>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Blood Stock Grid -->
-<div class="bl-card reveal">
-    <div class="bl-card-header">
-        <div class="bl-card-header-left">
-            <div class="bl-card-header-icon">
+<!-- Enhanced Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stock-stat-card total-stock reveal">
+            <div class="stock-stat-icon">
                 <i class="bi bi-droplet-fill"></i>
             </div>
-            <div>
-                <h5 class="bl-card-title">Current Blood Stock Levels</h5>
-                <span class="bl-card-subtitle">
-                    Update units after receiving donations or after use
-                </span>
+            <div class="stock-stat-content">
+                <div class="stock-stat-number">{{ total_units }}</div>
+                <div class="stock-stat-label">Total Units in Stock</div>
+                <div class="stock-stat-change">
+                    <i class="bi bi-graph-up"></i>
+                    <span>All Blood Types</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="bl-card-body">
-        <div class="row g-3">
-            {% for stock in stocks %}
-            <div class="col-md-6 col-lg-3">
-                <div class="blood-stock-card 
-                    {% if stock.stock_status == 'empty' %}stock-empty
-                    {% elif stock.stock_status == 'critical' %}stock-critical
-                    {% elif stock.stock_status == 'low' %}stock-low
-                    {% else %}stock-adequate{% endif %}">
-                    
-                    <!-- Blood Type Badge -->
-                    <div class="stock-header">
-                        <span class="bt-badge" data-type="{{ stock.blood_type }}">
-                            {{ stock.blood_type }}
-                        </span>
-                        <span class="stock-status-badge {{ stock.stock_status }}">
-                            {{ stock.stock_status|title }}
-                        </span>
-                    </div>
-                    
-                    <!-- Units Display -->
-                    <div class="stock-units">
-                        <span class="stock-number">{{ stock.units_available }}</span>
-                        <span class="stock-unit-label">units</span>
-                    </div>
-                    
-                    <!-- Progress Bar -->
-                    <div class="stock-progress-wrap">
-                        <div class="stock-progress">
-                            <div class="stock-progress-bar 
-                                {{ stock.stock_status }}"
-                                style="width: {{ stock.stock_percentage }}%">
-                            </div>
-                        </div>
-                        <span class="stock-threshold-label">
-                            Min: {{ stock.minimum_threshold }} units
-                        </span>
-                    </div>
-                    
-                    <!-- Update Form -->
-                    <form method="post" 
-                          action="{% url 'staff:update_blood_stock' stock.pk %}">
-                        {% csrf_token %}
-                        <div class="stock-update-form">
-                            <div class="stock-input-group">
-                                <label style="font-size:0.72rem;
-                                              color:var(--staff-muted);
-                                              font-weight:600;">
-                                    Units Available
-                                </label>
-                                <input type="number" 
-                                       name="units_available"
-                                       value="{{ stock.units_available }}"
-                                       min="0" max="999"
-                                       class="bl-input"
-                                       style="padding:7px 10px;font-size:0.85rem;">
-                            </div>
-                            <div class="stock-input-group">
-                                <label style="font-size:0.72rem;
-                                              color:var(--staff-muted);
-                                              font-weight:600;">
-                                    Alert Threshold
-                                </label>
-                                <input type="number"
-                                       name="minimum_threshold"
-                                       value="{{ stock.minimum_threshold }}"
-                                       min="1" max="20"
-                                       class="bl-input"
-                                       style="padding:7px 10px;font-size:0.85rem;">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-bl btn-sm w-100 mt-2">
-                            <i class="bi bi-save2"></i> Update Stock
-                        </button>
-                    </form>
-                    
-                    {% if stock.last_updated %}
-                    <div style="font-size:0.7rem;color:var(--staff-muted);
-                                margin-top:8px;text-align:center;">
-                        Updated: {{ stock.last_updated|date:"M d, H:i" }}
-                    </div>
-                    {% endif %}
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="stock-stat-card critical-stock {% if critical_count > 0 %}pulse-animation{% endif %} reveal reveal-delay-1">
+            <div class="stock-stat-icon critical">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div class="stock-stat-content">
+                <div class="stock-stat-number">{{ critical_count }}</div>
+                <div class="stock-stat-label">Critical Blood Types</div>
+                <div class="stock-stat-change critical">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span>Immediate Action Needed</span>
                 </div>
             </div>
-            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="stock-stat-card low-stock reveal reveal-delay-2">
+            <div class="stock-stat-icon low">
+                <i class="bi bi-exclamation-dash-fill"></i>
+            </div>
+            <div class="stock-stat-content">
+                <div class="stock-stat-number">{{ empty_types }}</div>
+                <div class="stock-stat-label">Empty Blood Types</div>
+                <div class="stock-stat-change low">
+                    <i class="bi bi-x-circle"></i>
+                    <span>No Stock Available</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="stock-stat-card tracked-types reveal reveal-delay-3">
+            <div class="stock-stat-icon tracked">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="stock-stat-content">
+                <div class="stock-stat-number">{{ blood_stocks|length }}</div>
+                <div class="stock-stat-label">Blood Types Tracked</div>
+                <div class="stock-stat-change tracked">
+                    <i class="bi bi-activity"></i>
+                    <span>System Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Blood Stock Management Section -->
+<div class="stock-management-section">
+    <div class="stock-header-card">
+        <div class="stock-header-content">
+            <div class="stock-header-icon">
+                <i class="bi bi-droplet-fill"></i>
+            </div>
+            <div class="stock-header-text">
+                <h2 class="stock-header-title">Blood Stock Management</h2>
+                <p class="stock-header-subtitle">
+                    Monitor and manage blood inventory levels across all blood types. 
+                    Update stock levels after donations or usage to maintain accurate inventory.
+                </p>
+            </div>
+        </div>
+        <div class="stock-header-actions">
+            <button class="btn btn-outline-primary" onclick="refreshStockData()">
+                <i class="bi bi-arrow-clockwise"></i>
+                Refresh
+            </button>
+            <button class="btn btn-primary" onclick="exportStockReport()">
+                <i class="bi bi-download"></i>
+                Export Report
+            </button>
+        </div>
+    </div>
+    
+    <!-- Blood Type Grid -->
+    <div class="blood-types-grid">
+        {% for item in blood_stocks %}
+        <div class="blood-type-card 
+            {% if item.stock.current_units == 0 %}empty-stock
+            {% elif item.stock.current_units <= item.stock.critical_level %}critical-stock
+            {% elif item.stock.current_units <= item.stock.minimum_level %}low-stock
+            {% else %}adequate-stock{% endif %} 
+            reveal" data-blood-type="{{ item.stock.blood_type }}">
+            
+            <!-- Stock Overview Badge -->
+            <div class="stock-overview-badge">
+                {% if item.stock.current_units == 0 %}
+                    <span class="overview-text empty">OUT OF STOCK</span>
+                {% elif item.stock.current_units <= item.stock.critical_level %}
+                    <span class="overview-text critical">CRITICAL</span>
+                {% elif item.stock.current_units <= item.stock.minimum_level %}
+                    <span class="overview-text low">LOW STOCK</span>
+                {% else %}
+                    <span class="overview-text adequate">AVAILABLE</span>
+                {% endif %}
+            </div>
+            
+            <!-- Blood Type Header -->
+            <div class="blood-type-header">
+                <div class="blood-type-badge">
+                    <span class="blood-type-text">{{ item.stock.blood_type }}</span>
+                    <span class="blood-type-icon">🩸</span>
+                </div>
+                <div class="stock-status-indicator">
+                    <span class="status-dot {{ item.stock.get_stock_status }}"></span>
+                    <span class="status-text">{{ item.stock.get_stock_status_display }}</span>
+                </div>
+            </div>
+            
+            <!-- Stock Level Display -->
+            <div class="stock-level-display">
+                <div class="stock-quantity">
+                    <span class="stock-number {% if item.stock.current_units <= item.stock.critical_level %}critical-stock{% elif item.stock.current_units <= item.stock.minimum_level %}low-stock{% else %}normal-stock{% endif %}">{{ item.stock.current_units }}</span>
+                    <span class="stock-unit">units available</span>
+                </div>
+                <div class="stock-level-info">
+                    <div class="stock-progress-container">
+                        <div class="stock-progress-bar">
+                            <div class="stock-progress-fill {{ item.stock.get_stock_status }}" 
+                                 style="width: {{ item.percentage }}%"></div>
+                        </div>
+                        <div class="stock-progress-text">
+                            <span class="current-level">{{ item.stock.current_units }}</span>
+                            <span class="optimal-level">/ {{ item.stock.optimal_level }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stock Information -->
+            <div class="stock-info">
+                <div class="stock-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">Optimal</span>
+                        <span class="metric-value">{{ item.stock.optimal_level }}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Minimum</span>
+                        <span class="metric-value">{{ item.stock.minimum_level }}</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Critical</span>
+                        <span class="metric-value">{{ item.stock.critical_level }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="stock-actions">
+                <button class="btn-action btn-update" onclick="openUpdateModal({{ item.stock.pk }}, '{{ item.stock.blood_type }}', {{ item.stock.current_units }}, {{ item.stock.minimum_level }}, {{ item.stock.critical_level }}, {{ item.stock.optimal_level }})">
+                    <i class="bi bi-pencil-square"></i>
+                    Update Stock
+                </button>
+                <button class="btn-action btn-history" onclick="viewStockHistory('{{ item.stock.blood_type }}')">
+                    <i class="bi bi-clock-history"></i>
+                    History
+                </button>
+            </div>
+            
+            <!-- Last Updated -->
+            {% if item.stock.last_updated %}
+            <div class="stock-last-updated">
+                <i class="bi bi-clock"></i>
+                <span>Updated: {{ item.stock.last_updated|date:"M d, H:i" }}</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Update Modal -->
+<div class="modal fade" id="updateStockModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Blood Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateStockForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="stock_id" id="stockId">
+                    
+                    <div class="stock-update-info">
+                        <div class="blood-type-display">
+                            <span class="blood-type-label">Blood Type:</span>
+                            <span class="blood-type-value" id="modalBloodType"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="stock-inputs">
+                        <div class="input-group">
+                            <label for="currentUnits">Current Units</label>
+                            <input type="number" id="currentUnits" name="current_units" min="0" max="999" required>
+                        </div>
+                        
+                        <div class="thresholds-grid">
+                            <div class="input-group">
+                                <label for="optimalLevel">Optimal Level</label>
+                                <input type="number" id="optimalLevel" name="optimal_level" min="1" max="999" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="minimumLevel">Minimum Level</label>
+                                <input type="number" id="minimumLevel" name="minimum_level" min="1" max="999" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="criticalLevel">Critical Level</label>
+                                <input type="number" id="criticalLevel" name="critical_level" min="1" max="999" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="update-actions">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i>
+                            Update Stock
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-.blood-stock-card {
+/* Enhanced Blood Stock Management Styles */
+
+/* Stats Cards */
+.stock-stat-card {
     background: white;
-    border-radius: 12px;
-    padding: 18px;
-    border: 2px solid var(--staff-border);
-    transition: all 0.25s ease;
-    height: 100%;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
-.blood-stock-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-.blood-stock-card.stock-empty { border-color: #922B21; background: #FFF9F9; }
-.blood-stock-card.stock-critical { border-color: #C0392B; background: #FEFAFA; }
-.blood-stock-card.stock-low { border-color: #D68910; background: #FFFDF5; }
-.blood-stock-card.stock-adequate { border-color: #1E8449; background: #F9FFFE; }
-.stock-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
-.stock-status-badge { font-size:0.65rem; font-weight:700; padding:3px 8px; border-radius:20px; text-transform:uppercase; }
-.stock-status-badge.empty { background:#FADBD8; color:#C0392B; }
-.stock-status-badge.critical { background:#FADBD8; color:#922B21; }
-.stock-status-badge.low { background:#FEF9E7; color:#D68910; }
-.stock-status-badge.adequate { background:#D5F5E3; color:#1E8449; }
-.stock-units { text-align:center; margin:12px 0; }
-.stock-number { font-family:'JetBrains Mono',monospace; font-size:2.4rem; font-weight:700; color:var(--staff-text); display:block; line-height:1; }
-.stock-unit-label { font-size:0.75rem; color:var(--staff-muted); text-transform:uppercase; letter-spacing:1px; }
-.stock-progress-wrap { margin-bottom:14px; }
-.stock-progress { height:8px; background:var(--staff-bg); border-radius:4px; overflow:hidden; margin-bottom:4px; }
-.stock-progress-bar { height:100%; border-radius:4px; transition:width 0.5s ease; }
-.stock-progress-bar.empty { background:#C0392B; }
-.stock-progress-bar.critical { background:#C0392B; }
-.stock-progress-bar.low { background:#D68910; }
-.stock-progress-bar.adequate { background:#1E8449; }
-.stock-threshold-label { font-size:0.68rem; color:var(--staff-muted); }
-.stock-update-form { display:flex; flex-direction:column; gap:8px; }
-.stock-input-group { display:flex; flex-direction:column; gap:3px; }
+
+.stock-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.stock-stat-card.total-stock {
+    border-left: 4px solid #3498db;
+}
+
+.stock-stat-card.critical-stock {
+    border-left: 4px solid #e74c3c;
+}
+
+.stock-stat-card.low-stock {
+    border-left: 4px solid #f39c12;
+}
+
+.stock-stat-card.tracked-types {
+    border-left: 4px solid #27ae60;
+}
+
+.stock-stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.stock-stat-card.total-stock .stock-stat-icon {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.stock-stat-card.critical-stock .stock-stat-icon {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.stock-stat-card.low-stock .stock-stat-icon {
+    background: linear-gradient(135deg, #f39c12, #d68910);
+    color: white;
+}
+
+.stock-stat-card.tracked-types .stock-stat-icon {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    color: white;
+}
+
+.stock-stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.stock-stat-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.stock-stat-change {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.stock-stat-change.critical {
+    color: #e74c3c;
+}
+
+.stock-stat-change.low {
+    color: #f39c12;
+}
+
+.stock-stat-change.tracked {
+    color: #27ae60;
+}
+
+/* Pulse Animation for Critical Stock */
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* Stock Management Section */
+.stock-management-section {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.stock-header-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stock-header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.stock-header-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.stock-header-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.stock-header-subtitle {
+    font-size: 16px;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.stock-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Blood Types Grid */
+.blood-types-grid {
+    padding: 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.blood-type-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.blood-type-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.blood-type-card.empty-stock {
+    border-color: #e74c3c;
+    background: linear-gradient(135deg, #fff5f5, #fff);
+}
+
+.blood-type-card.critical-stock {
+    border-color: #e67e22;
+    background: linear-gradient(135deg, #fff9f0, #fff);
+}
+
+.blood-type-card.low-stock {
+    border-color: #f39c12;
+    background: linear-gradient(135deg, #fffbf3, #fff);
+}
+
+.blood-type-card.adequate-stock {
+    border-color: #27ae60;
+    background: linear-gradient(135deg, #f0fff4, #fff);
+}
+
+/* Blood Type Header */
+.blood-type-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.blood-type-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: 2px solid #e9ecef;
+}
+
+.blood-type-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.blood-type-icon {
+    font-size: 16px;
+}
+
+.stock-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: blink 2s infinite;
+}
+
+.status-dot.critical {
+    background: #e74c3c;
+}
+
+.status-dot.low {
+    background: #f39c12;
+}
+
+.status-dot.moderate {
+    background: #3498db;
+}
+
+.status-dot.adequate {
+    background: #27ae60;
+}
+
+.status-dot.empty {
+    background: #95a5a6;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.status-text {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Stock Level Display */
+.stock-level-display {
+    margin-bottom: 24px;
+}
+
+.stock-quantity {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.stock-number {
+    font-size: 48px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.stock-number.critical-stock {
+    color: #c0392b;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(192, 57, 43, 0.2);
+}
+
+.stock-number.low-stock {
+    color: #d68910;
+    font-weight: 750;
+}
+
+.stock-number.normal-stock {
+    color: #27ae60;
+    font-weight: 700;
+}
+
+.stock-unit {
+    font-size: 14px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.stock-progress-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.stock-progress-bar {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.stock-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.stock-progress-fill.critical {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+    animation: pulse-red 2s infinite;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+}
+
+.stock-progress-fill.low {
+    background: linear-gradient(90deg, #e67e22, #d68910);
+}
+
+.stock-progress-fill.moderate {
+    background: linear-gradient(90deg, #3498db, #2980b9);
+}
+
+.stock-progress-fill.adequate {
+    background: linear-gradient(90deg, #27ae60, #1e8449);
+}
+
+.stock-progress-fill.empty {
+    background: linear-gradient(90deg, #95a5a6, #7f8c8d);
+}
+
+@keyframes pulse-red {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.stock-overview-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}
+
+.overview-text {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.overview-text.critical {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+    animation: pulse-badge 2s infinite;
+}
+
+.overview-text.low {
+    background: linear-gradient(135deg, #e67e22, #d68910);
+    color: white;
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+}
+
+.overview-text.adequate {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    color: white;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.overview-text.empty {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+}
+
+@keyframes pulse-badge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.stock-overview-summary {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    margin-bottom: 24px;
+}
+
+.overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.overview-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.overview-title i {
+    color: #e74c3c;
+    font-size: 28px;
+}
+
+.overview-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 16px 24px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item.critical {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: 1px solid #c0392b;
+}
+
+.stat-item.low {
+    background: linear-gradient(135deg, #e67e22, #d68910);
+    color: white;
+    border: 1px solid #d68910;
+}
+
+.stat-item.total {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: 1px solid #2980b9;
+}
+
+.stat-number {
+    display: block;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-number.low {
+    color: #fff;
+}
+
+.stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.stock-progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+/* Stock Information */
+.stock-info {
+    margin-bottom: 20px;
+}
+
+.stock-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.metric-item {
+    text-align: center;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.metric-label {
+    display: block;
+    font-size: 11px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.metric-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Stock Actions */
+.stock-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-action {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-action.btn-update {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.btn-action.btn-update:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.btn-action.btn-history {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+}
+
+.btn-action.btn-history:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+/* Last Updated */
+.stock-last-updated {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f1f3f4;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #f1f3f4;
+    padding: 24px;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.stock-update-info {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.blood-type-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.blood-type-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.blood-type-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stock-inputs {
+    margin-bottom: 24px;
+}
+
+.input-group {
+    margin-bottom: 16px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.thresholds-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.update-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stock-header-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .stock-header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .blood-types-grid {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+    
+    .stock-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .thresholds-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .update-actions {
+        flex-direction: column;
+    }
+    
+    .btn-action {
+        width: 100%;
+    }
+}
+
+/* Reveal Animation */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: reveal 0.6s ease forwards;
+}
+
+.reveal-delay-1 {
+    animation-delay: 0.1s;
+}
+
+.reveal-delay-2 {
+    animation-delay: 0.2s;
+}
+
+.reveal-delay-3 {
+    animation-delay: 0.3s;
+}
+
+@keyframes reveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Blood Stock Management JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips and modals
+    initializeModals();
+    initializeTooltips();
+    
+    // Auto-refresh critical stock levels
+    startAutoRefresh();
+});
+
+function initializeModals() {
+    // Initialize Bootstrap modal if available
+    if (typeof bootstrap !== 'undefined') {
+        const updateModal = new bootstrap.Modal(document.getElementById('updateStockModal'));
+        window.updateModal = updateModal;
+    }
+}
+
+function initializeTooltips() {
+    // Initialize tooltips if needed
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    if (tooltipTriggerList.length > 0) {
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+}
+
+function openUpdateModal(stockId, bloodType, currentUnits, minimumLevel, criticalLevel, optimalLevel) {
+    // Set modal values
+    document.getElementById('stockId').value = stockId;
+    document.getElementById('modalBloodType').textContent = bloodType;
+    document.getElementById('currentUnits').value = currentUnits;
+    document.getElementById('minimumLevel').value = minimumLevel;
+    document.getElementById('criticalLevel').value = criticalLevel;
+    document.getElementById('optimalLevel').value = optimalLevel;
+    
+    // Show modal
+    if (window.updateModal) {
+        window.updateModal.show();
+    } else {
+        // Fallback for manual modal handling
+        document.getElementById('updateStockModal').style.display = 'block';
+    }
+}
+
+function refreshStockData() {
+    // Show loading state
+    showLoadingState();
+    
+    // Refresh the page
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
+
+function exportStockReport() {
+    // Export stock data to CSV
+    exportToCSV();
+}
+
+function exportToCSV() {
+    // Get stock data
+    const stockCards = document.querySelectorAll('.blood-type-card');
+    let csvContent = 'Blood Type,Current Units,Optimal Level,Minimum Level,Critical Level,Status\n';
+    
+    stockCards.forEach(card => {
+        const bloodType = card.querySelector('.blood-type-text').textContent;
+        const currentUnits = card.querySelector('.stock-number').textContent;
+        const status = card.querySelector('.status-text').textContent;
+        
+        // Extract metrics
+        const metrics = card.querySelectorAll('.metric-value');
+        const optimalLevel = metrics[0].textContent;
+        const minimumLevel = metrics[1].textContent;
+        const criticalLevel = metrics[2].textContent;
+        
+        csvContent += `${bloodType},${currentUnits},${optimalLevel},${minimumLevel},${criticalLevel},${status}\n`;
+    });
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `blood_stock_report_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    // Show success message
+    showNotification('Stock report exported successfully!', 'success');
+}
+
+function viewStockHistory(bloodType) {
+    // Show stock history (placeholder for now)
+    showNotification(`Stock history for ${bloodType} - Feature coming soon!`, 'info');
+}
+
+function showLoadingState() {
+    // Add loading overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'loading-overlay';
+    overlay.innerHTML = `
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Refreshing stock data...</p>
+        </div>
+    `;
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Remove loading state after 2 seconds
+    setTimeout(() => {
+        if (document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+        }
+    }, 2000);
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="bi bi-${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="bi bi-x"></i>
+        </button>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border-left: 4px solid ${getNotificationColor(type)};
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 9999;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (document.body.contains(notification)) {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }
+    }, 5000);
+}
+
+function getNotificationIcon(type) {
+    const icons = {
+        'success': 'check-circle-fill',
+        'error': 'x-circle-fill',
+        'warning': 'exclamation-triangle-fill',
+        'info': 'info-circle-fill'
+    };
+    return icons[type] || 'info-circle-fill';
+}
+
+function getNotificationColor(type) {
+    const colors = {
+        'success': '#27ae60',
+        'error': '#e74c3c',
+        'warning': '#f39c12',
+        'info': '#3498db'
+    };
+    return colors[type] || '#3498db';
+}
+
+function startAutoRefresh() {
+    // Auto-refresh critical stock levels every 30 seconds
+    setInterval(() => {
+        checkCriticalStocks();
+    }, 30000);
+}
+
+function checkCriticalStocks() {
+    // Check for critical stock levels and update UI
+    const criticalStocks = document.querySelectorAll('.critical-stock');
+    if (criticalStocks.length > 0) {
+        // Add pulse animation to critical cards
+        criticalStocks.forEach(card => {
+            card.classList.add('pulse-animation');
+        });
+        
+        // Show notification if new critical stocks detected
+        if (criticalStocks.length > 0) {
+            showNotification(`⚠️ ${criticalStocks.length} blood type(s) at critical level!`, 'warning');
+        }
+    }
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    .loading-spinner {
+        text-align: center;
+        color: white;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255,255,255,0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .notification-close {
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        margin-left: 12px;
+    }
+    
+    .notification-close:hover {
+        background: #f8f9fa;
+    }
+`;
+document.head.appendChild(style);
+
+// Handle form submission
+document.getElementById('updateStockForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Updating...';
+    submitBtn.disabled = true;
+    
+    // Simulate form submission (replace with actual form submission)
+    setTimeout(() => {
+        // Close modal
+        if (window.updateModal) {
+            window.updateModal.hide();
+        } else {
+            document.getElementById('updateStockModal').style.display = 'none';
+        }
+        
+        // Show success message
+        showNotification('Stock updated successfully!', 'success');
+        
+        // Reset button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        
+        // Refresh page after 2 seconds
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    }, 1500);
+});
+
+// Handle ESC key to close modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('updateStockModal');
+        if (modal.style.display === 'block' || modal.classList.contains('show')) {
+            if (window.updateModal) {
+                window.updateModal.hide();
+            } else {
+                modal.style.display = 'none';
+            }
+        }
+    }
+});
+</script>
 {% endblock %}

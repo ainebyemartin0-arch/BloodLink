@@ -11,5 +11,5 @@ from django.conf import settings
 
 def vapid_context(request):
     return {
-        'VAPID_PUBLIC_KEY': getattr(settings, 'VAPID_PUBLIC_KEY', '')
+        'VAPID_PUBLIC_KEY': getattr(settings, 'VAPID_PUBLIC_KEY', 'default-vapid-key-for-development')
     }

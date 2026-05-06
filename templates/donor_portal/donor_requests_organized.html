@@ -287,6 +287,16 @@
     transform: translateY(-2px);
 }
 
+.btn-success {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -741,6 +751,13 @@
                             <span class="material-icons">visibility</span>
                             View Details
                         </button>
+                        
+                        {% if request.request_type == 'emergency' and request.status == 'open' %}
+                        <a href="{% url 'donor:fulfill_emergency_request' request.id %}" class="btn-action btn-success">
+                            <span class="material-icons">volunteer_activism</span>
+                            Fulfill Request
+                        </a>
+                        {% endif %}
                         
                         {% if request.status == 'pending' %}
                         <button class="btn-action btn-secondary" onclick="printRequest({{ request.id }})">

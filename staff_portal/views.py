@@ -15,7 +15,7 @@ from donors.models import Donor
 from donors.choices import BLOOD_TYPE_CHOICES, LOCATION_CHOICES
 from staff_portal.models import EmergencyRequest, DonationRecord, BloodStock, PublicBloodRequest, ActivityLog, BloodShortageAlert, StockAlert
 from notifications.models import SMSNotification
-from .utils import log_activity
+from .utils import log_activity, check_request_fulfillment, update_blood_stock_from_donation, auto_fulfill_request_from_donor_response
 from accounts.models import StaffUser
 from .forms import StaffLoginForm, StaffRegistrationForm, DonorForm, EmergencyRequestForm, DonationRecordForm
 from notifications.utils import send_emergency_sms
@@ -858,35 +858,35 @@ def update_blood_stock(request, pk):
     if request.method == 'POST':
         stock = get_object_or_404(BloodStock, pk=pk)
         try:
-            new_units = int(request.POST.get('units_available', 0))
-            new_threshold = int(request.POST.get('minimum_threshold', 3))
-            notes = request.POST.get('notes', '')
+            new_units = int(request.POST.get('current_units', 0))
+            new_optimal = int(request.POST.get('optimal_level', 50))
+            new_minimum = int(request.POST.get('minimum_level', 10))
+            new_critical = int(request.POST.get('critical_level', 5))
             
-            stock.units_available = max(0, new_units)
-            stock.minimum_threshold = max(1, new_threshold)
-            stock.notes = notes
-            stock.updated_by = request.user
+            stock.current_units = max(0, new_units)
+            stock.optimal_level = max(1, new_optimal)
+            stock.minimum_level = max(1, new_minimum)
+            stock.critical_level = max(1, new_critical)
             stock.save()
             
             # Auto-create emergency request if stock is critical
-            if stock.is_critical and stock.units_available > 0:
+            if stock.is_critical and stock.current_units > 0:
                 messages.warning(
                     request,
                     f'⚠️ {stock.blood_type} stock is critically low '
-                    f'({stock.units_available} units). '
+                    f'({stock.current_units} units). '
                     f'Consider sending an emergency alert.'
                 )
-            elif stock.units_available == 0:
+            elif stock.current_units == 0:
                 messages.error(
                     request,
                     f'🚨 {stock.blood_type} stock is EMPTY! '
-                    f'Please create an emergency request immediately.'
                 )
             else:
                 messages.success(
                     request,
                     f'✅ {stock.blood_type} stock updated to '
-                    f'{stock.units_available} units.'
+                    f'{stock.current_units} units.'
                 )
         except (ValueError, TypeError):
             messages.error(request, 'Invalid value entered.')
@@ -917,7 +917,7 @@ def dashboard_stats_api(request):
             donor_response='confirmed'
         ).count(),
         'critical_stocks': BloodStock.objects.filter(
-            units_available__lte=F('minimum_threshold')
+            current_units__lte=F('critical_level')
         ).count(),
     }
     return JsonResponse(stats)
@@ -974,8 +974,8 @@ def request_fulfill(request, pk):
             stock = BloodStock.objects.get(
                 blood_type=emergency_request.blood_type_needed
             )
-            stock.units_available += units_received
-            stock.updated_by = request.user
+            stock.current_units += units_received
+            stock.last_updated = timezone.now()
             stock.save()
             messages.success(
                 request,
@@ -999,14 +999,18 @@ def export_reports_pdf(request):
     Generate PDF report of all system data.
     Includes donors, requests, SMS stats, and blood stock.
     """
-    from reportlab.lib.pagesizes import letter, A4
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.lib import colors
-    from reportlab.pdfgen import canvas
-    from io import BytesIO
-    from datetime import datetime
+    try:
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import inch
+        from reportlab.lib import colors
+        from reportlab.pdfgen import canvas
+        from io import BytesIO
+        from datetime import datetime
+    except ImportError as e:
+        messages.error(request, f'PDF generation library not available: {e}')
+        return redirect('staff:reports')
     
     # Create PDF buffer
     buffer = BytesIO()
@@ -1109,13 +1113,13 @@ def export_reports_pdf(request):
     
     # Blood Stock Statistics
     story.append(Paragraph("Blood Stock Levels", heading_style))
-    stock_data = [['Blood Type', 'Units Available', 'Status', 'Critical Threshold']]
+    stock_data = [['Blood Type', 'Current Units', 'Status', 'Critical Threshold']]
     for stock in BloodStock.objects.all().order_by('blood_type'):
         stock_data.append([
             stock.blood_type,
-            str(stock.units_available),
-            stock.stock_status.title(),
-            f"{stock.minimum_threshold} units"
+            str(stock.current_units),
+            stock.get_stock_status_display(),
+            f"{stock.critical_level} units"
         ])
     stock_table = Table(stock_data, hAlign='LEFT')
     stock_table.setStyle(TableStyle([
@@ -1131,16 +1135,23 @@ def export_reports_pdf(request):
     story.append(stock_table)
     
     # Build PDF
-    doc.build(story)
-    
-    # Get PDF value
-    pdf_value = buffer.getvalue()
-    buffer.close()
-    
-    # Create response
-    response = HttpResponse(pdf_value, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="bloodlink_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf"'
-    return response
+    try:
+        doc.build(story)
+        
+        # Get PDF value
+        pdf_value = buffer.getvalue()
+        buffer.close()
+        
+        # Create response
+        response = HttpResponse(pdf_value, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="bloodlink_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf"'
+        return response
+        
+    except Exception as e:
+        messages.error(request, f'Error generating PDF report: {e}')
+        return redirect('staff:reports')
+    finally:
+        buffer.close()
 
 
 @login_required
@@ -1367,8 +1378,19 @@ def blood_stock(request):
     critical_count = blood_stocks.filter(current_units__lte=F("critical_level")).count()
     empty_types = blood_stocks.filter(current_units=0).count()
     
+    # Add stock percentages to context
+    stock_data = []
+    for stock in blood_stocks:
+        percentage = 0
+        if stock.optimal_level > 0:
+            percentage = min(100, (stock.current_units * 100) // stock.optimal_level)
+        stock_data.append({
+            'stock': stock,
+            'percentage': percentage,
+        })
+    
     context = {
-        "blood_stocks": blood_stocks,
+        "blood_stocks": stock_data,
         "total_units": total_units,
         "critical_count": critical_count,
         "empty_types": empty_types,

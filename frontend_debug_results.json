@@ -1,0 +1,195 @@
+{
+  "staff_portal": {
+    "Dashboard": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:41"
+    },
+    "Blood Stock": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:41"
+    },
+    "Donor Requests": {
+      "status": "FAIL",
+      "details": "HTTP 404",
+      "error": "Non-200 response",
+      "timestamp": "12:07:41"
+    },
+    "Emergency Requests": {
+      "status": "FAIL",
+      "details": "HTTP 404",
+      "error": "Non-200 response",
+      "timestamp": "12:07:41"
+    },
+    "Public Requests": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:41"
+    },
+    "Reports": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:41"
+    }
+  },
+  "donor_portal": {
+    "Donor Dashboard": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:42"
+    },
+    "Donations": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:42"
+    },
+    "Donor Requests": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:42"
+    },
+    "Profile": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:42"
+    },
+    "About": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:42"
+    },
+    "FAQ": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:42"
+    }
+  },
+  "public_pages": {
+    "Home": {
+      "status": "FAIL",
+      "details": "HTTP 302",
+      "error": "Non-200 response",
+      "timestamp": "12:07:42"
+    },
+    "Donor Register": {
+      "status": "FAIL",
+      "details": "HTTP 302",
+      "error": "Non-200 response",
+      "timestamp": "12:07:42"
+    },
+    "Donor Login": {
+      "status": "FAIL",
+      "details": "HTTP 302",
+      "error": "Non-200 response",
+      "timestamp": "12:07:42"
+    },
+    "Staff Login": {
+      "status": "FAIL",
+      "details": "HTTP 404",
+      "error": "Non-200 response",
+      "timestamp": "12:07:42"
+    },
+    "Contact": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Server error in response",
+      "timestamp": "12:07:42"
+    }
+  },
+  "templates": {
+    "base_staff_modern.html": {
+      "status": "PASS",
+      "details": "Template loads successfully",
+      "error": "",
+      "timestamp": "12:07:42"
+    },
+    "base_donor_enhanced.html": {
+      "status": "FAIL",
+      "details": "",
+      "error": "Template not found",
+      "timestamp": "12:07:42"
+    },
+    "staff_portal/dashboard.html": {
+      "status": "PASS",
+      "details": "Template loads successfully",
+      "error": "",
+      "timestamp": "12:07:42"
+    },
+    "staff_portal/blood_stock.html": {
+      "status": "PASS",
+      "details": "Template loads successfully",
+      "error": "",
+      "timestamp": "12:07:42"
+    },
+    "donor_portal/dashboard.html": {
+      "status": "PASS",
+      "details": "Template loads successfully",
+      "error": "",
+      "timestamp": "12:07:42"
+    },
+    "donor_portal/donations.html": {
+      "status": "PASS",
+      "details": "Template loads successfully",
+      "error": "",
+      "timestamp": "12:07:42"
+    }
+  },
+  "assets": {
+    "css/style.css": {
+      "status": "FAIL",
+      "details": "HTTP 404",
+      "error": "File not accessible",
+      "timestamp": "12:07:43"
+    },
+    "js/main.js": {
+      "status": "FAIL",
+      "details": "HTTP 404",
+      "error": "File not accessible",
+      "timestamp": "12:07:43"
+    },
+    "images/logo.png": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "12:07:43"
+    }
+  },
+  "summary": {
+    "total_tests": 26,
+    "passed": 6,
+    "failed": 20,
+    "errors": [
+      "staff_portal: Dashboard - Server error in response",
+      "staff_portal: Blood Stock - Server error in response",
+      "staff_portal: Donor Requests - Non-200 response",
+      "staff_portal: Emergency Requests - Non-200 response",
+      "staff_portal: Public Requests - Server error in response",
+      "staff_portal: Reports - Server error in response",
+      "donor_portal: Donor Dashboard - Server error in response",
+      "donor_portal: Donations - Server error in response",
+      "donor_portal: Donor Requests - Server error in response",
+      "donor_portal: Profile - Server error in response",
+      "donor_portal: About - Server error in response",
+      "donor_portal: FAQ - Server error in response",
+      "public_pages: Home - Non-200 response",
+      "public_pages: Donor Register - Non-200 response",
+      "public_pages: Donor Login - Non-200 response",
+      "public_pages: Staff Login - Non-200 response",
+      "public_pages: Contact - Server error in response",
+      "templates: base_donor_enhanced.html - Template not found",
+      "assets: css/style.css - File not accessible",
+      "assets: js/main.js - File not accessible"
+    ]
+  }
+}

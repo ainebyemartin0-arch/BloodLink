@@ -583,6 +583,69 @@ def response_confirmation(request, pk):
     }
     return render(request, 'donor_portal/response_confirmation.html', context)
 
+@donor_login_required
+def fulfill_emergency_request(request, pk):
+    """Automatically fulfill an emergency request when donor responds."""
+    donor = get_logged_in_donor(request)
+    
+    # Get the emergency request
+    emergency_request = get_object_or_404(EmergencyRequest, pk=pk)
+    
+    # Verify this request is for the donor's blood type
+    if emergency_request.blood_type_needed != donor.blood_type:
+        messages.error(request, f"This request is for blood type {emergency_request.blood_type_needed}, but your blood type is {donor.blood_type}.")
+        return redirect('donor:donor_requests')
+    
+    # Check if donor is eligible
+    if not donor.is_eligible_to_donate:
+        messages.error(request, f"You are not eligible to donate right now. {donor.eligibility_status_display}")
+        return redirect('donor:donor_requests')
+    
+    if request.method == 'POST':
+        response = request.POST.get('response')
+        units_willing = int(request.POST.get('units_willing', 1))
+        
+        if response == 'accept':
+            # Import the auto-fulfillment function
+            from staff_portal.utils import auto_fulfill_request_from_donor_response
+            
+            # Auto-fulfill the request
+            donation = auto_fulfill_request_from_donor_response(
+                emergency_request, donor, units_willing
+            )
+            
+            if donation:
+                messages.success(
+                    request,
+                    f'🎉 Thank you! Your donation of {units_willing} unit(s) has been recorded. '
+                    f'The emergency request has been automatically updated and blood stock adjusted.'
+                )
+                
+                # Log the activity
+                from staff_portal.utils import log_activity
+                log_activity(
+                    request,
+                    'donor_auto_fulfillment',
+                    f'Donor {donor.full_name} automatically fulfilled emergency request #{emergency_request.pk} with {units_willing} unit(s)',
+                    donor_id=donor.id,
+                    request_id=emergency_request.pk
+                )
+                
+            else:
+                messages.error(request, 'There was an error processing your donation. Please try again.')
+        
+        elif response == 'decline':
+            messages.success(request, 'You have declined the blood donation request.')
+        
+        return redirect('donor:donor_requests')
+    
+    context = {
+        'donor': donor,
+        'emergency_request': emergency_request,
+        'max_units': min(3, donor.donation_count_12_months < 6 and 6 - donor.donation_count_12_months or 0),
+    }
+    return render(request, 'donor_portal/fulfill_request.html', context)
+
 def mark_sms_opened(request, pk):
     """Mark SMS as opened (for tracking)."""
     try:

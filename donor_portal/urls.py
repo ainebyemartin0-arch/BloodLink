@@ -21,6 +21,7 @@ urlpatterns = [
     path('donations/', views.donor_donations, name='donations'),
     path('requests/', views.donor_requests, name='donor_requests'),
     path('requests/<int:pk>/', views.donor_request_detail, name='donor_request_detail'),
+    path('requests/<int:pk>/fulfill/', views.fulfill_emergency_request, name='fulfill_emergency_request'),
     path('toggle-availability/', views.toggle_availability, name='toggle_availability'),
     path('cancel-request/<int:pk>/', views.cancel_request, name='cancel_request'),
     path('change-password/', views.donor_change_password, name='change_password'),

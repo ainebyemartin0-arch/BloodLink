@@ -7,7 +7,8 @@ app_name = 'staff'
 
 urlpatterns = [
     path('', views.redirect_root, name='root'),
-    path('secure-access/', views.staff_login, name='login'),
+    path('login/', views.staff_login, name='login'),
+    path('secure-access/', views.staff_login, name='secure_access'),
     path('logout/', views.staff_logout, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('register/', views.register_staff_public, name='register'),
@@ -54,6 +55,10 @@ urlpatterns = [
     path('donations/', views.donation_list, name='donation_list'),
     path('donations/create/', views.donation_create, name='donation_create'),
     path('donations/<int:pk>/', views.donation_detail, name='donation_detail'),
+    
+    # Legacy URL patterns for compatibility
+    path('donor-requests/', views.request_list, name='donor_requests'),
+    path('emergency-requests/', views.request_list, name='emergency_requests'),
     
     # API endpoints for blood shortage
     path('api/check-shortage/', views.check_shortage_api, name='api_check_shortage'),

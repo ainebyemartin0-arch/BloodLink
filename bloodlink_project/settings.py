@@ -24,6 +24,10 @@ ALLOWED_HOSTS = allowed_hosts_env.split(' ')
 if '.onrender.com' not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append('.onrender.com')
 
+# Add testserver for testing
+if 'testserver' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('testserver')
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +51,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CommonMiddleware settings
+APPEND_SLASH = True
 
 ROOT_URLCONF = 'bloodlink_project.urls'
 

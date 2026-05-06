@@ -1,0 +1,164 @@
+{
+  "models": {
+    "StaffUser Model": {
+      "status": "PASS",
+      "details": "3 records",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "Donor Model": {
+      "status": "PASS",
+      "details": "4 records",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "BloodStock Model": {
+      "status": "PASS",
+      "details": "8 records",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "EmergencyRequest Model": {
+      "status": "PASS",
+      "details": "12 records",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "PublicBloodRequest Model": {
+      "status": "PASS",
+      "details": "6 records",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "DonationRecord Model": {
+      "status": "PASS",
+      "details": "3 records",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "Donor-Donation Relationship": {
+      "status": "PASS",
+      "details": "Donor has 1 donations",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "BloodStock Fields": {
+      "status": "PASS",
+      "details": "Sample: A+ - 5 units",
+      "error": "",
+      "timestamp": "13:26:05"
+    }
+  },
+  "database": {
+    "Connection": {
+      "status": "PASS",
+      "details": "Database connected successfully",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "Basic Query": {
+      "status": "PASS",
+      "details": "Queries working",
+      "error": "",
+      "timestamp": "13:26:05"
+    },
+    "Transactions": {
+      "status": "PASS",
+      "details": "Transactions working",
+      "error": "",
+      "timestamp": "13:26:06"
+    }
+  },
+  "views": {
+    "Staff Dashboard": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:14"
+    },
+    "Staff Blood Stock": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:15"
+    },
+    "Staff Reports": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:15"
+    },
+    "Donor Dashboard": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:15"
+    },
+    "Donor Donations": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:16"
+    },
+    "Donor Profile": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:16"
+    }
+  },
+  "apis": {
+    "API Dashboard Stats": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:17"
+    },
+    "API System Stats": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:17"
+    },
+    "API Check Shortage": {
+      "status": "PASS",
+      "details": "HTTP 200",
+      "error": "",
+      "timestamp": "13:26:17"
+    }
+  },
+  "authentication": {
+    "Staff Login": {
+      "status": "PASS",
+      "details": "Staff authentication working",
+      "error": "",
+      "timestamp": "13:26:11"
+    },
+    "Donor Login": {
+      "status": "PASS",
+      "details": "Donor authentication working",
+      "error": "",
+      "timestamp": "13:26:12"
+    }
+  },
+  "errors": {
+    "404 Handling": {
+      "status": "PASS",
+      "details": "Custom 404 page working",
+      "error": "",
+      "timestamp": "13:26:17"
+    },
+    "View Error Handling": {
+      "status": "PASS",
+      "details": "No unhandled errors",
+      "error": "",
+      "timestamp": "13:26:18"
+    }
+  },
+  "summary": {
+    "total_tests": 24,
+    "passed": 24,
+    "failed": 0,
+    "errors": []
+  }
+}
